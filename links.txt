@@ -1,0 +1,14 @@
+Seven segment driver - https://ro.farnell.com/ams-osram-group/as1115-bsst/display-driver-40-to-125deg-c/dp/4328186
+Seven segment display - https://ro.farnell.com/wurth-elektronik/157136b12701/led-display-7-seg-cmn-cthd-blue/dp/4228453
+Seven segment driver adapter - https://www.optimusdigital.ro/ro/accesorii-adaptoare-pcb/200-adaptor-pcb-sop28ssop28tssop28-la-dip.html?search_query=sop+24&results=9
+Display - https://eu.mouser.com/ProductDetail/Newhaven-Display/NHD-7.0-800480FT-CSXN-T?qs=j%252B1pi9TdxUZumka9fKWA4g%3D%3D
+Graphics chip - https://ro.mouser.com/ProductDetail/Bridgetek/FT812Q-R?qs=OplyyfyNBA68Hf23LHFICA%3D%3D&countryCode=RO&currencyCode=RON
+Schmitt inverter - https://ro.mouser.com/ProductDetail/863-MC74HC14ADR2G-Q
+Display toolchain home page - https://brtchip.com/toolchains/
+Display screen editor - https://brtchip.com/ese-2/
+Display screen designer - https://brtchip.com/esd/
+Display asset builder - https://brtchip.com/eab/
+Display ribbon connector - https://ro.mouser.com/ProductDetail/Molex/54104-4031?qs=OdNwOVlk5%2FgBUEuya%2FAfOQ%3D%3D
+Display touchscreen connector - https://ro.mouser.com/ProductDetail/Molex/52207-0485?qs=8JtXMKbI7JRtSPuKLQ2YFA%3D%3D
+Amplifier - eu.mouser.com/c/?q=tpa6205a1
+Speaker - https://www.optimusdigital.ro/ro/audio-difuzoare/2147-difuzor-de-1-w.html?search_query=difuzor&results=95
