@@ -9,7 +9,7 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include "display.h"
+#include "display_old.h"
 #include "FT81_misc.h"
 #include "FT81_display.h"
 #include "FT81_sound.h"

@@ -1,5 +1,5 @@
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef DISPLAY_OLD_H
+#define DISPLAY_OLD_H
 
 #ifdef __cplusplus
 extern "C"{

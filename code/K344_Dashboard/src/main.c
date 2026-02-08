@@ -24,7 +24,7 @@ extern "C" {
 #include "CanIf.h"
 #include "SchM_Can_43_FLEXCAN.h"
 
-#include "display.h"
+#include "display_old.h"
 #include "FT81_misc.h"
 #include "FT81_display.h"
 #include "FT81_sound.h"
