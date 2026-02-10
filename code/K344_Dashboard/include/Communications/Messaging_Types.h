@@ -25,7 +25,7 @@ typedef struct{
     /* General values */
     uint16_t MedianCellTemperature;                     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
     uint16_t HighestCellTemperature;                    /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
-    uint32_t LowestCellTemperature;                     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
+    uint16_t LowestCellTemperature;                     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
     uint32_t MedianCellVoltage;                         /* TODO */
     uint32_t HighestCellVoltage;                        /* TODO */
     uint32_t LowestCellVoltage;                         /* TODO */
@@ -47,16 +47,16 @@ typedef struct{
     /* Accelerator */
     uint16_t AcceleratorSensor1Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
     uint16_t AcceleratorSensor2Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint32_t AcceleratorSensor1TravelPercentage;        /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-    uint32_t AcceleratorSensor2TravelPercentage;        /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
+    uint8_t AcceleratorSensor1TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
+    uint8_t AcceleratorSensor2TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     /* Brake */
     uint16_t BrakeSensor1Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
     uint16_t BrakeSensor2Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint32_t BrakeSensor1TravelPercentage;              /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-    uint32_t BrakeSensor2TravelPercentage;              /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
+    uint8_t BrakeSensor1TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
+    uint8_t BrakeSensor2TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     /* Pressure */
     uint16_t PressureSensorVoltage;                     /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint32_t PressureSensorBars;                        /* 8 bits, 0-255, 0 to 255 Bars, 1 Bar per bit */
+    uint8_t PressureSensorBars;                         /* 8 bits, 0-255, 0 to 255 Bars, 1 Bar per bit */
     /* Status and errors */
     bool Accel_Sensor1_ShortToGnd;                      /* 1 bit, 0 means safe, 1 means errors */
     bool Accel_Sensor1_ShortToVcc;                      /* 1 bit, 0 means safe, 1 means errors */
@@ -78,21 +78,21 @@ typedef struct{
     /* Left inverter and motor */
     uint8_t LeftInverterTemperature;                    /* 8 bits, 0-255, -40 to 215 degrees C, 1 degree C per bit */
     uint8_t LeftMotorTemperature;                       /* 8 bits, 0-255, -30 to 225 degrees C, 1 degree C per bit */
-    uint32_t LeftInverterInputVoltage;                  /* 11 bits, 0-1800, 0 to 180.0 Volts, 0.1 Volts per bit */
-    uint32_t LeftInverterCurrent;                       /* 12 bits, 0-4000, 0 to 400.0 Amps, 0.1 Amps per bit */
-    uint32_t LeftMotorRpm;                              /* 13 bits, 0-6000, 0 to 6000 RPM, 1 RPM per bit */
-    uint32_t LeftMotorSpeedKmh;                         /* 8 bits, 0-255, 0 to 255 Km/h, 1 Km/h per bit */
-    uint32_t LeftInverterThrottle;                      /* 8 bits, 0-255, 0 to 5.00 Volts, 0.02 Volts per bit */
-    uint32_t LeftInverterThrottleFeedback;              /* 8 bits, 0-255, 0 to 5.00 Volts, 0.02 Volts per bit */
+    uint16_t LeftInverterInputVoltage;                  /* 11 bits, 0-1800, 0 to 180.0 Volts, 0.1 Volts per bit */
+    uint16_t LeftInverterCurrent;                       /* 12 bits, 0-4000, 0 to 400.0 Amps, 0.1 Amps per bit */
+    uint16_t LeftMotorRpm;                              /* 13 bits, 0-6000, 0 to 6000 RPM, 1 RPM per bit */
+    uint8_t LeftMotorSpeedKmh;                          /* 8 bits, 0-255, 0 to 255 Km/h, 1 Km/h per bit */
+    uint8_t LeftInverterThrottle;                       /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
+    uint8_t LeftInverterThrottleFeedback;               /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
     /* Right inverter and motor */
     uint8_t RightInverterTemperature;                   /* 8 bits, 0-255, -40 to 215 degrees C, 1 degree C per bit */
     uint8_t RightMotorTemperature;                      /* 8 bits, 0-255, -30 to 225 degrees C, 1 degree C per bit */
-    uint32_t RightInverterInputVoltage;                 /* 11 bits, 0-1800, 0 to 180.0 Volts, 0.1 Volts per bit */
-    uint32_t RightInverterCurrent;                      /* 12 bits, 0-4000, 0 to 400.0 Amps, 0.1 Amps per bit */
-    uint32_t RightMotorRpm;                             /* 13 bits, 0-6000, 0 to 6000 RPM, 1 RPM per bit */
-    uint32_t RightMotorSpeedKmh;                        /* 8 bits, 0-255, 0 to 255 Km/h, 1 Km/h per bit */
-    uint32_t RightInverterSentThrottle;                 /* 8 bits, 0-255, 0 to 5.00 Volts, 0.02 Volts per bit */
-    uint32_t RightInverterThrottleFeedback;             /* 8 bits, 0-255, 0 to 5.00 Volts, 0.02 Volts per bit */
+    uint16_t RightInverterInputVoltage;                 /* 11 bits, 0-1800, 0 to 180.0 Volts, 0.1 Volts per bit */
+    uint16_t RightInverterCurrent;                      /* 12 bits, 0-4000, 0 to 400.0 Amps, 0.1 Amps per bit */
+    uint16_t RightMotorRpm;                             /* 13 bits, 0-6000, 0 to 6000 RPM, 1 RPM per bit */
+    uint8_t RightMotorSpeedKmh;                         /* 8 bits, 0-255, 0 to 255 Km/h, 1 Km/h per bit */
+    uint8_t RightInverterSentThrottle;                  /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
+    uint8_t RightInverterThrottleFeedback;              /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
     /* Status and errors */ 
     bool IsCarInReverse;                                /* 1 bit, 0 means car is in FORWARD, 1 means car is in REVERSE */
     bool IsCarRunning;                                  /* 1 bit, 0 means car is RUNNING (Responding to accelerator pedal), 1 means car is IDLE (NOT responding to accelerator pedal)*/
