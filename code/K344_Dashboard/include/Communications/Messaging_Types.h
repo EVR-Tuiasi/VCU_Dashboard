@@ -26,10 +26,10 @@ typedef struct{
     uint16_t MedianCellTemperature;                     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
     uint16_t HighestCellTemperature;                    /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
     uint16_t LowestCellTemperature;                     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
-    uint32_t MedianCellVoltage;                         /* TODO */
-    uint32_t HighestCellVoltage;                        /* TODO */
-    uint32_t LowestCellVoltage;                         /* TODO */
-    uint16_t OverallVoltage;                            /* 11 bits, 0-1023, 0 to 204.7 Volts, 0.1 Volts per bit */
+    uint16_t MedianCellVoltage;                         /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
+    uint16_t HighestCellVoltage;                        /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
+    uint16_t LowestCellVoltage;                         /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
+    uint16_t OverallVoltage;                            /* 11 bits, 0-2047, 0 to 204.7 Volts, 0.1 Volts per bit */
     uint16_t OverallCurrent;                            /* 13 bits, 0-8095, 0 to 809.5 Amps, 0.1 Amps per bit */
     /* Cell voltages and temperatures*/
     uint32_t CellVoltage[CELLS_NUM];                    /* TODO */
@@ -45,13 +45,13 @@ typedef struct{
 
 typedef struct{
     /* Accelerator */
-    uint16_t AcceleratorSensor1Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint16_t AcceleratorSensor2Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
+    uint16_t AcceleratorSensor1Voltage;                 /* 14 bits, 0-16383, 0 to 5.00 Volts */
+    uint16_t AcceleratorSensor2Voltage;                 /* 14 bits, 0-16383, 0 to 5.00 Volts */
     uint8_t AcceleratorSensor1TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     uint8_t AcceleratorSensor2TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     /* Brake */
-    uint16_t BrakeSensor1Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint16_t BrakeSensor2Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
+    uint16_t BrakeSensor1Voltage;                       /* 14 bits, 0-16383, 0 to 5.00 Volts */
+    uint16_t BrakeSensor2Voltage;                       /* 14 bits, 0-16383, 0 to 5.00 Volts */
     uint8_t BrakeSensor1TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     uint8_t BrakeSensor2TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
     /* Pressure */
