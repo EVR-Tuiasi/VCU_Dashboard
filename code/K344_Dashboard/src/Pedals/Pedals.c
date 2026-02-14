@@ -58,18 +58,15 @@ void Pedals_Test(void){
     //TODO: Implementation
 }
 
-void Get_Pedals_Status(Error_Status Pedals_Status){
-    //TODO: Implementation
-}
-void Get_Brake_Data(Brake_Status Voltage,  Brake_Status Travel_Percentage){
+void Pedals_GetErrors(void){
     //TODO: Implementation
 }
 
-void Get_Accelerator_Data(Accelerator_Status Voltage, Accelerator_Status Travel_Percentage){
+uint32_t Pedals_GetData(Pedal_t PedalSelect, Sensor_t SensorSelect, PedalValue_t DesiredValueType){
     //TODO: Implementation
 }
 
-void Get_Pressure_Data(Pressure Voltage, Pressure Travel_Percentage){
+uint32_t Pedals_GetPressure(BrakePressure_t Value){
     //TODO: Implementation
 }
 

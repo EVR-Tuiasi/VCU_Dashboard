@@ -34,6 +34,26 @@ extern "C"{
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 
+typedef enum{
+    Brake,
+    Accel
+}Pedal_t;
+
+typedef enum{
+    Sensor1,
+    Sensor2
+}Sensor_t;
+
+typedef enum{
+    Raw_Voltage,
+    Percentage
+}PedalValue_t;
+
+typedef enum{
+    Raw_Voltage,
+    Bars
+}BrakePressure_t;
+
 typedef struct{
 	/*Status and Errors*/
 	bool Accel_Sensor1_ShortToGnd;                      /* 1 bit, 0 means safe, 1 means errors */
@@ -50,26 +70,7 @@ typedef struct{
     bool Brake_Sensor2_ShortToVcc;                      /* 1 bit, 0 means safe, 1 means errors */
     bool Brake_Sensor2_OutOfRangeOutput;                /* 1 bit, 0 means safe, 1 means errors */
     bool Brake_Implausibility;                          /* 1 bit, 0 means safe, 1 means errors */
-}Error_Status;
-
-typedef struct{
-    uint16_t PressureSensorVoltage;                     /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint8_t PressureSensorBars;                         /* 8 bits, 0-255, 0 to 255 Bars, 1 Bar per bit */
-}Pressure;
-
-typedef struct{
-    uint16_t AcceleratorSensor1Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint16_t AcceleratorSensor2Voltage;                 /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint8_t AcceleratorSensor1TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-    uint8_t AcceleratorSensor2TravelPercentage;         /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-}Accelerator_Status;
-
-typedef struct{
-    uint16_t BrakeSensor1Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint16_t BrakeSensor2Voltage;                       /* 9 bits, 0-500, 0 to 5.00 Volts, 0.1 Volts per bit */
-    uint8_t BrakeSensor1TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-    uint8_t BrakeSensor2TravelPercentage;               /* 7 bits, 0-100, 0 to 100 Percent, 1 Percent per bit */
-}Brake_Status;
+}PedalsErrors_t;
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -112,10 +113,9 @@ typedef struct{
 
 void Pedals_Init(void);
 void Pedals_Test(void);
-void Get_Pedals_Status(Get_Error_Status Pedals_Status);																				//TO PROCESS: Boolean values for the Pedals Status
-void Get_Brake_Data(uint8_t Select_Sensor, Get_Brake_Status Voltage, Get_Brake_Status Travel_Percentage);							//RECEIVE: 9-bit ADC for Voltage, 7-bit ADC for Travel Percentage
-void Get_Accelerator_Data(uint8_t Select_Sensor, Get_Accelerator_Status Voltage, Get_Accelerator_Status Travel_Percentage);			//RECEIVE: 9-bit ADC for Voltage, 7-bit ADC for Travel Percentage
-void Get_Pressure_Data(Pressure Voltage, Pressure Travel_Percentage);
+void Pedals_GetErrors(void);
+uint32_t Pedals_GetData(Pedal_t PedalSelect, Sensor_t SensorSelect, PedalValue_t DesiredValueType);
+uint32_t Pedals_GetPressure(BrakePressure_t ValueType);
 
 #ifdef __cplusplus
 }
