@@ -56,7 +56,13 @@ extern "C" {
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
+void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value){
+    /*TODO*/
+}
 
+uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
+    /*TODO*/
+}
 
 #ifdef __cplusplus
 }

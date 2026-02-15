@@ -19,7 +19,37 @@ extern "C"{
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 
-
+typedef enum{
+    DIGIT0 = 0x01,
+    DIGIT1 = 0x02,
+    DIGIT2 = 0x03,
+    DIGIT3 = 0x04,
+    DIGIT4 = 0x05,
+    DIGIT5 = 0x06,
+    DIGIT6 = 0x07,
+    DIGIT7 = 0x08,
+    DECODE_MODE = 0x09,
+    GLOBAL_INTENSITY = 0x10,
+    SCAN_LIMIT = 0x11,
+    SHUTDOWN = 0x12,
+    SELF_ADDRESSING = 0x13,
+    FEATURE = 0x14,
+    DISPLAY_TEST_MODE = 0x15,
+    DIG0_DIG1_INTENSITY = 0x16,
+    DIG2_DIG3_INTENSITY = 0x17,
+    DIG4_DIG5_INTENSITY = 0x18,
+    DIG6_DIG7_INTENSITY = 0x19,
+    DIAGNOSTIC_DIGIT_0 = 0x20,
+    DIAGNOSTIC_DIGIT_1 = 0x21,
+    DIAGNOSTIC_DIGIT_2 = 0x22,
+    DIAGNOSTIC_DIGIT_3 = 0x23,
+    DIAGNOSTIC_DIGIT_4 = 0x24,
+    DIAGNOSTIC_DIGIT_5 = 0x25,
+    DIAGNOSTIC_DIGIT_6 = 0x26,
+    DIAGNOSTIC_DIGIT_7 = 0x27,
+    KEYA = 0x28,
+    KEYB = 0x29,
+}AS1115Registers_t;
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -58,6 +88,9 @@ extern "C"{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+
+void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value);
+uint8_t AS1115_Read(AS1115Registers_t SelectedRegister);
 
 
 #ifdef __cplusplus
