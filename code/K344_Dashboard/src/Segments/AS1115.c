@@ -11,6 +11,7 @@ extern "C" {
 ==================================================================================================*/
 
 #include "AS1115.h"
+#include "CDD_I2c.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -20,21 +21,7 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-//adrese pentru LPI2C0 pentru S32K344
-#define LPI2C0_BASE          (0x40440000UL)									//Base Address
-#define LPI2C_MCR            (*(volatile uint32_t*)(LPI2C0_BASE + 0x10))	//Control Register
-#define LPI2C_MSR            (*(volatile uint32_t*)(LPI2C0_BASE + 0x14))	//Status Register
-#define LPI2C_MTDR           (*(volatile uint32_t*)(LPI2C0_BASE + 0x1C))	//Transmit Data
-#define LPI2C_MRDR           (*(volatile uint32_t*)(LPI2C0_BASE + 0x20))	//Receive Data
-
-//adresa driver de trimitere
-#define AS1115_I2C_ADDR      0x00
-
-//comenzi pentru LPI2C MTDR
-#define CMD_START            (0x0400U)
-#define CMD_STOP             (0x0200U)
-#define CMD_TRANSMIT         (0x0000U)
-#define CMD_RECEIVE          (0x0100U)
+#define DRIVER_SLAVE_ADDRESS 0x00
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -44,7 +31,8 @@ extern "C" {
 /*==================================================================================================
 *                                      LOCAL VARIABLES
 ==================================================================================================*/
-
+I2c_RequestType  writeRequest;
+I2c_RequestType readRequest;
 
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
@@ -64,69 +52,61 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL FUNCTIONS
 ==================================================================================================*/
-static void LPI2C_Wait(){
-	//se asteapta pana cand FIFO de transmitere a datelor are loc
-	while(((*(volatile uint32_t*)(LPI2C0_BASE + 0x18)) & 0xFF) > 2);
-}
+
 
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
 void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value){
-    //START + adresa pe write
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_START | (AS1115_I2C_ADDR << 1);
+    //structura bufferului
+	uint8_t buffer[2] = {
+    		(uint8_t)SelectedRegister,
+			Value
+    };
 
-	//trimite adresa de inregistrare
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_START | (uint8_t)SelectedRegister;
+    //pregatire cerere
+    I2c_RequestType request = {0};
+    request.SlaveAddress = DRIVER_SLAVE_ADDRESS;
+    request.BitsSlaveAddressSize = false;
+    request.HighSpeedMode = false;
+    request.ExpectNack = false;
+    request.RepeatedStart = false;
+    request.BufferSize = 2;
+    request.DataDirection = I2C_SEND_DATA;
+    request.DataBuffer = buffer;
 
-	//trimitere date
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_TRANSMIT | Value;
-
-	//STOP
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_STOP;
+    I2c_SyncTransmit(0, &request); //cerere pe canalul 0
 }
 
 uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
-    uint32_t data = 0;
-	//START + adresa pe write
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_START | (AS1115_I2C_ADDR << 1);
+    uint8_t value = 0;
 
-	//trimite adresa de inregistrare
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_START | (uint8_t)SelectedRegister;
+    //scriem registrul dorit
+    writeRequest.SlaveAddress = DRIVER_SLAVE_ADDRESS;
+    writeRequest.BitsSlaveAddressSize = false;
+    writeRequest.HighSpeedMode = false;
+    writeRequest.ExpectNack = false;
+    writeRequest.RepeatedStart = false;
+    writeRequest.BufferSize = 1;
+    writeRequest.DataDirection = I2C_SEND_DATA;
+    writeRequest.DataBuffer = &((uint8_t)SelectedRegister);
 
-	//REPEATED START + adresa pe read (bitul LSB setat pe 1)
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_START | (AS1115_I2C_ADDR << 1 | 0x01);
+    I2c_SyncTransmit(0, &writeRequest);
 
-	//comanda de receive (0x00 inseamna primirea 1 octet)
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_RECEIVE | 0x00;
+    //citim valoarea
+    readRequest.SlaveAddress = DRIVER_SLAVE_ADDRESS;
+    readRequest.BitsSlaveAddressSize = false;
+    readRequest.HighSpeedMode = false;
+    readRequest.ExpectNack = false;
+    readRequest.RepeatedStart = false;
+    readRequest.BufferSize = 1;
+    readRequest.DataDirection = I2C_RECEIVE_DATA;
+    readRequest.DataBuffer = &value;
 
-	//STOP
-	LPI2C_Wait();
-	LPI2C_MTDR = CMD_STOP;
+    I2c_SyncTransmit(0, &readRequest);
 
-	//asteapta pana cand receive FIFO are date disponibile
-	//verificam registrul MSR sau MRSR
-	//in LPI2C0_BASE + 0x24 avem MRSR
-	while(((*(volatile uint32_t*)(LPI2C0_BASE + 0x24)) & 0xFF) == 0);
-
-	//citirea datelor
-	receivedValue = LPI2C_MRDR;
-
-	//verificam bitul de RX Empty pentru a ne asigura ca datele sunt valide
-	if (!(data & (1 << 14))) {
-		return (uint8_t)(data & 0xFF);
-	}
-
-	return 0;
+    return value;
 }
 
 #ifdef __cplusplus

@@ -1,8 +1,19 @@
-#ifndef SEVEN_SEGMENTS_H
-#define SEVEN_SEGMENTS_H
+/*
+*   Copyright 2020 NXP
+*
+*   NXP Confidential. This software is owned or controlled by NXP and may only be used strictly
+*   in accordance with the applicable license terms.  By expressly accepting
+*   such terms or by downloading, installing, activating and/or otherwise using
+*   the software, you are agreeing that you have read, and that you agree to
+*   comply with and are bound by, such license terms.  If you do not agree to
+*   be bound by the applicable license terms, then you may not retain,
+*   install, activate or otherwise use the software.
+*
+*   This file contains sample code only. It is not part of the production code deliverables.
+*/
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 
@@ -12,17 +23,18 @@ extern "C"{
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
+#include "Mcu.h"
+#include "Port.h"
+#include "Dio.h"
 
-#include "stdint.h"
+#include "check_example.h"
+
+#include "SevenSegments.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-typedef enum{
-    SPEED_KMH,
-    BATTERY_PERCENTAGE,
-    TEMPERATURE
-}SegmentsMonitoredValue_t;
+
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -63,13 +75,68 @@ typedef enum{
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
-void Segments_Init(void);
-void Segments_Test(void);
-void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value);
-void Segments_Update(void);
+void TestDelay(uint32 delay);
+void TestDelay(uint32 delay)
+{
+   static volatile uint32 DelayTimer = 0;
+   while(DelayTimer<delay)
+   {
+       DelayTimer++;
+   }
+   DelayTimer=0;
+}
+
+/**
+* @brief        Main function of the example
+* @details      Initializez the used drivers and uses the Icu
+*               and Dio drivers to toggle a LED on a push button
+*/
+int main(void)
+{
+    uint8 count = 0U;
+    static SegmentsMonitoredValue_t SegmentsMonitoredValue = {0,0,0};
+
+    /* Initialize the Mcu driver */
+#if (MCU_PRECOMPILE_SUPPORT == STD_ON)
+    Mcu_Init(NULL_PTR);
+#elif (MCU_PRECOMPILE_SUPPORT == STD_OFF)
+    Mcu_Init(&Mcu_Config_VS_0);
+#endif /* (MCU_PRECOMPILE_SUPPORT == STD_ON) */
+
+    /* Initialize the clock tree and apply PLL as system clock */
+    Mcu_InitClock(McuClockSettingConfig_0);
+#if (MCU_NO_PLL == STD_OFF)
+    while ( MCU_PLL_LOCKED != Mcu_GetPllStatus() )
+    {
+        /* Busy wait until the System PLL is locked */
+    }
+
+    Mcu_DistributePllClock();
+#endif
+    Mcu_SetMode(McuModeSettingConf_0);
+
+    /* Initialize all pins using the Port driver */
+    Port_Init(NULL_PTR);
+    //platform
+    //i2c
+    Segments_Init();
+    Segments_Test();
+    while (1)
+    {
+        TestDelay(2000000);
+        Segments_Test();
+        Segments_Set(SegmentsMonitoredValue, 12);
+        Segments_Update();
+    }
+
+    Exit_Example(TRUE);
+
+    return (0U);
+}
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+/** @} */

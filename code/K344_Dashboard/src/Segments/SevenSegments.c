@@ -13,15 +13,13 @@ extern "C" {
 #include "stdint.h"
 #include "SevenSegments.h"
 #include "AS1115.h"
+#include "CDD_I2c.h"
+
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-typedef struct {
-	int16_t SPEED_KMH;
-	int16_t BATTERY_PERCENTAGE;
-	int16_t TEMPERATURE;
-} SegmentsValues_t;
+
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -36,13 +34,10 @@ typedef struct {
 /*==================================================================================================
 *                                      LOCAL VARIABLES
 ==================================================================================================*/
-//instantierea structurii pentru memorarea valorilor
-static SegmentsValues_t SegmentsValues = {0, 0, 0};
-
-//mapare pentru fiecare grup: gr 0 = temperatura (dig0-dig1), gr 1 = speed (dig2-dig4), gr 2 = battery (dig5-dig7)
-static const uint8_t GroupTemp[] = {DIGIT0, DIGIT1}; 				// 2 segmente
-static const uint8_t GroupSpeed[] = {DIGIT2, DIGIT3, DIGIT4}; 		// 3 segmente
-static const uint8_t GroupBattery[] = {DIGIT5, DIGIT6, DIGIT7}; 	// 3 segmente
+// -- SPEED_KMH pentru digiti 0-2
+// -- BATTERY_PERCENTAGE pentru digiti 3-5
+// -- TEMPERATURE pentru digiti 6-7
+static uint8_t displayBuffer[8] = {0};
 
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
@@ -62,18 +57,6 @@ static const uint8_t GroupBattery[] = {DIGIT5, DIGIT6, DIGIT7}; 	// 3 segmente
 /*==================================================================================================
 *                                       LOCAL FUNCTIONS
 ==================================================================================================*/
-//functie auxiliara pentru scrierea unui numar pe un grup de digituri
-static void DisplayWriteNumber(const uint8_t* GroupDigits, uint8_t size, int16_t value) {
-	for(uint8_t i = 0; i < size; i++){
-		//daca valoarea devine 0 stingem restul, apelam 0x0F
-		if(value == 0 && i > 0){
-			AS1115_Write((AS1115Registers_t)GroupDigits[i], 0x0F); //scriem BLANK
-		} else {
-			AS1115_Write((AS1115Registers_t)GroupDigits[i], (uint8_t)(value%10));
-			value /= 10;
-		}
-	}
-}
 
 
 /*==================================================================================================
@@ -81,39 +64,71 @@ static void DisplayWriteNumber(const uint8_t* GroupDigits, uint8_t size, int16_t
 ==================================================================================================*/
 
 void Segments_Init(void){
-    /*initializare drive*/
-	AS1115_Write(SHUTDOWN, 0x01);			//iesire din shutdown
-	AS1115_Write(SCAN_LIMIT, 0x07);			//activeaza digitii 0-7
-	AS1115_Write(DECODE_MODE, 0xFF);		//decodificare BCD pe digitii 0-7
-	AS1115_Write(GLOBAL_INTENSITY, 0x08);	//intensitatea setata
-}
+	// -- Iesire din modul Shutdown si trecere in Normal Mode Operation
+	AS1115_Write(SHUTDOWN, 0x01);
 
-void Segments_Test(void){
-    //aprinde toate segmentele pentru testare
-	AS1115_Write(DISPLAY_TEST_MODE, 0x01);
-}
+	// -- Activare mod decodificare "Code B" pentru toti digitii (permite afisarea cifrelor 0-9)
+	AS1115_Write(DECODE_MODE, 0xFF);
 
-void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
-    /*se seteaza in functie de valoarea monitorizata selectata*/
-	switch(SelectedMonitor){
-		case SPEED_KMH: 			SegmentsValues.SPEED_KMH = Value;
-									break;
-		case BATTERY_PERCENTAGE: 	SegmentsValues.BATTERY_PERCENTAGE = Value;
-									break;
-		case TEMPERATURE: 			SegmentsValues.TEMPERATURE = Value;
-						  	  	  	break;
-		default:					break;
+	// -- Scan limit: activare digitii 0 - 7
+	AS1115_Write(SCAN_LIMIT, 0x07);
 
+	// -- Seteaza intensitatea luminii globala a segmentelor
+	AS1115_Write(GLOBAL_INTENSITY, 0x0F);
+
+	//Vlad (ma intreb daca ne mai ajuta)
+	// -- Seteaza ca toate Segmentele de pe display sa fie stinse pe modul decode
+	for(uint8_t i = 0; i < 8; i++){
+		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x0F);
 	}
 }
 
+void Segments_Test(void){
+	// -- Activam modul test hardware (aprinde toate segmentele)
+	AS1115_Write(DISPLAY_TEST_MODE, 0x01);
+
+    // -- Delay pentru a observa testul hardware
+    for(volatile uint32_t i = 0; i < 500000; i++);
+
+    // -- Dezactivam modul test hardware pentru a prelua controlul
+    AS1115_Write(DISPLAY_TEST_MODE, 0x00);
+
+    // -- Scriem cifra 8 pe fiecare digit
+    for (uint8_t i = 0; i < 8; i++) {
+        AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x08);
+    }
+}
+
+void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
+	// -- SPEED_KMH pentru digiti 0-2
+	// -- BATTERY_PERCENTAGE pentru digiti 3-5
+    // -- TEMPERATURE pentru digiti 6-7
+
+	switch(SelectedMonitor) {
+		case SPEED_KMH:
+			displayBuffer[0] = (uint8_t)(Value % 10);
+	        displayBuffer[1] = (uint8_t)((Value / 10) % 10);
+	        displayBuffer[2] = (uint8_t)((Value / 100) % 10);
+	        break;
+		case BATTERY_PERCENTAGE:
+	        displayBuffer[3] = (uint8_t)(Value % 10);
+	        displayBuffer[4] = (uint8_t)((Value / 10) % 10);
+	        displayBuffer[5] = (uint8_t)((Value / 100) % 10);
+	        break;
+	    case TEMPERATURE:
+	    	displayBuffer[6] = (uint8_t)(Value % 10);
+	        displayBuffer[7] = (uint8_t)((Value / 10) % 10);
+	        break;
+	    default:
+	    	break;
+	    }
+}
+
 void Segments_Update(void){
-    //afisare temperatura pe grupul de 2 segmente
-	DisplayWriteNumber(GroupTemp, 2, SegmentsValues.TEMPERATURE);
-	//afisare viteza pe grupul de 3 segmente
-	DisplayWriteNumber(GroupSpeed, 3 SegmentsValues.SPEED_KMH);
-	//afisare baterie pe grupul de 3 segmente
-	DisplayWriteNumber(GroupBattery, 3, SegmentsValues.BATTERY_PERCENTAGE);
+    // -- Actualizeaza digitii din bufferul local
+	for(uint8_t i = 0; i < 8; i++){
+		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), displayBuffer[i]);
+	}
 }
 
 #ifdef __cplusplus
