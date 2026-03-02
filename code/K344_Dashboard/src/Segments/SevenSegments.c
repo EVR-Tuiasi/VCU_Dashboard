@@ -39,6 +39,15 @@ extern "C" {
 // -- TEMPERATURE pentru digiti 6-7
 static uint8_t displayBuffer[8] = {0};
 
+//variabila de test pentru simularea vitezei
+static uint16_t test_speed = 0;
+//variabila de test pentru simularea bateriei
+static uint16_t test_battery = 100;
+//variabila de test pentru simularea temperaturii
+static uint16_t test_temperature = 0;
+//counter pentru controlul refresh
+static uint32_t loop_counter = 0;
+
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
 ==================================================================================================*/
@@ -84,19 +93,32 @@ void Segments_Init(void){
 }
 
 void Segments_Test(void){
-	// -- Activam modul test hardware (aprinde toate segmentele)
+	// -- Activam un test hardware
 	AS1115_Write(DISPLAY_TEST_MODE, 0x01);
+	for(volatile uint32_t i = 0; i <= 200000UL; i++){}
+	AS1115_Write(DISPLAY_TEST_MODE, 0x00);
+	while(1){
+		// -- Actualizam valorile de test
+		test_speed = (test_speed + 1) % 200; //viteza urca pana la 199 km/h
+		test_temperature = 20 + (loop_counter % 15); //temperatura variaza intre 20-35 grade
 
-    // -- Delay pentru a observa testul hardware
-    for(volatile uint32_t i = 0; i < 500000; i++);
+		if(loop_counter % 10 == 0){
+			test_battery = (test_battery > 0) ? (test_battery - 1) : 100;
+		}
 
-    // -- Dezactivam modul test hardware pentru a prelua controlul
-    AS1115_Write(DISPLAY_TEST_MODE, 0x00);
+		// -- Mapam pe grupurile de digituri valorile de test
+		Segments_Set(SPEED_KMH, test_speed);
+		Segments_Set(BATTERY_PERCENTAGE, test_battery);
+		Segments_Set(TEMPERATURE, test_temperature);
 
-    // -- Scriem cifra 8 pe fiecare digit
-    for (uint8_t i = 0; i < 8; i++) {
-        AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x08);
-    }
+
+		// -- Trimitem tot bufferul catre driverul AS1115 prin I2C
+		Segments_Update();
+
+		// -- Controlul vitezei de refresh
+		for(volatile uint32_t delay = 0; delay < 500000UL; delay++);
+        loop_counter++;
+	}
 }
 
 void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){

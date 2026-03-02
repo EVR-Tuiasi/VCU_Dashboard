@@ -94,7 +94,7 @@ void TestDelay(uint32 delay)
 int main(void)
 {
     uint8 count = 0U;
-    static SegmentsMonitoredValue_t SegmentsMonitoredValue = {0,0,0};
+    static SegmentsMonitoredValue_t SegmentsMonitoredValue;
 
     /* Initialize the Mcu driver */
 #if (MCU_PRECOMPILE_SUPPORT == STD_ON)
@@ -121,13 +121,6 @@ int main(void)
     //i2c
     Segments_Init();
     Segments_Test();
-    while (1)
-    {
-        TestDelay(2000000);
-        Segments_Test();
-        Segments_Set(SegmentsMonitoredValue, 12);
-        Segments_Update();
-    }
 
     Exit_Example(TRUE);
 
