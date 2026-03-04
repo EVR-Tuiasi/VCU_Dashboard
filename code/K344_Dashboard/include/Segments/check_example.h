@@ -1,5 +1,5 @@
 /*
-*   Copyright 2020 NXP
+*   (c) Copyright 2020 NXP
 *
 *   NXP Confidential. This software is owned or controlled by NXP and may only be used strictly
 *   in accordance with the applicable license terms.  By expressly accepting
@@ -12,8 +12,11 @@
 *   This file contains sample code only. It is not part of the production code deliverables.
 */
 
+#ifndef CHECK_EXAMPLE_H
+#define CHECK_EXAMPLE_H
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"{
 #endif
 
 
@@ -23,16 +26,6 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include "Dio.h"
-#include "Mcu.h"
-#include "Port.h"
-#include "Platform.h"
-#include "CDD_I2c.h"
-
-#include "check_example.h"
-
-#include "SevenSegments.h"
-
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -63,7 +56,6 @@ extern "C" {
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
-
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -78,55 +70,50 @@ extern "C" {
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
-void TestDelay(uint32 delay);
-void TestDelay(uint32 delay)
-{
-   static volatile uint32 DelayTimer = 0;
-   while(DelayTimer<delay)
-   {
-       DelayTimer++;
-   }
-   DelayTimer=0;
-}
-
 /**
-* @brief        Main function of the example
-* @details      Initializez the used drivers and uses the Icu
-*               and Dio drivers to toggle a LED on a push button
+* @brief        Function used for testing automatically examples
+* @details      Writes a pass or fail status in the memory at a given address
+* @internal
 */
-int main(void)
+static inline void Exit_Example(boolean result) 
 {
-    /* Initialize the Mcu driver */
-#if (MCU_PRECOMPILE_SUPPORT == STD_ON)
-    Mcu_Init(NULL_PTR);
-#elif (MCU_PRECOMPILE_SUPPORT == STD_OFF)
-    Mcu_Init(&Mcu_Config_VS_0);
-#endif /* (MCU_PRECOMPILE_SUPPORT == STD_ON) */
-
-    /* Initialize the clock tree and apply PLL as system clock */
-    Mcu_InitClock(McuClockSettingConfig_0);
-#if (MCU_NO_PLL == STD_OFF)
-    while ( MCU_PLL_LOCKED != Mcu_GetPllStatus() )
+    volatile uint8 * testResultBasePtr;
+    
+    testResultBasePtr = (volatile uint8 *)VV_RESULT_ADDRESS;
+    
+    if (TRUE == result)
     {
-        /* Busy wait until the System PLL is locked */
+        *testResultBasePtr = 0x5AU;
     }
-
-    Mcu_DistributePllClock();
-#endif
-    Mcu_SetMode(McuModeSettingConf_0);
-
-    /* Initialize all pins using the Port driver */
-    Port_Init(NULL_PTR);
-    Platform_Init(NULL_PTR);
-    I2c_Init(NULL_PTR);
-    Segments_Init();
-    Segments_Test();
-
+    else
+    {
+        *testResultBasePtr = 0x33U;
+    }
 }
 
+static inline void EX_ASSERT(boolean result) 
+{
+    volatile uint8 * testResultBasePtr;
+    
+    testResultBasePtr = (volatile uint8 *)VV_RESULT_ADDRESS;
+    
+    if (TRUE == result)
+    {
+        if(*testResultBasePtr != 0x33U)
+        {
+            *testResultBasePtr = 0x5AU;
+        }
+    }
+    else
+    {
+        *testResultBasePtr = 0x33U;
+    }
+}
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif 
 
 /** @} */

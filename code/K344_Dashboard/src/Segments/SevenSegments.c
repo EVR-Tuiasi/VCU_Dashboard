@@ -13,8 +13,6 @@ extern "C" {
 #include "stdint.h"
 #include "SevenSegments.h"
 #include "AS1115.h"
-#include "CDD_I2c.h"
-
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -158,4 +156,3 @@ void Segments_Update(void){
 #endif
 
 /** @} */
-

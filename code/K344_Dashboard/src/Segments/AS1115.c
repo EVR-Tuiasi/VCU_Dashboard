@@ -80,7 +80,11 @@ void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value){
 }
 
 uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
-    uint8_t value = 0;
+    // ---!!!--- S-a incercat introducerea unei referinte la SelectedRegister in writeRequest.DataBuffer = &(registru);
+	// ---S-au facut 3 erori la compile, rezolvarea a constat in revenirea la varianta anterioara
+
+	uint8_t value = 0;
+    uint8_t registru = (uint8_t) SelectedRegister;
 
     //scriem registrul dorit
     writeRequest.SlaveAddress = DRIVER_SLAVE_ADDRESS;
@@ -90,7 +94,7 @@ uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
     writeRequest.RepeatedStart = false;
     writeRequest.BufferSize = 1;
     writeRequest.DataDirection = I2C_SEND_DATA;
-    writeRequest.DataBuffer = &((uint8_t)SelectedRegister);
+    writeRequest.DataBuffer = &(registru);
 
     I2c_SyncTransmit(0, &writeRequest);
 

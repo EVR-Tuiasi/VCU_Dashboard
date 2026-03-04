@@ -296,4 +296,3 @@ void SevenSegmentSetGlobalBrightness(uint8 BrightnessPercent){
 #endif
 
 /** @} */
-
