@@ -21,8 +21,10 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
+//adresa slave a driverului
 #define DRIVER_SLAVE_ADDRESS 0x00
-
+//canalul folosit
+#define I2C_USED_CHANNEL 0
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
 ==================================================================================================*/
@@ -41,9 +43,10 @@ extern "C" {
 /*==================================================================================================
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
+//cererea de scriere
 I2c_RequestType  writeRequest;
+//cererea de citire
 I2c_RequestType readRequest;
-
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -76,7 +79,7 @@ void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value){
     request.DataDirection = I2C_SEND_DATA;
     request.DataBuffer = buffer;
 
-    I2c_SyncTransmit(0, &request); //cerere pe canalul 0
+    I2c_SyncTransmit(I2C_USED_CHANNEL, &request); //cerere pe canalul 0
 }
 
 uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
@@ -96,7 +99,7 @@ uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
     writeRequest.DataDirection = I2C_SEND_DATA;
     writeRequest.DataBuffer = &(registru);
 
-    I2c_SyncTransmit(0, &writeRequest);
+    I2c_SyncTransmit(I2C_USED_CHANNEL, &writeRequest);
 
     //citim valoarea
     readRequest.SlaveAddress = DRIVER_SLAVE_ADDRESS;
@@ -108,7 +111,7 @@ uint8_t AS1115_Read(AS1115Registers_t SelectedRegister){
     readRequest.DataDirection = I2C_RECEIVE_DATA;
     readRequest.DataBuffer = &value;
 
-    I2c_SyncTransmit(0, &readRequest);
+    I2c_SyncTransmit(I2C_USED_CHANNEL, &readRequest);
 
     return value;
 }

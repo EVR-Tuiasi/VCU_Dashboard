@@ -45,7 +45,8 @@ static uint16_t test_battery = 100;
 static uint16_t test_temperature = 0;
 //counter pentru controlul refresh
 static uint32_t loop_counter = 0;
-
+//variabila pentru setarea luminozitatii
+static uint8_t luminozitateGlobala = 0x0F;
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
 ==================================================================================================*/
@@ -64,30 +65,45 @@ static uint32_t loop_counter = 0;
 /*==================================================================================================
 *                                       LOCAL FUNCTIONS
 ==================================================================================================*/
+static void SevenSegmentsSetGlobalBrightness(uint8_t BrightnessPercent){
+	// -- limitam ca procentul de luminozitate sa nu fie peste 100%
+	if(BrightnessPercent > 100){
+		BrightnessPercent = 100;
+	}
 
+	// -- transformam procentul intr o valoare din int. 0 - 16
+	luminozitateGlobala = (uint8_t)(((uint16_t)BrightnessPercent*(uint16_t)3) / (uint16_t)20);
+	AS1115_Write(GLOBAL_INTENSITY, luminozitateGlobala);
+}
 
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
 void Segments_Init(void){
-	// -- Iesire din modul Shutdown si trecere in Normal Mode Operation
-	AS1115_Write(SHUTDOWN, 0x01);
 
-	// -- Activare mod decodificare "Code B" pentru toti digitii (permite afisarea cifrelor 0-9)
-	AS1115_Write(DECODE_MODE, 0xFF);
+	// -- Seteaza modul Shutdown cu Reset Feature Register
+	AS1115_Write(SHUTDOWN, 0x00);
 
-	// -- Scan limit: activare digitii 0 - 7
-	AS1115_Write(SCAN_LIMIT, 0x07);
+	// -- Seteaza Luminozitatea Globala la 7 Segment Display-uri
+	AS1115_Write(GLOBAL_INTENSITY, luminozitateGlobala);
 
-	// -- Seteaza intensitatea luminii globala a segmentelor
-	AS1115_Write(GLOBAL_INTENSITY, 0x0F);
+	// -- Schimba Feature Register pentru modul de decodificare al 7 Segment Display
+	AS1115_Write(FEATURE, 0x00);
 
-	//Vlad (ma intreb daca ne mai ajuta)
-	// -- Seteaza ca toate Segmentele de pe display sa fie stinse pe modul decode
+	// -- Seteaza ca toate Segmentele de pe display sa fie stinse
 	for(uint8_t i = 0; i < 8; i++){
 		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x0F);
 	}
+
+	// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
+	AS1115_Write(SCAN_LIMIT, 0x07);
+
+	// -- Seteaza pana la ce pin folosim decodificare pe digits [ex: 0x03 - 00000011 - Decodifica pe dig0 si dig1, ne luam dupa pozitia bitilor de la LSB la MSB]
+	AS1115_Write(DECODE_MODE, 0xFF);
+
+	// -- Seteaza Normal Mode fara modificari la Feature Register
+	AS1115_Write(SHUTDOWN, 0x81);
 }
 
 void Segments_Test(void){
