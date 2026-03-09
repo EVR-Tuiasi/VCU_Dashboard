@@ -20,71 +20,83 @@ extern "C"{
 ==================================================================================================*/
 
 typedef enum{
+	idUartInvertorStanga = 0x10,
+	idUartInvertorDreapta = 0x11,
+	idUartInvertoare = 0x12,
+	idUartBord = 0x13,
+	idUartAcceleratie = 0x30,
+	idUartFrana = 0x31,
+	idUartBaterie = 0x14
+}idUart_t;
+
+typedef enum{
     /* TSAC */
-    TSAC_MedianCellTemperature,
-    TSAC_HighestCellTemperature,
-    TSAC_LowestCellTemperature,
-    TSAC_MedianCellVoltage,
-    TSAC_HighestCellVoltage,
-    TSAC_LowestCellVoltage,
-    TSAC_OverallVoltage,
-    TSAC_OverallCurrent,
-    TSAC_IsAmsSafe,
-    TSAC_IsImdSafe,
-    TSAC_IsTransceiverWorking,
-    TSAC_IsShuntWorking,
-    TSAC_IsBms0Working,
-    TSAC_IsBms1Working,
+    Uart_TSAC_MedianCellTemperature,
+    Uart_TSAC_HighestCellTemperature,
+    Uart_TSAC_LowestCellTemperature,
+    Uart_TSAC_MedianCellVoltage,
+    Uart_TSAC_HighestCellVoltage,
+    Uart_TSAC_LowestCellVoltage,
+    Uart_TSAC_OverallVoltage,
+    Uart_TSAC_OverallCurrent,
+    Uart_TSAC_IsAmsSafe,
+    Uart_TSAC_IsImdSafe,
+    Uart_TSAC_IsTransceiverWorking,
+    Uart_TSAC_IsShuntWorking,
+    Uart_TSAC_IsBms0Working,
+    Uart_TSAC_IsBms1Working,
     /* PEDALS */
-    PEDALS_AcceleratorSensor1Voltage,
-    PEDALS_AcceleratorSensor2Voltage,
-    PEDALS_AcceleratorSensor1TravelPercentage,
-    PEDALS_AcceleratorSensor2TravelPercentage,
-    PEDALS_BrakeSensor1Voltage,
-    PEDALS_BrakeSensor2Voltage,
-    PEDALS_BrakeSensor1TravelPercentage,
-    PEDALS_BrakeSensor2TravelPercentage,
-    PEDALS_PressureSensorVoltage,
-    PEDALS_PressureSensorBars,
-    PEDALS_Accel_Sensor1_ShortToGnd,
-    PEDALS_Accel_Sensor1_ShortToVcc,
-    PEDALS_Accel_Sensor1_OutOfRangeOutput,
-    PEDALS_Accel_Sensor2_ShortToGnd,
-    PEDALS_Accel_Sensor2_ShortToVcc,
-    PEDALS_Accel_Sensor2_OutOfRangeOutput,
-    PEDALS_Accel_Implausibility,
-    PEDALS_Brake_Sensor1_ShortToGnd,
-    PEDALS_Brake_Sensor1_ShortToVcc,
-    PEDALS_Brake_Sensor1_OutOfRangeOutput,
-    PEDALS_Brake_Sensor2_ShortToGnd,
-    PEDALS_Brake_Sensor2_ShortToVcc,
-    PEDALS_Brake_Sensor2_OutOfRangeOutput,
-    PEDALS_Brake_Implausibility,
+    Uart_PEDALS_AcceleratorSensor1Voltage,
+    Uart_PEDALS_AcceleratorSensor2Voltage,
+    Uart_PEDALS_AcceleratorSensor1TravelPercentage,
+    Uart_PEDALS_AcceleratorSensor2TravelPercentage,
+    Uart_PEDALS_BrakeSensor1Voltage,
+    Uart_PEDALS_BrakeSensor2Voltage,
+    Uart_PEDALS_BrakeSensor1TravelPercentage,
+    Uart_PEDALS_BrakeSensor2TravelPercentage,
+    Uart_PEDALS_PressureSensorVoltage,
+    Uart_PEDALS_PressureSensorBars,
+    Uart_PEDALS_Accel_Sensor1_ShortToGnd,
+    Uart_PEDALS_Accel_Sensor1_ShortToVcc,
+    Uart_PEDALS_Accel_Sensor1_OutOfRangeOutput,
+    Uart_PEDALS_Accel_Sensor2_ShortToGnd,
+    Uart_PEDALS_Accel_Sensor2_ShortToVcc,
+    Uart_PEDALS_Accel_Sensor2_OutOfRangeOutput,
+    Uart_PEDALS_Accel_Implausibility,
+    Uart_PEDALS_Brake_Sensor1_ShortToGnd,
+    Uart_PEDALS_Brake_Sensor1_ShortToVcc,
+    Uart_PEDALS_Brake_Sensor1_OutOfRangeOutput,
+    Uart_PEDALS_Brake_Sensor2_ShortToGnd,
+    Uart_PEDALS_Brake_Sensor2_ShortToVcc,
+    Uart_PEDALS_Brake_Sensor2_OutOfRangeOutput,
+    Uart_PEDALS_Brake_Implausibility,
     /* INVERTERS */
-    INVERTERS_LeftInverterTemperature,
-    INVERTERS_LeftMotorTemperature,
-    INVERTERS_LeftInverterInputVoltage,
-    INVERTERS_LeftInverterCurrent,
-    INVERTERS_LeftMotorRpm,
-    INVERTERS_LeftMotorSpeedKmh,
-    INVERTERS_LeftInverterThrottle,
-    INVERTERS_LeftInverterThrottleFeedback,
-    INVERTERS_RightInverterTemperature,
-    INVERTERS_RightMotorTemperature,
-    INVERTERS_RightInverterInputVoltage,
-    INVERTERS_RightInverterCurrent,
-    INVERTERS_RightMotorRpm,
-    INVERTERS_RightMotorSpeedKmh,
-    INVERTERS_RightInverterSentThrottle,
-    INVERTERS_RightInverterThrottleFeedback,
-    INVERTERS_IsCarInReverse,
-    INVERTERS_IsCarRunning,
+    Uart_INVERTERS_LeftInverterTemperature,
+    Uart_INVERTERS_LeftMotorTemperature,
+    Uart_INVERTERS_LeftInverterInputVoltage,
+    Uart_INVERTERS_LeftInverterCurrent,
+    Uart_INVERTERS_LeftMotorRpm,
+    Uart_INVERTERS_LeftMotorSpeedKmh,
+    Uart_INVERTERS_LeftInverterThrottle,
+    Uart_INVERTERS_LeftInverterThrottleFeedback,
+    Uart_INVERTERS_RightInverterTemperature,
+    Uart_INVERTERS_RightMotorTemperature,
+    Uart_INVERTERS_RightInverterInputVoltage,
+    Uart_INVERTERS_RightInverterCurrent,
+    Uart_INVERTERS_RightMotorRpm,
+    Uart_INVERTERS_RightMotorSpeedKmh,
+    Uart_INVERTERS_RightInverterSentThrottle,
+    Uart_INVERTERS_RightInverterThrottleFeedback,
+    Uart_INVERTERS_IsCarInReverse,
+    Uart_INVERTERS_IsCarRunning,
     /* DASHBOARD */
-    DASHBOARD_ActivationButtonPressed,
-    DASHBOARD_CarReverseCommandPressed,
-    DASHBOARD_IsDisplayWorking,
-    DASHBOARD_IsSegmentsDriverWorking
+    Uart_DASHBOARD_ActivationButtonPressed,
+    Uart_DASHBOARD_CarReverseCommandPressed,
+    Uart_DASHBOARD_IsDisplayWorking,
+    Uart_DASHBOARD_IsSegmentsDriverWorking
 }UartMonitoredValue_t;
+
+#define UART_Channel 0x00000000
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -94,7 +106,6 @@ typedef enum{
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
 ==================================================================================================*/
-
 
 /*==================================================================================================
 *                                      LOCAL VARIABLES
@@ -128,8 +139,10 @@ typedef enum{
 void UartMessaging_Init(void);
 void UartMessaging_Test(void);
 void UartMessaging_Update(void);
-void UartMessaging_SendValue(UartMonitoredValue_t DesiredValueType, uint32_t Value);
+void UartMessaging_SetValue(UartMonitoredValue_t DesiredValueType, uint32_t Value);
 uint32_t UartMessaging_ReadValue(UartMonitoredValue_t DesiredValueType);
+void UartMessaging_CreateBuffer(idUart_t type);
+uint8_t CRC_calculate(uint8_t length);
 
 #ifdef __cplusplus
 }
