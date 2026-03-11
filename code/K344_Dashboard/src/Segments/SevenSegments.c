@@ -11,6 +11,7 @@ extern "C" {
 ==================================================================================================*/
 
 #include "stdint.h"
+#include "CDD_I2c.h"
 #include "SevenSegments.h"
 #include "AS1115.h"
 
@@ -37,14 +38,6 @@ extern "C" {
 // -- TEMPERATURE pentru digiti 6-7
 static uint8_t displayBuffer[8] = {0};
 
-//variabila de test pentru simularea vitezei
-static uint16_t test_speed = 0;
-//variabila de test pentru simularea bateriei
-static uint16_t test_battery = 100;
-//variabila de test pentru simularea temperaturii
-static uint16_t test_temperature = 0;
-//counter pentru controlul refresh
-static uint32_t loop_counter = 0;
 //variabila pentru setarea luminozitatii
 static uint8_t luminozitateGlobala = 0x0F;
 /*==================================================================================================
@@ -65,16 +58,7 @@ static uint8_t luminozitateGlobala = 0x0F;
 /*==================================================================================================
 *                                       LOCAL FUNCTIONS
 ==================================================================================================*/
-static void SevenSegmentsSetGlobalBrightness(uint8_t BrightnessPercent){
-	// -- limitam ca procentul de luminozitate sa nu fie peste 100%
-	if(BrightnessPercent > 100){
-		BrightnessPercent = 100;
-	}
 
-	// -- transformam procentul intr o valoare din int. 0 - 16
-	luminozitateGlobala = (uint8_t)(((uint16_t)BrightnessPercent*(uint16_t)3) / (uint16_t)20);
-	AS1115_Write(GLOBAL_INTENSITY, luminozitateGlobala);
-}
 
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
@@ -111,53 +95,117 @@ void Segments_Test(void){
 	AS1115_Write(DISPLAY_TEST_MODE, 0x01);
 	for(volatile uint32_t i = 0; i <= 200000UL; i++){}
 	AS1115_Write(DISPLAY_TEST_MODE, 0x00);
-	while(1){
-		// -- Actualizam valorile de test
-		test_speed = (test_speed + 1) % 200; //viteza urca pana la 199 km/h
-		test_temperature = 20 + (loop_counter % 15); //temperatura variaza intre 20-35 grade
 
-		if(loop_counter % 10 == 0){
-			test_battery = (test_battery > 0) ? (test_battery - 1) : 100;
+	//initializari
+	uint16_t rpm = 0, tensiune = 0, temperatura = 0, procentaj = 0, viteza = 0;
+	volatile uint32_t delay;
+	while(1){
+		delay = 2000000;
+		while(delay--);
+
+		//actualizari
+		rpm += 5;
+		tensiune++;
+		temperatura++;
+
+		//limitari
+		rpm %= 6000;
+		tensiune %= 150;
+		temperatura %= 99;
+
+		//calcul procent baterie
+		if (tensiune < 60U){
+			procentaj = 0; //capatul de 0%
+		} else if (tensiune > 100){
+			procentaj = 1000U; //capatul de 100%
+		} else {
+			procentaj = (uint16_t)(tensiune - 60U) * 25U;
 		}
 
-		// -- Mapam pe grupurile de digituri valorile de test
-		Segments_Set(SPEED_KMH, test_speed);
-		Segments_Set(BATTERY_PERCENTAGE, test_battery);
-		Segments_Set(TEMPERATURE, test_temperature);
+		//calcul viteza
+		if (rpm != 0){
+			viteza = (uint16_t)((uint32_t)rpm * 84807UL / 312500UL);
+		}
 
+		//afisare baterie
+		if (procentaj < 1000U) {
+			Segments_Set(BATTERY_PERCENTAGE, (int16_t)procentaj, 1);
+		} else {
+			Segments_Set(BATTERY_PERCENTAGE, (int16_t)(procentaj/10), 0);
+		}
 
-		// -- Trimitem tot bufferul catre driverul AS1115 prin I2C
+		//afisare temperatura
+		Segments_Set(TEMPERATURE, (int16_t)temperatura, 0);
+
+		//afisare viteza
+		if (viteza < 1000U){
+			Segments_Set(SPEED_KMH, (int16_t)viteza, 1);
+		} else {
+			Segments_Set(SPEED_KMH, (int16_t)(viteza/10), 0);
+		}
+
+		//trimitem bufferul cu cei 8 digiti
 		Segments_Update();
-
-		// -- Controlul vitezei de refresh
-		for(volatile uint32_t delay = 0; delay < 500000UL; delay++);
-        loop_counter++;
 	}
 }
 
-void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
+void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value, uint8_t PrecisionFloatPoint){
 	// -- SPEED_KMH pentru digiti 0-2
 	// -- BATTERY_PERCENTAGE pentru digiti 3-5
     // -- TEMPERATURE pentru digiti 6-7
 
-	switch(SelectedMonitor) {
+	uint8_t startDigit = 0;
+	uint8_t numDigits = 0;
+
+	//identificam tipul pe care lucram
+	switch(SelectedMonitor){
 		case SPEED_KMH:
-			displayBuffer[0] = (uint8_t)(Value % 10);
-	        displayBuffer[1] = (uint8_t)((Value / 10) % 10);
-	        displayBuffer[2] = (uint8_t)((Value / 100) % 10);
-	        break;
+			startDigit = 0;
+			numDigits = 3;
+			break;
 		case BATTERY_PERCENTAGE:
-	        displayBuffer[3] = (uint8_t)(Value % 10);
-	        displayBuffer[4] = (uint8_t)((Value / 10) % 10);
-	        displayBuffer[5] = (uint8_t)((Value / 100) % 10);
-	        break;
-	    case TEMPERATURE:
-	    	displayBuffer[6] = (uint8_t)(Value % 10);
-	        displayBuffer[7] = (uint8_t)((Value / 10) % 10);
-	        break;
-	    default:
-	    	break;
-	    }
+			startDigit = 3;
+			numDigits = 3;
+			break;
+		case TEMPERATURE:
+			startDigit = 6;
+			numDigits = 2;
+			break;
+		default:
+			return; //nu stim pe ce lucram, am iesit
+	}
+
+	//reglare numar negativ
+	bool isNegative = false;
+	if (Value < 0){
+		isNegative = true;
+		Value *= -1;
+	}
+
+	//extragere cifre si salvare in buffer
+	for (uint8_t i = 0; i < numDigits; i++){
+		uint8_t indexCurrent = startDigit + i;
+
+		if (Value == 0 && i > 0 && i > PrecisionFloatPoint) {
+			//verificam daca punem semnul minus, daca am terminat numarul completam cu blank
+			if (isNegative) {
+				displayBuffer[indexCurrent] = 0x0A; //punem semnul minus
+				isNegative = false;
+			} else {
+				displayBuffer[indexCurrent] = 0x0F; //blank
+			}
+		} else {
+			uint8_t digit = (uint8_t)(Value % 10);
+
+			//adaugam virgula
+			if (i == PrecisionFloatPoint && PrecisionFloatPoint > 0){
+				displayBuffer[indexCurrent] = digit | 0x80; //punem virgula
+			} else {
+				displayBuffer[indexCurrent] = digit;
+			}
+			Value /= 10;
+		}
+	}
 }
 
 void Segments_Update(void){
