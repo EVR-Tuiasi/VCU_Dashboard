@@ -98,13 +98,13 @@ void Segments_Test(void){
 	//variabila de test pentru simularea vitezei
 	static uint16_t test_speed = 0;
 	//variabila de test pentru simularea bateriei
-	static uint16_t test_battery = 1100;
+	static uint16_t test_battery = 110;
 	//variabila de test pentru simularea temperaturii
 	static uint16_t test_temperature = 0;
 	//counter pentru controlul refresh
 	static uint32_t loop_counter = 0;
 	//pas de scadere al bateriei
-	static uint16_t step = 10;
+	static uint16_t step = 1;
 
 	while(1){
 		// -- Actualizam valorile de test
@@ -113,15 +113,10 @@ void Segments_Test(void){
 
 		// -- La fiecare 10 cicluri, consumam o unitate din baterie
 		if(loop_counter % 10 == 0){
-			if(test_battery > 1000){
-				step = 10;
+			if(test_battery > 0){
+				test_battery -= 1;
 			} else {
-				step = 1;
-			}
-			if(test_battery >= step){
-				test_battery -= step;
-			} else {
-				test_battery = 10000;
+				test_battery = 1000;
 			}
 		}
 
@@ -165,25 +160,25 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 			}
 			break;
 		case BATTERY_PERCENTAGE:
-		    if(Value < 0) Value = 0;
-		    if(Value > 10000) Value = 10000;
+		    //limite de 0.00-100%
+			if(Value < 0) Value = 0;
+		    if(Value > 1000) Value = 1000;
 
-		    if (Value == 10000) {
-		        //baterie plina 100
-		        displayBuffer[3] = 0;
-		        displayBuffer[4] = 0;
-		        displayBuffer[5] = 1;
-		    } else if (Value > 1000) {
-		        //valori de forma XY.Z
-		    	uint16_t temp = Value / 10;
-	            displayBuffer[3] = (uint8_t)(temp % 10);
-	            displayBuffer[4] = ((uint8_t)((temp / 10) % 10)) | 0x80;
-	            displayBuffer[5] = (uint8_t)(temp / 100);
+		    if (Value == 1000) {
+		        //valoare baterie plina
+		        displayBuffer[0] = 0;
+		        displayBuffer[1] = 0;
+		        displayBuffer[2] = 1;
 		    } else {
-		    	//valori de forma XY.Z
-		  	    displayBuffer[3] = (uint8_t)(Value % 10);
-		  	    displayBuffer[4] = ((uint8_t)(Value / 10) % 10);
-		  	    displayBuffer[5] = ((uint8_t)(Value / 100)) | 0x80;
+		        //valori de forma xy.z
+		        displayBuffer[0] = (uint8_t)(Value % 10);
+		        displayBuffer[1] = ((uint8_t)(Value / 10) % 10) | 0x80;
+		        displayBuffer[2] = (uint8_t)(Value / 100);
+
+		        //stingem digitul din fata
+		        if (displayBuffer[2] == 0){
+		        	displayBuffer[2] |= 0x0F;
+		        }
 		    }
 		    break;
 		case TEMPERATURE:
