@@ -75,12 +75,14 @@ void Segments_Init(void){
 	AS1115_Write(FEATURE, 0x00);
 
 	// -- Seteaza ca toate Segmentele de pe display sa fie stinse
-	for(uint8_t i = 0; i < 4; i++){//aici era 8
+	for(uint8_t i = 0; i < 8; i++){
+		//pentru teste poti pune 4
 		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x0F);
 	}
 
 	// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
-	AS1115_Write(SCAN_LIMIT, 0x03);//aici era 7
+	AS1115_Write(SCAN_LIMIT, 0x07);
+	//aici era 3 pentru teste pe PCB
 
 	// -- Seteaza pana la ce pin folosim decodificare pe digits [ex: 0x03 - 00000011 - Decodifica pe dig0 si dig1, ne luam dupa pozitia bitilor de la LSB la MSB]
 	AS1115_Write(DECODE_MODE, 0xFF);
@@ -166,18 +168,18 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 
 		    if (Value == 1000) {
 		        //valoare baterie plina
-		        displayBuffer[0] = 0;
-		        displayBuffer[1] = 0;
-		        displayBuffer[2] = 1;
+		        displayBuffer[3] = 0;
+		        displayBuffer[4] = 0;
+		        displayBuffer[5] = 1;
 		    } else {
 		        //valori de forma xy.z
-		        displayBuffer[0] = (uint8_t)(Value % 10);
-		        displayBuffer[1] = ((uint8_t)(Value / 10) % 10) | 0x80;
-		        displayBuffer[2] = (uint8_t)(Value / 100);
+		        displayBuffer[3] = (uint8_t)(Value % 10);
+		        displayBuffer[4] = ((uint8_t)(Value / 10) % 10) | 0x80;
+		        displayBuffer[5] = (uint8_t)(Value / 100);
 
 		        //stingem digitul din fata
-		        if (displayBuffer[2] == 0){
-		        	displayBuffer[2] |= 0x0F;
+		        if (displayBuffer[5] == 0){
+		        	displayBuffer[5] |= 0x0F;
 		        }
 		    }
 		    break;
@@ -202,7 +204,8 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 
 void Segments_Update(void){
     // -- Actualizeaza digitii din bufferul local
-	for(uint8_t i = 0; i < 4; i++){//aici e 8
+	for(uint8_t i = 0; i < 8; i++){
+		//aici e 4 pentru teste
 		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), displayBuffer[i]);
 	}
 }
