@@ -28,7 +28,29 @@ extern "C" {
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
 ==================================================================================================*/
+static const uint8_t GroupDigits_SpeedKmh[3] = {0U, 1U, 2U};
+static const uint8_t GroupDigits_BatteryPercentage[3] = {3U, 4U, 5U};
+static const uint8_t GroupDigits_Temperature[3] = {6U, 7U};
 
+static const SegmentsDigitGroup_t Group[3] = {
+    {
+        3U,
+        GroupDigits_SpeedKmh
+    },
+    {
+        3U,
+        GroupDigits_BatteryPercentage
+    },
+    {
+    	3U,
+        GroupDigits_Temperature
+    }
+};
+
+static const SegmentsGroups_t SegmentsGroups_All = {
+    3U,
+    Group
+};
 
 /*==================================================================================================
 *                                      LOCAL VARIABLES
