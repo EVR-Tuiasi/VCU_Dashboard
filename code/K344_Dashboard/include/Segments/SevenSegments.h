@@ -18,14 +18,21 @@ extern "C"{
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-typedef struct{
-    const uint8_t GroupLength;    //This stores how many digits this group contains.
-    const uint8_t* GroupDigits;   //This stores the hardware digit numbers used in this group.
-}SegmentsDigitGroup_t;
+typedef enum{
+    DIGIT_0 = 0U,
+    DIGIT_1 = 1U,
+    DIGIT_2 = 2U,
+    DIGIT_3 = 3U,
+    DIGIT_4 = 4U,
+    DIGIT_5 = 5U,
+    DIGIT_6 = 6U,
+    DIGIT_7 = 7U
+}SegmentsDigits_t;
 
 typedef struct{
-    const uint8_t NumberOfGroups; //This stores the number of configured groups.
-    const SegmentsGroup* Groups;  //This stores the group structures.
+    SegmentsDigits_t DigitGroup_Speed[3];
+    SegmentsDigits_t DigitGroup_Battery[3];
+    SegmentsDigits_t DigitGroup_Temperature[2];
 }SegmentsGroups_t;
 
 typedef enum{
