@@ -139,8 +139,8 @@ void Segments_Test(void){
 
 		// -- Mapam pe grupurile de digituri valorile de test
 		//Segments_Set(SPEED_KMH, test_speed);
-		Segments_Set(BATTERY_PERCENTAGE, test_battery);
-		//Segments_Set(TEMPERATURE, test_temperature);
+		//Segments_Set(BATTERY_PERCENTAGE, test_battery);
+		Segments_Set(TEMPERATURE, test_temperature);
 
 
 		// -- Trimitem tot bufferul catre driverul AS1115 prin I2C
@@ -164,15 +164,15 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 			if(Value > 9999) Value = 9999;
 
 			//valoarea va iesi de forma XYZ
-			displayBuffer[0] = (uint8_t)((Value / 10) % 10);
-			displayBuffer[1] = (uint8_t)((Value / 100) % 10);
-			displayBuffer[2] = (uint8_t)((Value / 1000) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Speed[0]] = (uint8_t)((Value / 10) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Speed[1]] = (uint8_t)((Value / 100) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Speed[2]] = (uint8_t)((Value / 1000) % 10);
 
 			//stingem secventa de digituri din fata egale cu 0
-			if(displayBuffer[2] == 0){
-				displayBuffer[2] |= 0x0F;
-				if(displayBuffer[1] == 0){
-					displayBuffer[1] |= 0x0F;
+			if(displayBuffer[SegmentsGroups.DigitGroup_Speed[2]] == 0){
+				displayBuffer[SegmentsGroups.DigitGroup_Speed[2]] |= 0x0F;
+				if(displayBuffer[SegmentsGroups.DigitGroup_Speed[1]] == 0){
+					displayBuffer[SegmentsGroups.DigitGroup_Speed[1]] |= 0x0F;
 				}
 			}
 			break;
@@ -183,18 +183,18 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 
 		    if (Value == 1000) {
 		        //valoare baterie plina
-		        displayBuffer[3] = 0;
-		        displayBuffer[4] = 0;
-		        displayBuffer[5] = 1;
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[0]] = 0;
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[1]] = 0;
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[2]] = 1;
 		    } else {
 		        //valori de forma xy.z
-		        displayBuffer[3] = (uint8_t)(Value % 10);
-		        displayBuffer[4] = ((uint8_t)(Value / 10) % 10) | 0x80;
-		        displayBuffer[5] = (uint8_t)(Value / 100);
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[0]] = (uint8_t)(Value % 10);
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[1]] = ((uint8_t)(Value / 10) % 10) | 0x80;
+		        displayBuffer[SegmentsGroups.DigitGroup_Battery[2]] = (uint8_t)(Value / 100);
 
 		        //stingem digitul din fata
-		        if (displayBuffer[5] == 0){
-		        	displayBuffer[5] |= 0x0F;
+		        if (displayBuffer[SegmentsGroups.DigitGroup_Battery[2]] == 0){
+		        	displayBuffer[SegmentsGroups.DigitGroup_Battery[2]] |= 0x0F;
 		        }
 		    }
 		    break;
@@ -204,12 +204,12 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value){
 			if(Value > 999) Value = 60;
 
 			//valoarea va iesi de forma XY
-			displayBuffer[6] = (uint8_t)((Value / 10) % 10);
-			displayBuffer[7] = (uint8_t)((Value / 100) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Temperature[0]] = (uint8_t)((Value / 10) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Temperature[1]] = (uint8_t)((Value / 100) % 10);
 
 			//stingem primul digit daca e 0
-			if(displayBuffer[6] == 0){
-				displayBuffer[6] |= 0x0F;
+			if(displayBuffer[SegmentsGroups.DigitGroup_Temperature[1]] == 0){
+				displayBuffer[SegmentsGroups.DigitGroup_Temperature[1]] |= 0x0F;
 			}
 	        break;
 	    default:
