@@ -82,7 +82,7 @@ typedef enum{
 
 void Segments_Init(void);
 void Segments_Test(void);
-void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, int16_t Value);
+void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value);
 void Segments_Update(void);
 
 #ifdef __cplusplus
