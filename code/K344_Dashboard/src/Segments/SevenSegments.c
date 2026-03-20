@@ -199,12 +199,12 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 			if(Value > 999) Value = 999;
 
 			//valoarea va iesi de forma XY
-			displayBuffer[SegmentsGroups.DigitGroup_Speed[0]] = (uint8_t)((Value / 10) % 10);
-			displayBuffer[SegmentsGroups.DigitGroup_Speed[1]] = (uint8_t)((Value / 100) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Temperature[0]] = (uint8_t)((Value / 10) % 10);
+			displayBuffer[SegmentsGroups.DigitGroup_Temperature[1]] = (uint8_t)((Value / 100) % 10);
 
 			//stingem primul digit daca e 0
 			if(((uint8_t)((Value / 100) % 10)) == 0){
-				displayBuffer[SegmentsGroups.DigitGroup_Speed[1]] |= 0x0F;
+				displayBuffer[SegmentsGroups.DigitGroup_Temperature[1]] |= 0x0F;
 			}
 	        break;
 	    default:
