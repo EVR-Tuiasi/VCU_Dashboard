@@ -155,7 +155,6 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 	switch(SelectedMonitor) {
 		case SPEED_KMH:
 			//limite de 0-999 kmh
-			if(Value < 0) Value = 0;
 			if(Value > 9999) Value = 9999;
 
 			//valoarea va iesi de forma XYZ
@@ -173,7 +172,6 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 			break;
 		case BATTERY_PERCENTAGE:
 		    //limite de 0.00-100%
-			if(Value < 0) Value = 0;
 		    if(Value > 1000) Value = 1000;
 
 		    if (Value == 1000) {
@@ -195,7 +193,6 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 		    break;
 		case TEMPERATURE:
 			//limite de 0-60 grade Celsius
-			if(Value < 0) Value = 0;
 			if(Value > 999) Value = 999;
 
 			//valoarea va iesi de forma XY
