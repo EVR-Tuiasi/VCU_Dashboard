@@ -135,7 +135,7 @@ int main(void)
 	Gpt_StartTimer(channel, TIMEOUT_VALUE);
 	Gpt_EnableNotification(channel);
 
-	trailingArray();
+	//trailingArray();
 	Display_Init();
 	while(1){
 		for(i = 0; i < 18; i++)

@@ -46,9 +46,326 @@ extern "C" {
  *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
-double trail_x[151];
-double trail_y[151];
+//double trail_x[151];
+//double trail_y[151];
 
+double trail_x[] = {
+		-0.92050485349200839,  /*   0 */
+		-0.93045754156519311,  /*   1 */
+		-0.93976721567650523,  /*   2 */
+		-0.9484274421627561,   /*   3 */
+		-0.95643223617638906,  /*   4 */
+		-0.96377606582144693,  /*   5 */
+		-0.97045385597651446,  /*   6 */
+		-0.97646099180199664,  /*   7 */
+		-0.98179332192930979,  /*   8 */
+		-0.98644716132977894,  /*   9 */
+		-0.99041929386126237,  /*  10 */
+		-0.99370697449073897,  /*  11 */
+		-0.99630793119132699,  /*  12 */
+		-0.99822036651241941,  /*  13 */
+		-0.99944295882185408,  /*  14 */
+		-0.9999748632192571,   /*  15 */
+		-0.99981571211993103,  /*  16 */
+		-0.99896561550888252,  /*  17 */
+		-0.9974251608648147,   /*  18 */
+		-0.99519541275413681,  /*  19 */
+		-0.99227791209527039,  /*  20 */
+		-0.98867467509376372,  /*  21 */
+		-0.98438819184894566,  /*  22 */
+		-0.97942142463308601,  /*  23 */
+		-0.97377780584425011,  /*  24 */
+		-0.96746123563426023,  /*  25 */
+		-0.96047607921340816,  /*  26 */
+		-0.95282716383377541,  /*  27 */
+		-0.94451977545325094,  /*  28 */
+		-0.93555965508254946,  /*  29 */
+		-0.92595299481775362,  /*  30 */
+		-0.91570643356112535,  /*  31 */
+		-0.90482705243313999,  /*  32 */
+		-0.89332236987891667,  /*  33 */
+		-0.88120033647242457,  /*  34 */
+		-0.86846932942205679,  /*  35 */
+		-0.8551381467813689,   /*  36 */
+		-0.84121600136898356,  /*  37 */
+		-0.82671251440186033,  /*  38 */
+		-0.81163770884633513,  /*  39 */
+		-0.79600200249151842,  /*  40 */
+		-0.7798162007498457,   /*  41 */
+		-0.76309148918974845,  /*  42 */
+		-0.74583942580561202,  /*  43 */
+		-0.72807193303035977,  /*  44 */
+		-0.70980128949618271,  /*  45 */
+		-0.69104012154910932,  /*  46 */
+		-0.67180139452328125,  /*  47 */
+		-0.65209840378096173,  /*  48 */
+		-0.63194476552447398,  /*  49 */
+		-0.61135440738640945,  /*  50 */
+		-0.59034155880462136,  /*  51 */
+		-0.56892074118864522,  /*  52 */
+		-0.54710675788434815,  /*  53 */
+		-0.52491468394373564,  /*  54 */
+		-0.50235985570699526,  /*  55 */
+		-0.47945786020396503,  /*  56 */
+		-0.45622452438236116,  /*  57 */
+		-0.43267590417020646,  /*  58 */
+		-0.40882827338000921,  /*  59 */
+		-0.38469811246237673,  /*  60 */
+		-0.36030209711682115,  /*  61 */
+		-0.33565708676763717,  /*  62 */
+		-0.31078011291281082,  /*  63 */
+		-0.28568836735401232,  /*  64 */
+		-0.26039919031581066,  /*  65 */
+		-0.23493005846231291,  /*  66 */
+		-0.20929857281951611,  /*  67 */
+		-0.18352244661171666,  /*  68 */
+		-0.15761949302038064,  /*  69 */
+		-0.13160761287393877,  /*  70 */
+		-0.1055047822770072,   /*  71 */
+		-0.079329040187591709, /*  72 */
+		-0.053098475950852264, /*  73 */
+		-0.026831216798046547, /*  74 */
+		-0.00054541531929444618, /* 75 */
+		0.025740763081186429, /*  76 */
+		0.052009152738698543, /*  77 */
+		0.078241600281861529, /*  78 */
+		0.10441997717791462,  /*  79 */
+		0.13052619226085471,  /*  80 */
+		0.15654220423375001,  /*  81 */
+		0.18245003413659075,  /*  82 */
+		0.20823177777106053,  /*  83 */
+		0.23386961807364082,  /*  84 */
+		0.25934583742850303,  /*  85 */
+		0.28464282991167011,  /*  86 */
+		0.30974311345799282,  /*  87 */
+		0.33462934194253147,  /*  88 */
+		0.35928431716799097,  /*  89 */
+		0.38369100074993062,  /*  90 */
+		0.40783252589152674,  /*  91 */
+		0.43169220903976047,  /*  92 */
+		0.45525356141496709,  /*  93 */
+		0.47850030040578451,  /*  94 */
+		0.501416360821625,    /*  95 */
+		0.52398590599489236,  /*  96 */
+		0.54619333872527209,  /*  97 */
+		0.56802331205853529,  /*  98 */
+		0.58946073989239978,  /*  99 */
+		0.61049080740212835,  /* 100 */
+		0.63109898127865138,  /* 101 */
+		0.65127101977214208,  /* 102 */
+		0.67099298253410433,  /* 103 */
+		0.69025124025116746,  /* 104 */
+		0.70903248406393693,  /* 105 */
+		0.72732373476438505,  /* 106 */
+		0.74511235176542978,  /* 107 */
+		0.76238604183650116,  /* 108 */
+		0.77913286759905909,  /* 109 */
+		0.79534125577619275,  /* 110 */
+		0.81100000519059778,  /* 111 */
+		0.82609829450540606,  /* 112 */
+		0.84062568970251772,  /* 113 */
+		0.85457215129326791,  /* 114 */
+		0.86792804125644574,  /* 115 */
+		0.88068412969886878,  /* 116 */
+		0.89283160123391148,  /* 117 */
+		0.90436206107358064,  /* 118 */
+		0.91526754082992412,  /* 119 */
+		0.92554050402176913,  /* 120 */
+		0.93517385128297914,  /* 121 */
+		0.94416092526863316,  /* 122 */
+		0.95249551525573639,  /* 123 */
+		0.96017186143528188,  /* 124 */
+		0.96718465889269922,  /* 125 */
+		0.97352906127393624,  /* 126 */
+		0.97920068413464323,  /* 127 */
+		0.98419560797014305,  /* 128 */
+		0.98851038092409482,  /* 129 */
+		0.99214202117397821,  /* 130 */
+		0.99508801899175003,  /* 131 */
+		0.99734633847824894,  /* 132 */
+		0.99891541897015035,  /* 133 */
+		0.99979417611849841,  /* 134 */
+		0.99998200263699288,  /* 135 */
+		0.99947876872125696,  /* 136 */
+		0.99828482214623959,  /* 137 */
+		0.9964009880160245,   /* 138 */
+		0.99382856819726739,  /* 139 */
+		0.99056934041950995,  /* 140 */
+		0.98662555704664034,  /* 141 */
+		0.98199994352034548,  /* 142 */
+		0.97669569647663101,  /* 143 */
+		0.97071648153671508,  /* 144 */
+		0.96406643077381426,  /* 145 */
+		0.9567501398575825,   /* 146 */
+		0.94877266487816758,  /* 147 */
+		0.94013951885208247,  /* 148 */
+		0.9308566679123127,   /* 149 */
+		0.92093052718528079,  /* 150 */
+};
+
+double trail_y[] = {
+		-0.39073112839605717,  /*   0 */
+		-0.36639973163807976,  /*   1 */
+		-0.34181512596669683,  /*   2 */
+		-0.31699430113585941,  /*   3 */
+		-0.29195441014417306,  /*   4 */
+		-0.26671275738092087,  /*   5 */
+		-0.24128678666747291,  /*   6 */
+		-0.21569406920233333,  /*   7 */
+		-0.18995229141816308,  /*   8 */
+		-0.16407924275916524,  /*   9 */
+		-0.13809280338728164,  /*  10 */
+		-0.11201093182570135,  /*  11 */
+		-0.085851652548207508, /*  12 */
+		-0.059633043522958097, /*  13 */
+		-0.033373223719289601, /*  14 */
+		-0.007090340586188024, /*  15 */
+		0.0191974424889172,   /*  16 */
+		0.045471958732382772, /*  17 */
+		0.071715050538910557, /*  18 */
+		0.097908582019776841, /*  19 */
+		0.12403445153605834,  /*  20 */
+		0.15007460420817653,  /*  21 */
+		0.17601104439313833,  /*  22 */
+		0.20182584812083953,  /*  23 */
+		0.22750117548082668,  /*  24 */
+		0.25301928295098441,  /*  25 */
+		0.27836253565959423,  /*  26 */
+		0.30351341957232075,  /*  27 */
+		0.32845455359568471,  /*  28 */
+		0.3531687015886617,   /*  29 */
+		0.37763878427411707,  /*  30 */
+		0.40184789104182728,  /*  31 */
+		0.42577929163494527,  /*  32 */
+		0.4494164477118256,   /*  33 */
+		0.47274302427522469,  /*  34 */
+		0.4957429009609749,   /*  35 */
+		0.51840018317832992,  /*  36 */
+		0.54069921309428426,  /*  37 */
+		0.56262458045427932,  /*  38 */
+		0.5841611332318094,   /*  39 */
+		0.60529398809957857,  /*  40 */
+		0.62600854071496215,  /*  41 */
+		0.64629047581267351,  /*  42 */
+		0.66612577709765519,  /*  43 */
+		0.68550073693135827,  /*  44 */
+		0.70440196580472159,  /*  45 */
+		0.72281640159129779,  /*  46 */
+		0.74073131857413355,  /*  47 */
+		0.75813433624016913,  /*  48 */
+		0.77501342783607152,  /*  49 */
+		0.79135692867960161,  /*  50 */
+		0.80715354422075714,  /*  51 */
+		0.82239235784713038,  /*  52 */
+		0.83706283842808193,  /*  53 */
+		0.85115484759252125,  /*  54 */
+		0.8646586467352575,   /*  55 */
+		0.87756490374708762,  /*  56 */
+		0.88986469946396252,  /*  57 */
+		0.90154953383077863,  /*  58 */
+		0.91261133177553766,  /*  59 */
+		0.92304244878980757,  /*  60 */
+		0.93283567621163632,  /*  61 */
+		0.94198424620726162,  /*  62 */
+		0.95048183644817774,  /*  63 */
+		0.95832257448032543,  /*  64 */
+		0.96550104178238472,  /*  65 */
+		0.97201227751036878,  /*  66 */
+		0.97785178192592859,  /*  67 */
+		0.9830155195059993,   /*  68 */
+		0.98749992173164158,  /*  69 */
+		0.99130188955414766,  /*  70 */
+		0.99441879553671009,  /*  71 */
+		0.99684848567017215,  /*  72 */
+		0.9985892808616047,   /*  73 */
+		0.99963997809468197,  /*  74 */
+		0.99999985126105373,  /*  75 */
+		0.99966865166213859,  /*  76 */
+		0.99864660818099349,  /*  77 */
+		0.99693442712413805,  /*  78 */
+		0.99453329173344607,  /*  79 */
+		0.99144486136843857,  /*  80 */
+		0.98767127035954572,  /*  81 */
+		0.98321512653312904,  /*  82 */
+		0.97807950940928301,  /*  83 */
+		0.972267968073663,    /*  84 */
+		0.96578451872480775,  /*  85 */
+		0.95863364189865363,  /*  86 */
+		0.95082027937215818,  /*  87 */
+		0.94234983074817202,  /*  88 */
+		0.93322814972391954,  /*  89 */
+		0.92346154004566794,  /*  90 */
+		0.91305675115237894,  /*  91 */
+		0.90202097351135457,  /*  92 */
+		0.89036183364910071,  /*  93 */
+		0.87808738888084137,  /*  94 */
+		0.86520612174232669,  /*  95 */
+		0.85172693412778244,  /*  96 */
+		0.83765914113805273,  /*  97 */
+		0.82301246464318623,  /*  98 */
+		0.80779702656391639,  /*  99 */
+		0.79202334187667567,  /* 100 */
+		0.77570231134698087,  /* 101 */
+		0.7588452139962103,   /* 102 */
+		0.74146369930697698,  /* 103 */
+		0.72356977917248944,  /* 104 */
+		0.70517581959545594,  /* 105 */
+		0.68629453214227665,  /* 106 */
+		0.66693896515842477,  /* 107 */
+		0.64712249475108863,  /* 108 */
+		0.62685881554530853,  /* 109 */
+		0.60616193121999074,  /* 110 */
+		0.58504614483034612,  /* 111 */
+		0.56352604892343661,  /* 112 */
+		0.54161651545366152,  /* 113 */
+		0.51933268550515477,  /* 114 */
+		0.49668995882819034,  /* 115 */
+		0.47370398319683377,  /* 116 */
+		0.45039064359519021,  /* 117 */
+		0.42676605123972222,  /* 118 */
+		0.40284653244522689,  /* 119 */
+		0.37864861734215999,  /* 120 */
+		0.3541890284531134,   /* 121 */
+		0.32948466913633256,  /* 122 */
+		0.30455261190426408,  /* 123 */
+		0.27941008662520728,  /* 124 */
+		0.25407446861621696,  /* 125 */
+		0.22856326663549509,  /* 126 */
+		0.20289411078256256,  /* 127 */
+		0.17708474031457525,  /* 128 */
+		0.1511529913872067,   /* 129 */
+		0.12511678472856186,  /* 130 */
+		0.098994113254650198, /* 131 */
+		0.072803029634968985, /* 132 */
+		0.046561633816792812, /* 133 */
+		0.020288060516793036, /* 134 */
+		-0.0059995334909589415, /* 135 */
+		-0.032282981204344682, /* 136 */
+		-0.058544119025319481, /* 137 */
+		-0.084764798594051338, /* 138 */
+		-0.11092689951030602,  /* 139 */
+		-0.13701234185596931,  /* 140 */
+		-0.16300309868958524,  /* 141 */
+		-0.18888120850428267,  /* 142 */
+		-0.21462878764049509,  /* 143 */
+		-0.24022804264485936,  /* 144 */
+		-0.26566128256680238,  /* 145 */
+		-0.2909109311842652,   /* 146 */
+		-0.31595953915015806,  /* 147 */
+		-0.34078979605113607,  /* 148 */
+		-0.36538454237034507,  /* 149 */
+		-0.38972678134590744,  /* 150 */
+};
+
+//static volatile uint16_t x_memory_outer[151];
+//static volatile uint16_t y_memory_outer[151];
+//static volatile uint16_t x_memory_inner[151];
+//static volatile uint16_t y_memory_inner[151];
+
+const uint16_t x_memory_outer[] = {46, 44, 42, 40, 39, 37, 36, 35, 34, 33, 32, 32, 31, 31, 31, 31, 31, 31, 31, 32, 32, 33, 33, 34, 36, 37, 38, 39, 41, 42, 44, 46, 48, 50, 53, 55, 58, 61, 64, 66, 69, 72, 75, 79, 82, 85, 89, 93, 97, 100, 104, 108, 112, 116, 120, 125, 129, 133, 138, 142, 147, 152, 156, 161, 166, 170, 175, 180, 185, 190, 195, 200, 205, 209, 214, 219, 224, 229, 234, 239, 244, 249, 254, 259, 264, 269, 273, 278, 283, 288, 292, 297, 302, 306, 310, 314, 318, 323, 327, 331, 335, 339, 342, 346, 350, 354, 357, 361, 364, 367, 370, 373, 376, 379, 381, 384, 386, 388, 390, 392, 394, 396, 398, 400, 401, 402, 403, 404, 405, 406, 407, 408, 408, 408, 408, 408, 408, 408, 408, 408, 407, 406, 405, 404, 403, 402, 401, 399, 397, 396, 394};
+const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 329, 323, 318, 313, 308, 303, 298, 293, 288, 283, 278, 272, 267, 262, 257, 252, 247, 242, 237, 232, 228, 223, 218, 213, 209, 204, 200, 196, 191, 187, 183, 178, 174, 170, 167, 163, 159, 156, 152, 149, 145, 142, 139, 136, 134, 131, 128, 125, 123, 121, 119, 117, 115, 113, 112, 110, 108, 107, 106, 105, 104, 104, 103, 103, 102, 102, 102, 102, 102, 103, 103, 104, 104, 105, 106, 107, 108, 110, 112, 113, 115, 116, 118, 121, 123, 126, 128, 131, 133, 136, 139, 142, 145, 149, 152, 156, 159, 163, 166, 170, 174, 178, 183, 187, 191, 196, 200, 205, 209, 214, 218, 223, 227, 232, 237, 242, 247, 252, 257, 262, 267, 272, 277, 282, 287, 292, 298, 303, 308, 313, 318, 323, 328, 333, 338, 343, 348, 353, 358, 363, 367, 372};
+//static uint16_t x_memory_inner[] = {100, 99, 97, 96, 95, 94, 93, 93, 92, 92, 91, 90, 90, 90, 90, 90, 90, 90, 90, 91, 91, 92, 92, 92, 93, 94, 95, 96, 97, 98, 99, 101, 102, 104, 105, 107, 109, 110, 112, 114, 116, 118, 120, 123, 125, 127, 130, 132, 135, 137, 140, 143, 146, 149, 151, 154, 157, 160, 163, 166, 169, 173, 176, 179, 182, 186, 189, 192, 196, 199, 203, 206, 210, 213, 216, 219, 223, 226, 230, 233, 237, 240, 244, 247, 250, 253, 257, 260, 263, 266, 270, 273, 276, 279, 282, 285, 288, 290, 293, 296, 299, 302, 304, 307, 310, 312, 314, 317, 319, 321, 323, 325, 327, 329, 330, 332, 334, 336, 337, 338, 339, 341, 342, 343, 344, 345, 346, 347, 347, 348, 349, 349, 349, 349, 349, 349, 349, 349, 349, 349, 348, 347, 347, 346, 346, 345, 344, 343, 342, 340, 339};
+//static uint16_t y_memory_inner[] = {340, 337, 334, 331, 328, 324, 321, 318, 314, 311, 307, 304, 301, 297, 294, 290, 287, 284, 280, 277, 273, 270, 267, 263, 260, 257, 254, 250, 247, 243, 240, 237, 234, 231, 228, 225, 222, 219, 217, 214, 211, 208, 205, 203, 200, 198, 196, 193, 191, 189, 187, 185, 183, 181, 179, 177, 175, 174, 172, 171, 170, 169, 167, 166, 165, 164, 163, 162, 162, 161, 161, 160, 160, 160, 160, 160, 160, 160, 160, 160, 161, 161, 162, 162, 163, 164, 165, 166, 167, 168, 170, 171, 173, 174, 176, 177, 179, 181, 183, 185, 187, 189, 191, 193, 196, 198, 200, 203, 205, 208, 211, 214, 216, 219, 222, 225, 228, 231, 234, 237, 240, 244, 247, 250, 253, 257, 260, 263, 267, 270, 274, 277, 280, 283, 287, 290, 294, 298, 301, 304, 307, 310, 314, 317, 321, 324, 328, 331, 334, 337, 340};
 /*==================================================================================================
  *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -200,6 +517,8 @@ void Display_Test(uint8_t Address, uint8_t Minutes, uint8_t Seconds, uint32_t Mi
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t witness, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds){
 	uint32_t index = 0;
 	uint8_t Red, Green, Blue = 0;
+	uint16_t x_memory_inner[151];
+	uint16_t y_memory_inner[151];
 
 	volatile uint32_t Height_Offset, Width_Offset;
 
@@ -275,10 +594,10 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(255, 0, 0));
 			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_R));
-			wr32(RAM_DL + (index+=4), vertex2f(480, 195));
-			wr32(RAM_DL + (index+=4), vertex2f(480, 290));
-			wr32(RAM_DL + (index+=4), vertex2f(700, 290));
-			wr32(RAM_DL + (index+=4), vertex2f(763, 335));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_TEMP_X, WARNING_CELL_TEMP_Y));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_TEMP_X, WARNING_CELL_TEMP_Y + WARNING_CELL_TEMP_HEIGHT));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_TEMP_X + WARNING_CELL_TEMP_WIDTH, WARNING_CELL_TEMP_Y + WARNING_CELL_TEMP_HEIGHT));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_TEMP_X + WARNING_CELL_TEMP_DIAGONAL_WIDTH, WARNING_CELL_TEMP_Y + WARNING_CELL_TEMP_DIAGONAL_HEIGHT));
 			wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_R));
 			wr32(RAM_DL + (index+=4), vertex2f(724, 190));
@@ -289,10 +608,10 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(255, 0, 0));
 			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_R));
-			wr32(RAM_DL + (index+=4), vertex2f(450, 86));
-			wr32(RAM_DL + (index+=4), vertex2f(450, 190));
-			wr32(RAM_DL + (index+=4), vertex2f(720, 190));
-			wr32(RAM_DL + (index+=4), vertex2f(763, 221));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_X, WARNING_CELL_Y));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_X, WARNING_CELL_Y + WARNING_CELL_HEIGHT));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_X + WARNING_CELL_WIDTH, WARNING_CELL_Y + WARNING_CELL_HEIGHT));
+			wr32(RAM_DL + (index+=4), vertex2f(WARNING_CELL_X + WARNING_CELL_DIAGONAL_WIDTH, WARNING_CELL_Y + WARNING_CELL_DIAGONAL_HEIGHT));
 		}
 
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
@@ -311,21 +630,24 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), line_width(60));
 		wr32(RAM_DL + (index+=4), begin(LINES));
 		//Diagonal ends
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_START, UPPER_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_START - UPPER_BORDER_DIAGONAL, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_END, UPPER_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_END + UPPER_BORDER_DIAGONAL, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X, UPPER_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X - UPPER_BORDER_OFFSET, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH, UPPER_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH + UPPER_BORDER_OFFSET, 0));
+
 		//Vertical upper indicators
 		wr32(RAM_DL + (index+=4), line_width(64));
 		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_MIDDLE_LINE, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_MIDDLE_LINE, UPPER_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_MIDDLE_LINE, UPPER_BORDER_Y));
 		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_LEFT_LINE, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_LEFT_LINE, UPPER_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_LEFT_LINE, UPPER_BORDER_Y));
 		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_RIGHT_LINE, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_RIGHT_LINE, UPPER_BORDER_HEIGHT));
-
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_RIGHT_LINE, UPPER_BORDER_Y));
 
 		//Speedometer: Design
+
+		x_memory_inner[Speed] = CENTER_X + ((uint32_t)(x_memory_outer[Speed] - CENTER_X) * (188/195));
+		y_memory_inner[Speed] = CENTER_Y + ((uint32_t)(y_memory_outer[Speed] - CENTER_Y) * (188/195));
 
 		//Outer ring
 		wr32(RAM_DL + (index+=4), save_context());
@@ -342,20 +664,38 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), vertex2f(CENTER_X, CENTER_Y - 10));
 		wr32(RAM_DL + (index+=4), stencil_func(GREATER, 2, 255));
 		wr32(RAM_DL + (index+=4), color_rgb(247, 198, 0));
-		if(Speed < 75U){
+		/*if(Speed < 75U){
 			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_B));
 			wr32(RAM_DL + (index+=4), vertex2f(0, 0));
 			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + (OUTER_RADIUS - 5) * trail_x[Speed], CENTER_Y - (OUTER_RADIUS) * trail_y[Speed] - 2));
 			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + INNER_RADIUS * trail_x[Speed], CENTER_Y - INNER_RADIUS * trail_y[Speed] - 9));
-			wr32(RAM_DL + (index+=4), vertex2f(220, 480));
+			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X, EDGE_STRIP_ENDS));
 		}
 		else{
 			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_A));
-			wr32(RAM_DL + (index+=4), vertex2f(480, 0));
+			wr32(RAM_DL + (index+=4), vertex2f(EDGE_STRIP_ENDS, 0));
 			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + (OUTER_RADIUS + 1) * trail_x[Speed], CENTER_Y - (OUTER_RADIUS) * trail_y[Speed] - 4));
 			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + INNER_RADIUS * trail_x[Speed], CENTER_Y - INNER_RADIUS * trail_y[Speed] - 8));
-			wr32(RAM_DL + (index+=4), vertex2f(0, 480));
-			wr32(RAM_DL + (index+=4), vertex2f(220, 480));
+			wr32(RAM_DL + (index+=4), vertex2f(0, EDGE_STRIP_ENDS));
+			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X, EDGE_STRIP_ENDS));
+		}*/
+
+		/*ALTERNATE WITHOUT SIN AND COS*/
+
+		if(Speed < 75U){
+			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_B));
+			wr32(RAM_DL + (index+=4), vertex2f(0, 0));
+			wr32(RAM_DL + (index+=4), vertex2f(x_memory_outer[Speed], y_memory_outer[Speed] - 2));
+			wr32(RAM_DL + (index+=4), vertex2f(x_memory_inner[Speed], y_memory_inner[Speed] - 9));
+			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X, EDGE_STRIP_ENDS));
+		}
+		else{
+			wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_A));
+			wr32(RAM_DL + (index+=4), vertex2f(EDGE_STRIP_ENDS, 0));
+			wr32(RAM_DL + (index+=4), vertex2f(x_memory_outer[Speed], y_memory_outer[Speed]));
+			wr32(RAM_DL + (index+=4), vertex2f(x_memory_inner[Speed], y_memory_inner[Speed] - 5));
+			wr32(RAM_DL + (index+=4), vertex2f(0, EDGE_STRIP_ENDS));
+			wr32(RAM_DL + (index+=4), vertex2f(CENTER_X, EDGE_STRIP_ENDS));
 		}
 
 		wr32(RAM_DL + (index+=4), clear(0, 1, 0));
@@ -372,8 +712,15 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
 		wr32(RAM_DL + (index+=4), begin(LINES));
-		wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + INNER_RADIUS * trail_x[Speed], CENTER_Y - INNER_RADIUS * trail_y[Speed] - 10));
+		/*wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + INNER_RADIUS * trail_x[Speed], CENTER_Y - INNER_RADIUS * trail_y[Speed] - 10));
 		wr32(RAM_DL + (index+=4), vertex2f(CENTER_X + (OUTER_RADIUS - 6) * trail_x[Speed], CENTER_Y - (OUTER_RADIUS) * trail_y[Speed] - 3));
+		x_memory_outer[Speed] = CENTER_X + (OUTER_RADIUS - 6) * trail_x[Speed];
+		y_memory_outer[Speed] = CENTER_Y - (OUTER_RADIUS) * trail_y[Speed] - 3;
+		x_memory_inner[Speed] = CENTER_X + INNER_RADIUS * trail_x[Speed];
+		y_memory_inner[Speed] = CENTER_Y - INNER_RADIUS * trail_y[Speed] - 10;*/
+
+		wr32(RAM_DL + (index+=4), vertex2f(x_memory_outer[Speed], y_memory_outer[Speed]));
+		wr32(RAM_DL + (index+=4), vertex2f(x_memory_inner[Speed], y_memory_inner[Speed]));
 
 		wr32(RAM_DL + (index+=4), restore_context());
 
@@ -407,19 +754,19 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		if(Speed >= 100U){
 			wr32(RAM_DL + (index+=4), bitmap_transform_a(72));
 			wr32(RAM_DL + (index+=4), bitmap_transform_e(72));
-			wr32(RAM_DL + (index+=4), vertex2ii(114, 185, 31, (Speed / 100U) + '0'));
-			wr32(RAM_DL + (index+=4), vertex2ii(165, 185, 31, ((Speed / 10U) % 10) + '0'));
-			wr32(RAM_DL + (index+=4), vertex2ii(244, 185, 31, (Speed % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(114, 185, LARGE_FONT, (Speed / 100U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(165, 185, LARGE_FONT, ((Speed / 10U) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(244, 185, LARGE_FONT, (Speed % 10) + '0'));
 		}
 
 		else if(Speed >= 10U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(130, 170, 31, (Speed / 10U) + '0'));
-			wr32(RAM_DL + (index+=4), vertex2ii(217, 170, 31, (Speed % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(130, 170, LARGE_FONT, (Speed / 10U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(217, 170, LARGE_FONT, (Speed % 10) + '0'));
 		}
 
 		else{
-			wr32(RAM_DL + (index+=4), vertex2ii(175, 170, 31, Speed + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(175, 170, LARGE_FONT, Speed + '0'));
 		}
 		wr32(RAM_DL + (index+=4), restore_context());
 
@@ -431,10 +778,10 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), bitmap_transform_a(200));
 		wr32(RAM_DL + (index+=4), bitmap_transform_e(256));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
-		wr32(RAM_DL + (index+=4), vertex2ii(157, 326, 31, 'k'));
-		wr32(RAM_DL + (index+=4), vertex2ii(185, 326, 31, 'm'));
-		wr32(RAM_DL + (index+=4), vertex2ii(230, 326, 31, '/'));
-		wr32(RAM_DL + (index+=4), vertex2ii(251, 326, 31, 'h'));
+		wr32(RAM_DL + (index+=4), vertex2ii(157, 326, LARGE_FONT, 'k'));
+		wr32(RAM_DL + (index+=4), vertex2ii(185, 326, LARGE_FONT, 'm'));
+		wr32(RAM_DL + (index+=4), vertex2ii(230, 326, LARGE_FONT, '/'));
+		wr32(RAM_DL + (index+=4), vertex2ii(251, 326, LARGE_FONT, 'h'));
 
 		/* SPEEDOMETER HASH MARKS */
 		wr32(RAM_DL + (index+=4), begin(LINES));
@@ -497,13 +844,13 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		/* BATTERY PERCENTAGE BAR */
 		wr32(RAM_DL + (index+=4), line_width(16));
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(VERTICAL_BATTERY_BORDER, VERTICAL_BATTERY_BORDER_ORIGIN));
-		wr32(RAM_DL + (index+=4), vertex2f(VERTICAL_BATTERY_BORDER + 8, VERTICAL_BATTERY_BORDER_END));
-		wr32(RAM_DL + (index+=4), vertex2f(HORIZONTAL_BATTERY_BORDER_ORIGIN, HORIZONTAL_BATTERY_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(HORIZONTAL_BATTER_BORDER_END, HORIZONTAL_BATTERY_BORDER_HEIGHT + BORDER_THICKNESS));
+		wr32(RAM_DL + (index+=4), vertex2f(BATTERY_BORDER_X, BATTERY_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(BATTERY_BORDER_X + BATTERY_BORDER_WIDTH, BATTERY_BORDER_Y + BORDER_THICKNESS));
+		wr32(RAM_DL + (index+=4), vertex2f(BATTERY_BORDER_X, BATTERY_BORDER_Y + BORDER_THICKNESS));
+		wr32(RAM_DL + (index+=4), vertex2f(BATTERY_BORDER_X + BORDER_THICKNESS, BATTERY_BORDER_Y + BATTERY_BORDER_HEIGHT));
 
 		//Calculation for the Battery bar
-		Height_Offset = (429 - 67) * (100U - Battery_Percentage) / 100U;
+		Height_Offset = (450 - 60) * (100U - Battery_Percentage) / 100U;
 		//Battery percentage fill
 
 		if(Battery_Percentage <= 50U)
@@ -518,23 +865,24 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		}
 
 		wr32(RAM_DL + (index+=4), color_rgb(Red, Green, Blue));
-		wr32(RAM_DL + (index+=4), vertex2f(VERTICAL_BATTERY_BORDER + 10, VERTICAL_BATTERY_BORDER_ORIGIN - BORDER_THICKNESS));
-		wr32(RAM_DL + (index+=4), vertex2f(HORIZONTAL_BATTER_BORDER_END, 67 + Height_Offset));
+		wr32(RAM_DL + (index+=4), vertex2f(800, BATTERY_BORDER_Y + BATTERY_BORDER_HEIGHT - BORDER_THICKNESS));
+		wr32(RAM_DL + (index+=4), vertex2f(BATTERY_BORDER_X + BORDER_THICKNESS + 2, BATTERY_BORDER_Y + BORDER_THICKNESS + Height_Offset));
+
 
 		//Dynamic Battery percentage
 		wr32(RAM_DL + (index+=4), vertex_translate_x(8600));
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 		if(Battery_Percentage >= 100U){
-			wr32(RAM_DL + (index+=4), vertex2ii(190, 24, 30, (Battery_Percentage / 100U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(190, 24, MEDIUM_FONT, (Battery_Percentage / 100U) + '0'));
 		}
 
 		if(Battery_Percentage >= 10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(205, 24, 30, ((Battery_Percentage / 10U) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(205, 24, MEDIUM_FONT, ((Battery_Percentage / 10U) % 10) + '0'));
 		}
 
-		wr32(RAM_DL + (index+=4), vertex2ii(221, 24, 30, ((Battery_Percentage % 10) + '0')));
-		wr32(RAM_DL + (index+=4), vertex2ii(239, 24, 30, '%'));
+		wr32(RAM_DL + (index+=4), vertex2ii(221, 24, MEDIUM_FONT, ((Battery_Percentage % 10) + '0')));
+		wr32(RAM_DL + (index+=4), vertex2ii(239, 24, MEDIUM_FONT, '%'));
 		/* THE END FOR BATTERY PERCENTAGE BAR */
 
 
@@ -588,29 +936,29 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), vertex_translate_x(8000));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));				//50, 255, 150
-		wr32(RAM_DL + (index+=4), vertex2ii(150, 410, 31, 'M'));
-		wr32(RAM_DL + (index+=4), vertex2ii(183, 410, 31, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(204, 410, 31, 't'));
-		wr32(RAM_DL + (index+=4), vertex2ii(217, 410, 31, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(240, 410, 31, 'r'));
+		wr32(RAM_DL + (index+=4), vertex2ii(150, 410, LARGE_FONT, 'M'));
+		wr32(RAM_DL + (index+=4), vertex2ii(183, 410, LARGE_FONT, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(204, 410, LARGE_FONT, 't'));
+		wr32(RAM_DL + (index+=4), vertex2ii(217, 410, LARGE_FONT, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(240, 410, LARGE_FONT, 'r'));
 
 		//Dynamic Shadows for Motor Temperature
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));				//50, 255, 150
 		if(Motor_Temperature >=10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(8, 435, 31, (Motor_Temperature / 10U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(8, 435, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(30, 435, 31, (Motor_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(55, 435, 27, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(62, 435, 31, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(30, 435, LARGE_FONT, (Motor_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(55, 435, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(62, 435, LARGE_FONT, 'C'));
 
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));				//50, 255, 150
 		//Dynamic Text for Motor Temperature
 		if(Motor_Temperature >=10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(10, 433, 31, (Motor_Temperature / 10U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(10, 433, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(32, 433, 31, (Motor_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(57, 433, 27, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(64, 433, 31, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(32, 433, LARGE_FONT, (Motor_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(57, 433, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(64, 433, LARGE_FONT, 'C'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 
 		/* THE END FOR MOTOR TEMPERATURE */
@@ -660,32 +1008,32 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		//Inverter Text
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
-		wr32(RAM_DL + (index+=4), vertex2ii(5, 410, 31, 'I'));
-		wr32(RAM_DL + (index+=4), vertex2ii(15, 410, 31, 'n'));
-		wr32(RAM_DL + (index+=4), vertex2ii(37, 410, 31, 'v'));
-		wr32(RAM_DL + (index+=4), vertex2ii(57, 410, 31, 'e'));
-		wr32(RAM_DL + (index+=4), vertex2ii(78, 410, 31, 'r'));
-		wr32(RAM_DL + (index+=4), vertex2ii(93, 410, 31, 't'));
-		wr32(RAM_DL + (index+=4), vertex2ii(107, 410, 31, 'e'));
-		wr32(RAM_DL + (index+=4), vertex2ii(127, 410, 31, 'r'));
+		wr32(RAM_DL + (index+=4), vertex2ii(5, 410, LARGE_FONT, 'I'));
+		wr32(RAM_DL + (index+=4), vertex2ii(15, 410, LARGE_FONT, 'n'));
+		wr32(RAM_DL + (index+=4), vertex2ii(37, 410, LARGE_FONT, 'v'));
+		wr32(RAM_DL + (index+=4), vertex2ii(57, 410, LARGE_FONT, 'e'));
+		wr32(RAM_DL + (index+=4), vertex2ii(78, 410, LARGE_FONT, 'r'));
+		wr32(RAM_DL + (index+=4), vertex2ii(93, 410, LARGE_FONT, 't'));
+		wr32(RAM_DL + (index+=4), vertex2ii(107, 410, LARGE_FONT, 'e'));
+		wr32(RAM_DL + (index+=4), vertex2ii(127, 410, LARGE_FONT, 'r'));
 
 		//Dynamic shadows for Inverter temp
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		if(Inverter_Temperature >= 10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(210, 435, 31, (Inverter_Temperature / 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(210, 435, LARGE_FONT, (Inverter_Temperature / 10) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(232, 435, 31, (Inverter_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(257, 435, 27, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(263, 435, 31, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(232, 435, LARGE_FONT, (Inverter_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(257, 435, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(263, 435, LARGE_FONT, 'C'));
 
 		//Dynamic temperature for Inverter
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
 		if(Inverter_Temperature >= 10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(212, 433, 31, (Inverter_Temperature / 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(212, 433, LARGE_FONT, (Inverter_Temperature / 10) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(234, 433, 31, (Inverter_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(259, 433, 27, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(265, 433, 31, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(234, 433, LARGE_FONT, (Inverter_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(259, 433, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(265, 433, LARGE_FONT, 'C'));
 
 
 		/* THE END FOR INVERTER TEMPERATURE */
@@ -700,14 +1048,14 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), stencil_op(INCR, INCR));
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_A));
-		wr32(RAM_DL + (index+=4), vertex2f(544, 45));
-		wr32(RAM_DL + (index+=4), vertex2f(696, 45));
-		wr32(RAM_DL + (index+=4), vertex2f(750, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(ACCEL_BAR_ORIGIN_X - 1, ACCEL_BAR_ORIGIN_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(ACCEL_BAR_ORIGIN_X + 152, ACCEL_BAR_ORIGIN_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(ACCEL_BAR_END_X, 0));
 		wr32(RAM_DL + (index+=4), stencil_func(GREATER, 0, 255));
 		wr32(RAM_DL + (index+=4), color_rgb(0, 225, 0));
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(544, 45));
-		wr32(RAM_DL + (index+=4), vertex2f(544 + Width_Offset, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(ACCEL_BAR_ORIGIN_X, ACCEL_BAR_ORIGIN_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(ACCEL_BAR_ORIGIN_X + Width_Offset, 0));
 		wr32(RAM_DL + (index+=4), stencil_func(ALWAYS, 0, 255));
 		wr32(RAM_DL + (index+=4), clear(0, 1, 0));
 
@@ -719,41 +1067,26 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		wr32(RAM_DL + (index+=4), begin(EDGE_STRIP_A));
 		wr32(RAM_DL + (index+=4), vertex2f(56, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(104, 45));
-		wr32(RAM_DL + (index+=4), vertex2f(253, 45));
+		wr32(RAM_DL + (index+=4), vertex2f(BRAKE_BAR_ORIGIN_X - 149, BRAKE_BAR_ORIGIN_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(BRAKE_BAR_ORIGIN_X, BRAKE_BAR_ORIGIN_Y));
 		wr32(RAM_DL + (index+=4), stencil_func(GREATER, 0, 255));
 		wr32(RAM_DL + (index+=4), color_rgb(255, 0, 0));
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(253, 45));
-		wr32(RAM_DL + (index+=4), vertex2f(253 - Width_Offset, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(BRAKE_BAR_ORIGIN_X, BRAKE_BAR_ORIGIN_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(BRAKE_BAR_ORIGIN_X - Width_Offset, 0));
 		wr32(RAM_DL + (index+=4), stencil_func(ALWAYS, 0, 255));
 
 
 		/* WARNING LIGHTS SPACE */
 		wr32(RAM_DL + (index+=4), color_rgb(80, 80, 80));
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_START, WARNING_LIGHTS_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_END, WARNING_LIGHTS_BORDER_HEIGHT + BORDER_THICKNESS));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_START, WARNING_VERTICAL_BORDER_START));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_START + BORDER_THICKNESS, WARNING_VERTICAL_BORDER_END));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_END, WARNING_VERTICAL_BORDER_START));
-		wr32(RAM_DL + (index+=4), vertex2f(WARNING_LIGHTS_BORDER_END - BORDER_THICKNESS, WARNING_VERTICAL_BORDER_END));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X, WARNING_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X + WARNING_BORDER_WIDTH, WARNING_BORDER_Y + BORDER_THICKNESS));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X, WARNING_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X + BORDER_THICKNESS, WARNING_BORDER_Y - WARNING_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X + WARNING_BORDER_WIDTH, WARNING_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(WARNING_BORDER_X + WARNING_BORDER_WIDTH - BORDER_THICKNESS, WARNING_BORDER_Y - WARNING_BORDER_HEIGHT));
 		/* END FOR WARNING LIGHTS SPACE */
-
-
-		//Witnesses boxes
-		/*wr32(RAM_DL + (index+=4), save_context());
-		wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
-		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(210, 55));
-		wr32(RAM_DL + (index+=4), vertex2f(299, 76));
-		wr32(RAM_DL + (index+=4), vertex2f(304, 55));
-		wr32(RAM_DL + (index+=4), vertex2f(400, 76));
-		wr32(RAM_DL + (index+=4), vertex2f(405, 55));
-		wr32(RAM_DL + (index+=4), vertex2f(495, 76));
-		wr32(RAM_DL + (index+=4), vertex2f(500, 55));
-		wr32(RAM_DL + (index+=4), vertex2f(590, 76));
-		wr32(RAM_DL + (index+=4), restore_context());*/
 
 		//INVERTER_TEMP STATUS
 		wr32(RAM_DL + (index+=4), save_context());
@@ -766,8 +1099,8 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		}
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(TOP_LEFT_INVERTER_CORNER, BOX_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(BOTTOM_RIGHT_INVERTER_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
+		wr32(RAM_DL + (index+=4), vertex2f(TL_INVERTER_CORNER, BOX_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(BR_INVERTER_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		//BATTERY STATUS
@@ -781,8 +1114,8 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		}
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(TOP_LEFT_BATTERY_CORNER, BOX_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(BOTTOM_RIGHT_BATTERY_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
+		wr32(RAM_DL + (index+=4), vertex2f(TL_BATTERY_CORNER, BOX_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(BR_BATTERY_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		//ACCELERATION STATUS
@@ -796,8 +1129,8 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		}
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(TOP_LEFT_ACCEL_CORNER, BOX_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(BOTTOM_RIGHT_ACCEL_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
+		wr32(RAM_DL + (index+=4), vertex2f(TL_ACCEL_CORNER, BOX_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(BR_ACCEL_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		//BRAKE STATUS
@@ -811,8 +1144,8 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		}
 		wr32(RAM_DL + (index+=4), begin(RECTS));
-		wr32(RAM_DL + (index+=4), vertex2f(TOP_LEFT_BRAKE_CORNER, BOX_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(BOTTOM_RIGHT_BRAKE_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
+		wr32(RAM_DL + (index+=4), vertex2f(TL_BRAKE_CORNER, BOX_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(BR_BRAKE_CORNER, BOX_HEIGHT + BOX_HEIGHT_OFFSET));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 
@@ -821,35 +1154,35 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 
-		wr32(RAM_DL + (index+=4), vertex2ii(210, 55, 23, 'I'));
-		wr32(RAM_DL + (index+=4), vertex2ii(215, 55, 23, 'N'));
-		wr32(RAM_DL + (index+=4), vertex2ii(228, 55, 23, 'V'));
-		wr32(RAM_DL + (index+=4), vertex2ii(240, 55, 23, 'E'));
-		wr32(RAM_DL + (index+=4), vertex2ii(252, 55, 23, 'R'));
-		wr32(RAM_DL + (index+=4), vertex2ii(264, 55, 23, 'T'));
-		wr32(RAM_DL + (index+=4), vertex2ii(274, 55, 23, 'E'));
-		wr32(RAM_DL + (index+=4), vertex2ii(286, 55, 23, 'R'));
+		wr32(RAM_DL + (index+=4), vertex2ii(210, 55, SMALL_FONT, 'I'));
+		wr32(RAM_DL + (index+=4), vertex2ii(215, 55, SMALL_FONT, 'N'));
+		wr32(RAM_DL + (index+=4), vertex2ii(228, 55, SMALL_FONT, 'V'));
+		wr32(RAM_DL + (index+=4), vertex2ii(240, 55, SMALL_FONT, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(252, 55, SMALL_FONT, 'R'));
+		wr32(RAM_DL + (index+=4), vertex2ii(264, 55, SMALL_FONT, 'T'));
+		wr32(RAM_DL + (index+=4), vertex2ii(274, 55, SMALL_FONT, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(286, 55, SMALL_FONT, 'R'));
 
-		wr32(RAM_DL + (index+=4), vertex2ii(311, 55, 23, 'B'));
-		wr32(RAM_DL + (index+=4), vertex2ii(324, 55, 23, 'A'));
-		wr32(RAM_DL + (index+=4), vertex2ii(334, 55, 23, 'T'));
-		wr32(RAM_DL + (index+=4), vertex2ii(345, 55, 23, 'T'));
-		wr32(RAM_DL + (index+=4), vertex2ii(355, 55, 23, 'E'));
-		wr32(RAM_DL + (index+=4), vertex2ii(367, 55, 23, 'R'));
-		wr32(RAM_DL + (index+=4), vertex2ii(380, 55, 23, 'Y'));
+		wr32(RAM_DL + (index+=4), vertex2ii(311, 55, SMALL_FONT, 'B'));
+		wr32(RAM_DL + (index+=4), vertex2ii(324, 55, SMALL_FONT, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(334, 55, SMALL_FONT, 'T'));
+		wr32(RAM_DL + (index+=4), vertex2ii(345, 55, SMALL_FONT, 'T'));
+		wr32(RAM_DL + (index+=4), vertex2ii(355, 55, SMALL_FONT, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(367, 55, SMALL_FONT, 'R'));
+		wr32(RAM_DL + (index+=4), vertex2ii(380, 55, SMALL_FONT, 'Y'));
 
-		wr32(RAM_DL + (index+=4), vertex2ii(420, 55, 23, 'A'));
-		wr32(RAM_DL + (index+=4), vertex2ii(432, 55, 23, 'C'));
-		wr32(RAM_DL + (index+=4), vertex2ii(445, 55, 23, 'C'));
-		wr32(RAM_DL + (index+=4), vertex2ii(457, 55, 23, 'E'));
-		wr32(RAM_DL + (index+=4), vertex2ii(469, 55, 23, 'L'));
+		wr32(RAM_DL + (index+=4), vertex2ii(420, 55, SMALL_FONT, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(432, 55, SMALL_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(445, 55, SMALL_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(457, 55, SMALL_FONT, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(469, 55, SMALL_FONT, 'L'));
 
 		wr32(RAM_DL + (index+=4), vertex_translate_x(407*16));
-		wr32(RAM_DL + (index+=4), vertex2ii(106, 55, 23, 'B'));
-		wr32(RAM_DL + (index+=4), vertex2ii(119, 55, 23, 'R'));
-		wr32(RAM_DL + (index+=4), vertex2ii(132, 55, 23, 'A'));
-		wr32(RAM_DL + (index+=4), vertex2ii(143, 55, 23, 'K'));
-		wr32(RAM_DL + (index+=4), vertex2ii(155, 55, 23, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(106, 55, SMALL_FONT, 'B'));
+		wr32(RAM_DL + (index+=4), vertex2ii(119, 55, SMALL_FONT, 'R'));
+		wr32(RAM_DL + (index+=4), vertex2ii(132, 55, SMALL_FONT, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(143, 55, SMALL_FONT, 'K'));
+		wr32(RAM_DL + (index+=4), vertex2ii(155, 55, SMALL_FONT, 'E'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 		wr32(RAM_DL + (index+=4), restore_context());
 
@@ -858,17 +1191,17 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), color_rgb(250, 200, 0));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 
-		wr32(RAM_DL + (index+=4), vertex2ii(410, 1, 31, 'A'));
-		wr32(RAM_DL + (index+=4), vertex2ii(435, 1, 31, 'C'));
-		wr32(RAM_DL + (index+=4), vertex2ii(460, 1, 31, 'C'));
-		wr32(RAM_DL + (index+=4), vertex2ii(485, 1, 31, 'E'));
-		wr32(RAM_DL + (index+=4), vertex2ii(510, 1, 31, 'L'));
+		wr32(RAM_DL + (index+=4), vertex2ii(410, 1, LARGE_FONT, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(435, 1, LARGE_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(460, 1, LARGE_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(485, 1, LARGE_FONT, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(510, 1, LARGE_FONT, 'L'));
 
-		wr32(RAM_DL + (index+=4), vertex2ii(265, 1, 31, 'B'));
-		wr32(RAM_DL + (index+=4), vertex2ii(290, 1, 31, 'R'));
-		wr32(RAM_DL + (index+=4), vertex2ii(315, 1, 31, 'A'));
-		wr32(RAM_DL + (index+=4), vertex2ii(340, 1, 31, 'K'));
-		wr32(RAM_DL + (index+=4), vertex2ii(365, 1, 31, 'E'));
+		wr32(RAM_DL + (index+=4), vertex2ii(265, 1, LARGE_FONT, 'B'));
+		wr32(RAM_DL + (index+=4), vertex2ii(290, 1, LARGE_FONT, 'R'));
+		wr32(RAM_DL + (index+=4), vertex2ii(315, 1, LARGE_FONT, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(340, 1, LARGE_FONT, 'K'));
+		wr32(RAM_DL + (index+=4), vertex2ii(365, 1, LARGE_FONT, 'E'));
 
 		wr32(RAM_DL + (index+=4), restore_context());
 
@@ -878,32 +1211,32 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), line_width(56));
 		wr32(RAM_DL + (index+=4), color_rgb(80, 80, 80));
 		wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
-		wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER));
-		wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER));
-		wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER, LOWER_HORIZONTAL_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER + INVERTER_HORIZONTAL_BORDER_WIDTH , LOWER_HORIZONTAL_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_X, MIDDLE_HORIZONTAL_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_X + MIDDLE_HORIZONTAL_BORDER_WIDTH, MIDDLE_HORIZONTAL_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER, LOWER_HORIZONTAL_BORDER_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER + MOTOR_HORIZONTAL_BORDER_WIDTH, LOWER_HORIZONTAL_BORDER_HEIGHT));
 		wr32(RAM_DL + (index+=4), line_width(48));
 		wr32(RAM_DL + (index+=4), begin(LINES));
-		wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, LOWER_HORIZONTAL_BORDER + BORDER_THICKNESS));
-		wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, 480));
-		wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, LOWER_HORIZONTAL_BORDER + BORDER_THICKNESS));
-		wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, 480));
+		wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, MIDDLE_HORIZONTAL_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, MAX_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, MIDDLE_HORIZONTAL_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, MAX_Y));
 
 		/* END FOR LOWER BORDERS DESIGN */
 
 		wr32(RAM_DL + (index+=4), line_width(64));
 		//Data underline
 		wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
-		wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_DIAGONAL_LINE_START, TEMPERATURE_DIAGONAL_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_DIAGONAL_LINE_END, TEMPERATURE_UNDERLINE_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_UNDERLINE, TEMPERATURE_UNDERLINE_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_UNDERLINE_X, TEMPERATURE_UNDERLINE_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_UNDERLINE_X + TEMPERATURE_UNDERLINE_WIDTH, TEMPERATURE_UNDERLINE_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(UNDERLINE_END, TEMPERATURE_UNDERLINE_HEIGHT_OFFSET));
 		//Data underline
 		wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
-		wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_DIAGONAL_LINE_START, VOLTAGE_DIAGONAL_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_DIAGONAL_LINE_END, VOLTAGE_UNDERLINE_HEIGHT));
-		wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_UNDERLINE, VOLTAGE_UNDERLINE_HEIGHT));
+		wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_UNDERLINE_X, VOLTAGE_UNDERLINE_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_UNDERLINE_X + VOLTAGE_UNDERLINE_WIDTH, VOLTAGE_UNDERLINE_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(UNDERLINE_END, VOLTAGE_UNDERLINE_HEIGHT_OFFSET));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		wr32(RAM_DL + (index+=4), save_context());
@@ -914,48 +1247,48 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		/* DYNAMIC VALUES FOR CELL_VOLTAGE */
 		if(Cell_Voltage >= 100U){
-			wr32(RAM_DL + (index+=4), vertex2ii(460, 90, 31, (Cell_Voltage / 100U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(460, 90, LARGE_FONT, (Cell_Voltage / 100U) + '0'));
 		}
 		else{
-			wr32(RAM_DL + (index+=4), vertex2ii(460, 90, 31, '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(460, 90, LARGE_FONT, '0'));
 		}
 		if(Cell_Temperature >= 100U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(478, 192, 31, (Cell_Temperature / 100U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(478, 192, LARGE_FONT, (Cell_Temperature / 100U) + '0'));
 		}
 
 		if(Total_Current >= 100U){
-			wr32(RAM_DL + (index+=4), vertex2ii(500, 290, 31, (Total_Current / 100U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(500, 290, LARGE_FONT, (Total_Current / 100U) + '0'));
 		}
 		wr32(RAM_DL + (index+=4), vertex_translate_x(8250));
-		wr32(RAM_DL + (index+=4), vertex2ii(0, 90, 31, '.'));
+		wr32(RAM_DL + (index+=4), vertex2ii(0, 90, LARGE_FONT, '.'));
 		if(Cell_Voltage >= 10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(20, 90, 31, ((Cell_Voltage / 10U) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(20, 90, LARGE_FONT, ((Cell_Voltage / 10U) % 10) + '0'));
 		}
 		else{
-			wr32(RAM_DL + (index+=4), vertex2ii(20, 90, 31, '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(20, 90, LARGE_FONT, '0'));
 		}
 
-		wr32(RAM_DL + (index+=4), vertex2ii(70, 90, 31, (Cell_Voltage % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(135, 90, 31, 'V'));
+		wr32(RAM_DL + (index+=4), vertex2ii(70, 90, LARGE_FONT, (Cell_Voltage % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(135, 90, LARGE_FONT, 'V'));
 
 		if(Cell_Temperature >= 10U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(18, 192, 31, ((Cell_Temperature / 10) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(18, 192, LARGE_FONT, ((Cell_Temperature / 10) % 10) + '0'));
 		}
 		else
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(20, 192, 31, '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(20, 192, LARGE_FONT, '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(65, 192, 31, '.'));
-		wr32(RAM_DL + (index+=4), vertex2ii(80, 192, 31, (Cell_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(150, 192, 31, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(65, 192, LARGE_FONT, '.'));
+		wr32(RAM_DL + (index+=4), vertex2ii(80, 192, LARGE_FONT, (Cell_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(150, 192, LARGE_FONT, 'C'));
 		if(Total_Current >= 10U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(40, 290, 31, ((Total_Current / 10) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(40, 290, LARGE_FONT, ((Total_Current / 10) % 10) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(90, 290, 31, (Total_Current % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(150, 290, 31, 'A'));
+		wr32(RAM_DL + (index+=4), vertex2ii(90, 290, LARGE_FONT, (Total_Current % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(150, 290, LARGE_FONT, 'A'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 		wr32(RAM_DL + (index+=4), restore_context());
 
@@ -974,35 +1307,35 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), save_context());
 		wr32(RAM_DL + (index+=4), color_rgb(250, 200, 0));
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
-		wr32(RAM_DL + (index+=4), vertex2ii(327, 435, 31, ((Minutes / 10) % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(347, 435, 31, (Minutes % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(367, 435, 31, ':'));
-		wr32(RAM_DL + (index+=4), vertex2ii(377, 435, 31, ((Seconds / 10) % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(399, 435, 31, (Seconds % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(422, 435, 31, ':'));
-		wr32(RAM_DL + (index+=4), vertex2ii(433, 435, 31, ((Miliseconds / 10) % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(456, 435, 31, (Miliseconds % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(327, 435, LARGE_FONT, ((Minutes / 10) % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(347, 435, LARGE_FONT, (Minutes % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(367, 435, LARGE_FONT, ':'));
+		wr32(RAM_DL + (index+=4), vertex2ii(377, 435, LARGE_FONT, ((Seconds / 10) % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(399, 435, LARGE_FONT, (Seconds % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(422, 435, LARGE_FONT, ':'));
+		wr32(RAM_DL + (index+=4), vertex2ii(433, 435, LARGE_FONT, ((Miliseconds / 10) % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(456, 435, LARGE_FONT, (Miliseconds % 10) + '0'));
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		//Celsius indicator for cell temp
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
-		wr32(RAM_DL + (index+=4), vertex2ii(10, 52, 31, 'U'));
-		wr32(RAM_DL + (index+=4), vertex2ii(40, 65, 30, 't'));
-		wr32(RAM_DL + (index+=4), vertex2ii(55, 52, 31, '='));
+		wr32(RAM_DL + (index+=4), vertex2ii(10, 52, LARGE_FONT, 'U'));
+		wr32(RAM_DL + (index+=4), vertex2ii(40, 65, MEDIUM_FONT, 't'));
+		wr32(RAM_DL + (index+=4), vertex2ii(55, 52, LARGE_FONT, '='));
 		if(Total_Voltage >= 100U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(80, 52, 31, (Total_Voltage / 100) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 52, LARGE_FONT, (Total_Voltage / 100) + '0'));
 		}
 		if(Total_Voltage >= 10U)
 		{
-			wr32(RAM_DL + (index+=4), vertex2ii(102, 52, 31, ((Total_Voltage / 10) % 10) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(102, 52, LARGE_FONT, ((Total_Voltage / 10) % 10) + '0'));
 		}
 
-		wr32(RAM_DL + (index+=4), vertex2ii(126, 52, 31, (Total_Voltage % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(151, 52, 31, 'V'));
+		wr32(RAM_DL + (index+=4), vertex2ii(126, 52, LARGE_FONT, (Total_Voltage % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(151, 52, LARGE_FONT, 'V'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(8600));
-		wr32(RAM_DL + (index+=4), vertex2ii(118, 196, 30, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(118, 196, MEDIUM_FONT, 'o'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 		wr32(RAM_DL + (index+=4), restore_context());
 
