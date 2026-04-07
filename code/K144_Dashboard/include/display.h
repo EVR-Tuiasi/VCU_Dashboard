@@ -225,13 +225,60 @@ extern "C"{
 #define BRAKE_BAR_ORIGIN_Y	45
 
 
-/* Font Defines */
+/* Font Size Defines */
 
 #define LARGE_FONT			31
 #define MEDIUM_FONT			30
 #define SMALL_FONT			23
 #define CELSIUS_SYMBOL		27
 
+/* Word Position Defines */
+
+#define SPEED_HUNDREDS			114U
+#define SPEED_TENS				130U
+#define SPEED_UNITS				175U
+#define SPEED_TEXT_Y			170U
+#define SPEED_TEXT_SMALL_Y		185U
+
+#define KM_POSITION_X			157U
+#define KM_POSITION_Y			326U
+
+#define BATTERY_HUNDREDS							190U
+#define BATTERY_TENS								205U
+#define BATTERY_UNITS								221U
+#define BATTERY_TEXT_POSITION_Y						24U
+
+#define INVERTER_TEXT_POSITION_X	5U
+#define INVERTER_TEXT_POSITION_Y	410U
+#define INVERTER_TEMP_POSITION_X	212U
+#define INVERTER_TEMP_POSITION_Y	433U
+
+#define WARNING_TEXT_POSITION_Y		55U
+#define WARNING_TEXT_POSITION_X		210U
+
+#define PEDALS_TEXT_POSITION_X		265U
+#define PEDALS_TEXT_POSITION_Y		1U
+
+#define CELL_VOLTAGE_POSITION_X		460U
+#define CELL_VOLTAGE_POSITION_Y		90U
+
+#define CELL_TEMPERATURE_POSITION_X	478U
+#define CELL_TEMPERATURE_POSITION_Y	192U
+
+#define TOTAL_CURRENT_POSITION_X	500U
+#define TOTAL_CURRENT_POSITION_Y	290U
+
+#define TOTAL_VOLTAGE_POSITION_X	80U
+#define TOTAL_VOLTAGE_POSITION_Y	52U
+
+#define MOTOR_TEMP_POSITION_X		10U
+#define MOTOR_TEMP_POSITION_Y		433U
+
+#define TIME_TEXT_POSITION_X		327U
+#define TIME_TEXT_POSITION_Y		435U
+
+#define MOTOR_TEXT_POSITION_X		150U
+#define MOTOR_TEXT_POSITION_Y		410U
 
 /*==================================================================================================
  *                                             ENUMS
