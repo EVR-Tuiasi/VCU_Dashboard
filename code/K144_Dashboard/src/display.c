@@ -45,7 +45,7 @@ extern "C" {
  *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
-Witness Warnings = {.Inverter = false,
+Witnesses_t Witnesses = {.Inverter = false,
 		.Battery = false,
 		.Acceleration = false,
 		.Brake = false
@@ -212,42 +212,42 @@ void Display_Test(){
 
 	if(Witness_Delay < 50U)
 	{
-		Warnings.Inverter = true;
-		Warnings.Battery = false;
-		Warnings.Acceleration = false;
-		Warnings.Brake = false;
+		Witnesses.Inverter = true;
+		Witnesses.Battery = false;
+		Witnesses.Acceleration = false;
+		Witnesses.Brake = false;
 	}
 
 	else if(Witness_Delay >= 50U && Witness_Delay < 100U)
 	{
-		Warnings.Inverter = false;
-		Warnings.Battery = true;
-		Warnings.Acceleration = false;
-		Warnings.Brake = false;
+		Witnesses.Inverter = false;
+		Witnesses.Battery = true;
+		Witnesses.Acceleration = false;
+		Witnesses.Brake = false;
 	}
 
 	else if(Witness_Delay >= 100U && Witness_Delay < 150U)
 	{
-		Warnings.Inverter = false;
-		Warnings.Battery = false;
-		Warnings.Acceleration = true;
-		Warnings.Brake = false;
+		Witnesses.Inverter = false;
+		Witnesses.Battery = false;
+		Witnesses.Acceleration = true;
+		Witnesses.Brake = false;
 	}
 
 	else if(Witness_Delay >= 150U && Witness_Delay < 200U)
 	{
-		Warnings.Inverter = false;
-		Warnings.Battery = false;
-		Warnings.Acceleration = false;
-		Warnings.Brake = true;
+		Witnesses.Inverter = false;
+		Witnesses.Battery = false;
+		Witnesses.Acceleration = false;
+		Witnesses.Brake = true;
 	}
 
 	else
 	{
-		Warnings.Inverter = false;
-		Warnings.Battery = false;
-		Warnings.Acceleration = false;
-		Warnings.Brake = false;
+		Witnesses.Inverter = false;
+		Witnesses.Battery = false;
+		Witnesses.Acceleration = false;
+		Witnesses.Brake = false;
 	}
 
 
@@ -829,7 +829,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//INVERTER_TEMP STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Warnings.Inverter)
+		if(Witnesses.Inverter)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -844,7 +844,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BATTERY STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Warnings.Battery)
+		if(Witnesses.Battery)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -859,7 +859,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//ACCELERATION STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Warnings.Acceleration)
+		if(Witnesses.Acceleration)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -874,7 +874,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BRAKE STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Warnings.Brake)
+		if(Witnesses.Brake)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}

@@ -318,9 +318,8 @@ typedef struct{
 	bool Battery;
 	bool Acceleration;
 	bool Brake;
-}Witness;
+}Witnesses_t;
 
-extern Witness Warning;
 
 /*==================================================================================================
  *                                GLOBAL VARIABLE DECLARATIONS
