@@ -67,9 +67,6 @@ extern "C" {
  *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
-uint8 testValues[] = {15, 42, 15, 22, 53, 21, 99, 19, 82, 111, 5, 29, 15, 83, 0, 7, 33, 26};
-volatile uint32_t milis = 0U;
-
 /*==================================================================================================
  *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -84,7 +81,7 @@ volatile uint32_t milis = 0U;
  *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
-void Gpt_FtmNotification(void){
+/*void Gpt_FtmNotification(void){
 	milis++;
 }
 
@@ -94,7 +91,7 @@ uint8_t Get_Seconds(void){
 
 uint8_t Get_Minutes(void){
 	return ((milis / 60000U));
-}
+}*/
 
 /**
  * @brief        Main function of the example
@@ -104,8 +101,6 @@ uint8_t Get_Minutes(void){
 int main(void)
 {
 	uint8_t channel = 0U;
-	int i;
-	int j;
 	/* Initialize the Mcu driver */
 #if (MCU_PRECOMPILE_SUPPORT == STD_ON)
 	Mcu_Init(NULL_PTR);
@@ -137,19 +132,13 @@ int main(void)
 
 	//trailingArray();
 	Display_Init();
-	while(1){
-		for(i = 0; i < 18; i++)
-		{
-			for(j = 0; j < 70; j++)
-			{
-			Display_Test(testValues[i], Get_Minutes(), Get_Seconds(), milis);
-			Get_Seconds();
-			Get_Minutes();
-			}
-		}
-
+	while(1)
+	{
+		Display_Test();
 	}
 }
+
+
 
 #ifdef __cplusplus
 }
