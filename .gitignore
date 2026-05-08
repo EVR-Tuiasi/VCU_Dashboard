@@ -53,3 +53,5 @@ dkms.conf
 
 # debug information files
 *.dwo
+/code/VCU_Dashboard_K344/generate
+/code/VCU_Dashboard_K344/RTD
