@@ -28,11 +28,8 @@ extern "C" {
 *                                       LOCAL MACROS
 ==================================================================================================*/
 #define SCL_PORT						IP_SIUL2
-#define SCL_PIN_IDX_CALCULAT			110U
+#define SCL_PIN_IDX_CALCULAT			62U
 #define SCL_PIN_IDX_NORMAL				14U
-#define RECOVERY_MAX_BUS_ATTEMPTS		9U
-#define RECOVERY_WAIT_AFTER_POWER_MS	50U
-#define RECOVERY_POWER_LOOP_COUNT		100000UL
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -282,16 +279,16 @@ static void Recover_Bus_I2C(void) {
 	I2c_DeInit();
 
 	// reconfigurare pin 14 => pin gpio output
-	Port_SetPinMode(14, PORT_MUX_AS_GPIO);
+	Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_AS_GPIO);
 
 	for(uint8_t i = 0; i < 10; i++){
 		// ID = NUMBER(PORT D) * 16 + PIN;
-		Dio_WriteChannel(62, 0);
+		Dio_WriteChannel(SCL_PIN_IDX_CALCULAT, 0);
 		for(uint16_t j = 0; j < 5000; j++);
-		Dio_WriteChannel(62, 1);
+		Dio_WriteChannel(SCL_PIN_IDX_CALCULAT, 1);
 	}
 
-	Port_SetPinMode(14, PORT_MUX_ALT3);
+	Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_ALT3);
 
 	I2c_Init(NULL_PTR);
 	g_sistem_state = INITIALIZING;
@@ -310,7 +307,6 @@ void System_Reset(void) {
 	nack = false;
 	index = 1;
 	indexJunior = 0;
-	bus_recovery_done = false;
 }
 
 void System_Task_Run(void){
