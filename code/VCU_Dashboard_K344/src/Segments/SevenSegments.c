@@ -10,10 +10,14 @@ extern "C" {
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
 
+#include "Dio.h"
+#include "Port.h"
 #include "stdint.h"
 #include "CDD_I2c.h"
-#include "SevenSegments.h"
 #include "AS1115.h"
+#include "SevenSegments.h"
+#include "Siul2_Dio_Ip.h"
+#include "Siul2_Port_Ip.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -23,7 +27,12 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-
+#define SCL_PORT						IP_SIUL2
+#define SCL_PIN_IDX_CALCULAT			110U
+#define SCL_PIN_IDX_NORMAL				14U
+#define RECOVERY_MAX_BUS_ATTEMPTS		9U
+#define RECOVERY_WAIT_AFTER_POWER_MS	50U
+#define RECOVERY_POWER_LOOP_COUNT		100000UL
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -122,13 +131,13 @@ void Segments_Init(void){
 		case 4:
 
 			// -- Seteaza ca toate Segmentele de pe display sa fie stinse
-			for(uint8_t i = indexJunior; i < 8; i++){
-				//pentru teste poti pune 4
-				AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x0F);
-			}
-			index++;
+			// -- Se pune cifra cu cifra
+			AS1115_Write((AS1115Registers_t)(DIGIT0 + indexJunior), 0x0F);
 			indexJunior++;
-			if (indexJunior == 8) indexJunior = 0;
+			if (indexJunior >= 8) {
+				indexJunior = 0;
+				index++; // trecem la case 5 dupa ce trimitem toti 8 digitii
+			}
 			break;
 		case 5:
 			// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
@@ -265,11 +274,31 @@ void Segments_Update(void){
 	}
 	index++;
 	indexJunior++;
-	if (indexJunior == 8) indexJunior = 0;
+	if (indexJunior >= 8) indexJunior = 0;
 }
 
-SegmentsState_t System_Get_State(void) {
-	return g_sistem_state;
+static void Recover_Bus_I2C(void) {
+	// oprim I2C-ul
+	I2c_DeInit();
+
+	// reconfigurare pin 14 => pin gpio output
+	Port_SetPinMode(14, PORT_MUX_AS_GPIO);
+
+	for(uint8_t i = 0; i < 10; i++){
+		// ID = NUMBER(PORT D) * 16 + PIN;
+		Dio_WriteChannel(62, 0);
+		for(uint16_t j = 0; j < 5000; j++);
+		Dio_WriteChannel(62, 1);
+	}
+
+	Port_SetPinMode(14, PORT_MUX_ALT3);
+
+	I2c_Init(NULL_PTR);
+	g_sistem_state = INITIALIZING;
+
+	index = 1;
+	indexJunior = 0;
+	i2c_succes = true;
 }
 
 void System_Reset(void) {
@@ -279,7 +308,9 @@ void System_Reset(void) {
 	recovery = true;
 	timeout = false;
 	nack = false;
-	index++;
+	index = 1;
+	indexJunior = 0;
+	bus_recovery_done = false;
 }
 
 void System_Task_Run(void){
@@ -301,11 +332,13 @@ void System_Task_Run(void){
 			break;
 	
 		case I2C_ERROR:
-			// punem un index mai mic pentru a include si reset ul
-			index = 0;
+			//pornim functia de recover
+			Recover_Bus_I2C();
+
 			// resetam flagurile si starea
 			System_Reset();
-			// fortam o reinitializare
+
+			// fortam reinitializarea
 			Segments_Init();
 
 			// verificam functionalitate

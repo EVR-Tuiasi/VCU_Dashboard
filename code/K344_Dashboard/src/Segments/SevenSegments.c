@@ -10,10 +10,14 @@ extern "C" {
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
 
+#include "Dio.h"
+#include "Port.h"
 #include "stdint.h"
 #include "CDD_I2c.h"
-#include "SevenSegments.h"
 #include "AS1115.h"
+#include "SevenSegments.h"
+#include "Siul2_Dio_Ip.h"
+#include "Siul2_Port_Ip.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -23,7 +27,12 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-
+#define SCL_PORT						IP_SIUL2
+#define SCL_PIN_IDX_CALCULAT			110U
+#define SCL_PIN_IDX_NORMAL				14U
+#define RECOVERY_MAX_BUS_ATTEMPTS		9U
+#define RECOVERY_WAIT_AFTER_POWER_MS	50U
+#define RECOVERY_POWER_LOOP_COUNT		100000UL
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -53,6 +62,26 @@ static const SegmentsGroups_t SegmentsGroups = {
 // -- TEMPERATURE pentru digiti 6-7
 static uint8_t displayBuffer[8] = {0};
 
+// -- STAREA CURENTA
+static SegmentsState_t g_sistem_state = INITIALIZING;
+
+// -- INDEX PENTRU OPERATII ATOMICE
+// index pentru monitorizarea operatiilor atomice de READ/WRITE din fiecare stare
+static uint8_t index = 1;
+// tot index dar mai junior in care se monitorizeaza scrierea in buffer
+static uint8_t indexJunior = 0;
+
+// -- Variabile de flag pentru state machine
+// gestionarea resetului pentru initializing
+static uint8_t reset_flag = 0;
+// transmitere cu succes pe i2c
+bool i2c_succes = true;
+// intarziere de trimitere
+bool timeout = false;
+// recuperare din i2c_error
+static bool recovery = false;
+// nack la raspunsul primit
+bool nack = false;
 //
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
@@ -80,30 +109,55 @@ static uint8_t displayBuffer[8] = {0};
 
 void Segments_Init(void){
 
-	// -- Seteaza modul Shutdown cu Reset Feature Register
-	AS1115_Write(SHUTDOWN, 0x00);
+	// -- Flag pentru resetarea sistemului
+	reset_flag = 0;
 
-	// -- Seteaza Luminozitatea Globala la 7 Segment Display-uri
-	AS1115_Write(GLOBAL_INTENSITY, 0x0F);
+	switch (index) {
+		case 1:
+			// -- Seteaza modul Shutdown cu Reset Feature Register
+			AS1115_Write(SHUTDOWN, 0x00);
+			index++;
+			break;
+		case 2:
+			// -- Seteaza Luminozitatea Globala la 7 Segment Display-uri
+			AS1115_Write(GLOBAL_INTENSITY, 0x0F);
+			index++;
+			break;
+		case 3:
+			// -- Schimba Feature Register pentru modul de decodificare al 7 Segment Display
+			AS1115_Write(FEATURE, 0x00);
+			index++;
+			break;
+		case 4:
 
-	// -- Schimba Feature Register pentru modul de decodificare al 7 Segment Display
-	AS1115_Write(FEATURE, 0x00);
-
-	// -- Seteaza ca toate Segmentele de pe display sa fie stinse
-	for(uint8_t i = 0; i < 8; i++){
-		//pentru teste poti pune 4
-		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), 0x0F);
+			// -- Seteaza ca toate Segmentele de pe display sa fie stinse
+			// -- Se pune cifra cu cifra
+			AS1115_Write((AS1115Registers_t)(DIGIT0 + indexJunior), 0x0F);
+			indexJunior++;
+			if (indexJunior >= 8) {
+				indexJunior = 0;
+				index++; // trecem la case 5 dupa ce trimitem toti 8 digitii
+			}
+			break;
+		case 5:
+			// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
+			AS1115_Write(SCAN_LIMIT, 0x07);
+			//aici era 3 pentru teste pe PCB
+			index++;
+			break;
+		case 6:
+			// -- Seteaza pana la ce pin folosim decodificare pe digits [ex: 0x03 - 00000011 - Decodifica pe dig0 si dig1, ne luam dupa pozitia bitilor de la LSB la MSB]
+			AS1115_Write(DECODE_MODE, 0xFF);
+			index++;
+			break;
+		case 7:
+			// -- Seteaza Normal Mode fara modificari la Feature Register
+			AS1115_Write(SHUTDOWN, 0x81);
+			index++;
+			break;
+		default:
+			break;
 	}
-
-	// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
-	AS1115_Write(SCAN_LIMIT, 0x07);
-	//aici era 3 pentru teste pe PCB
-
-	// -- Seteaza pana la ce pin folosim decodificare pe digits [ex: 0x03 - 00000011 - Decodifica pe dig0 si dig1, ne luam dupa pozitia bitilor de la LSB la MSB]
-	AS1115_Write(DECODE_MODE, 0xFF);
-
-	// -- Seteaza Normal Mode fara modificari la Feature Register
-	AS1115_Write(SHUTDOWN, 0x81);
 }
 
 void Segments_Test(void){
@@ -133,13 +187,13 @@ void Segments_Test(void){
 		}
 
 		// -- Mapam pe grupurile de digituri valorile de test
-		//Segments_Set(SPEED_KMH, test_speed);
-		//Segments_Set(BATTERY_PERCENTAGE, test_battery);
+		Segments_Set(SPEED_KMH, test_speed);
+		Segments_Set(BATTERY_PERCENTAGE, test_battery);
 		Segments_Set(TEMPERATURE, test_temperature);
 
 
 		// -- Trimitem tot bufferul catre driverul AS1115 prin I2C
-		Segments_Update();
+		System_Task_Run();
 
 		// -- Controlul vitezei de refresh
 		for(volatile uint32_t delay = 0; delay < 50000UL; delay++);
@@ -155,6 +209,7 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 	switch(SelectedMonitor) {
 		case SPEED_KMH:
 			//limite de 0-999 kmh
+			if(Value < 0) Value = 0;
 			if(Value > 9999) Value = 9999;
 
 			//valoarea va iesi de forma XYZ
@@ -172,6 +227,7 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 			break;
 		case BATTERY_PERCENTAGE:
 		    //limite de 0.00-100%
+			if(Value < 0) Value = 0;
 		    if(Value > 1000) Value = 1000;
 
 		    if (Value == 1000) {
@@ -193,6 +249,7 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 		    break;
 		case TEMPERATURE:
 			//limite de 0-60 grade Celsius
+			if(Value < 0) Value = 0;
 			if(Value > 999) Value = 999;
 
 			//valoarea va iesi de forma XY
@@ -211,9 +268,109 @@ void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value){
 
 void Segments_Update(void){
     // -- Actualizeaza digitii din bufferul local
-	for(uint8_t i = 0; i < 8; i++){
+	for(uint8_t i = indexJunior; i < 8; i++){
 		//aici e 4 pentru teste
 		AS1115_Write((AS1115Registers_t)(DIGIT0 + i), displayBuffer[i]);
+	}
+	index++;
+	indexJunior++;
+	if (indexJunior >= 8) indexJunior = 0;
+}
+
+static void Recover_Bus_I2C(void) {
+	// oprim I2C-ul
+	I2c_DeInit();
+
+	// reconfigurare pin 14 => pin gpio output
+	Port_SetPinMode(14, PORT_MUX_AS_GPIO);
+
+	for(uint8_t i = 0; i < 10; i++){
+		// ID = NUMBER(PORT D) * 16 + PIN;
+		Dio_WriteChannel(62, 0);
+		for(uint16_t j = 0; j < 5000; j++);
+		Dio_WriteChannel(62, 1);
+	}
+
+	Port_SetPinMode(14, PORT_MUX_ALT3);
+
+	I2c_Init(NULL_PTR);
+	g_sistem_state = INITIALIZING;
+
+	index = 1;
+	indexJunior = 0;
+	i2c_succes = true;
+}
+
+void System_Reset(void) {
+	g_sistem_state = INITIALIZING;
+	reset_flag = 0;
+	i2c_succes = true;
+	recovery = true;
+	timeout = false;
+	nack = false;
+	index = 1;
+	indexJunior = 0;
+	bus_recovery_done = false;
+}
+
+void System_Task_Run(void){
+	switch (g_sistem_state)
+	{
+		case INITIALIZING:
+			// facem initializarea
+			Segments_Init();
+
+			// verificam cazuri critice
+			if ( reset_flag == 1 || ( i2c_succes == false && timeout == false ) || index < 8 ) {
+				g_sistem_state = INITIALIZING;
+			} else if ( i2c_succes == true && timeout == false ) {
+				g_sistem_state = OPERATIONAL;
+			} else if ( i2c_succes == false ) {
+				g_sistem_state = I2C_ERROR;
+			}
+
+			break;
+	
+		case I2C_ERROR:
+			//pornim functia de recover
+			Recover_Bus_I2C();
+
+			// resetam flagurile si starea
+			System_Reset();
+
+			// fortam reinitializarea
+			Segments_Init();
+
+			// verificam functionalitate
+			if ( i2c_succes == true && timeout == false && nack == false ) {
+				recovery = true;
+			} else {
+				recovery = false;
+			}
+
+			//trimitem la starea urmatoare
+			if( recovery == false ) {
+				g_sistem_state = I2C_ERROR;
+			} else if ( i2c_succes == false && timeout == false && recovery == true) {
+				g_sistem_state = INITIALIZING;
+			} else {
+				// stare de default
+				g_sistem_state = INITIALIZING;
+			}
+
+			break;
+
+		case OPERATIONAL:
+			// afisam date
+			Segments_Update();
+
+			// verificari critice
+			if ( i2c_succes == true && timeout == false && nack == false ) {
+			    g_sistem_state = OPERATIONAL;
+			} else {
+			    g_sistem_state = I2C_ERROR;
+			}
+			break;
 	}
 }
 

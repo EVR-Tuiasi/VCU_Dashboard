@@ -18,7 +18,7 @@ extern "C"{
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-typedef enum{
+typedef enum {
     DIGIT_0 = 0U,
     DIGIT_1 = 1U,
     DIGIT_2 = 2U,
@@ -27,19 +27,25 @@ typedef enum{
     DIGIT_5 = 5U,
     DIGIT_6 = 6U,
     DIGIT_7 = 7U
-}SegmentsDigits_t;
+} SegmentsDigits_t;
 
-typedef struct{
+typedef struct {
     SegmentsDigits_t DigitGroup_Speed[3];
     SegmentsDigits_t DigitGroup_Battery[3];
     SegmentsDigits_t DigitGroup_Temperature[2];
-}SegmentsGroups_t;
+} SegmentsGroups_t;
 
-typedef enum{
+typedef enum {
     SPEED_KMH,
     BATTERY_PERCENTAGE,
     TEMPERATURE
-}SegmentsMonitoredValue_t;
+} SegmentsMonitoredValue_t;
+
+typedef enum {
+    INITIALIZING,
+    OPERATIONAL,
+    I2C_ERROR
+} SegmentsState_t;
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -84,6 +90,8 @@ void Segments_Init(void);
 void Segments_Test(void);
 void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value);
 void Segments_Update(void);
+void System_Task_Run(void);
+void System_Reset(void);
 
 #ifdef __cplusplus
 }

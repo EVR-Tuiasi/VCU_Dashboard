@@ -91,7 +91,6 @@ void Segments_Test(void);
 void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value);
 void Segments_Update(void);
 void System_Task_Run(void);
-SegmentsState_t System_Get_State(void);
 void System_Reset(void);
 
 #ifdef __cplusplus
