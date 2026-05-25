@@ -92,7 +92,8 @@ typedef enum{
 
 void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value);
 uint8_t AS1115_Read(AS1115Registers_t SelectedRegister);
-
+void AS1115_Async_Write(AS1115Registers_t SelectedRegister, uint8_t Value);
+uint8_t AS1115_Async_Read(AS1115Registers_t SelectedRegister);
 
 #ifdef __cplusplus
 }

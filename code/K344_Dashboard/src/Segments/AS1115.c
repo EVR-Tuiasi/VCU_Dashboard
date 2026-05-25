@@ -130,7 +130,7 @@ void AS1115_Async_Write(AS1115Registers_t SelectedRegister, uint8_t Value){
     request.DataBuffer = buffer;
 
     // trimitem datele si primim statusul livrarii
-    I2c_SyncTransmit(I2C_USED_CHANNEL, &request); //cerere pe canalul 0
+    I2c_AsyncTransmit(I2C_USED_CHANNEL, &request); //cerere pe canalul 0
 }
 
 uint8_t AS1115_Async_Read(AS1115Registers_t SelectedRegister){
@@ -147,7 +147,7 @@ uint8_t AS1115_Async_Read(AS1115Registers_t SelectedRegister){
     request.DataBuffer = (uint8_t*)&SelectedRegister;
 
     // trimitem datele si primim statusul livrarii
-    I2c_SyncTransmit(I2C_USED_CHANNEL, &request);
+    I2c_AsyncTransmit(I2C_USED_CHANNEL, &request);
 
     //citim valoarea
     request.SlaveAddress = DRIVER_SLAVE_ADDRESS;
@@ -160,7 +160,7 @@ uint8_t AS1115_Async_Read(AS1115Registers_t SelectedRegister){
     request.DataBuffer = &value;
 
     // trimitem datele si primim statusul livrarii
-    I2c_SyncTransmit(I2C_USED_CHANNEL, &request);
+    I2c_AsyncTransmit(I2C_USED_CHANNEL, &request);
 
 
     return value;
