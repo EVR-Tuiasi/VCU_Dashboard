@@ -32,7 +32,6 @@ extern "C" {
 #define SCL_PIN_IDX_CALCULAT			62U
 #define SCL_PIN_IDX_NORMAL				14U
 #define GPT_RECOVER_CHANNEL  GptConf_GptChannelConfiguration_GptChannelConfiguration_for_timer_recover_i2c
-#define I2C_BUSY_TIMEOUT 1000U
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -72,20 +71,12 @@ static uint8_t index = 0;
 static uint8_t indexDigits = 0;
 
 // -- Variabile de flag pentru state machine
-// gestionarea resetului pentru initializing
-static uint8_t reset_flag = 0;
-// transmitere cu succes pe i2c
-static bool i2c_succes = true;
 // flag de eroare
 static bool i2c_error_flag = false;
 // pentru a face cele 9 clock uri la mana
 static uint8_t recover_clk_count = 0;
 // pentru a marca recoverul
 static bool recover_in_progress = false;
-// flag pentru i2c cand e busy
-static bool i2c_busy = false;
-// counter pentru "watchdog"
-static uint32_t i2c_busy_timeout = 0 ;
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
 ==================================================================================================*/
@@ -114,10 +105,11 @@ void I2c_Callback(uint8 Event, uint8 Channel){
 				Event == I2C_MASTER_EVENT_DMA_TRANSFER_ERROR
 		){
 			i2c_error_flag = true;
-			i2c_busy = false;
 		} else if (Event == I2C_MASTER_EVENT_END_TRANSFER) {
-			i2c_succes = true;
-			i2c_busy = false;
+			i2c_error_flag = false;
+		} else {
+			//orice alt eveniment neasteptat => eroare, ca sa nu ramana in busy niciodata
+			i2c_error_flag = true;
 		}
 	}
 }
@@ -130,7 +122,9 @@ void I2c_ErrorCallback(uint8 Event, uint8 Channel){
 		){
 			i2c_error_flag = true;
 		} else if (Event == I2C_MASTER_EVENT_END_TRANSFER) {
-			i2c_succes = true;
+			i2c_error_flag = false;
+		} else {
+			i2c_error_flag = true;
 		}
 	}
 }
@@ -248,32 +242,29 @@ void Segments_Update(void){
 	switch (i2c_system_state)
 		{
 			case INITIALIZING:
-				if (i2c_busy) break;
+				if (I2c_GetStatus(I2C_USED_CHANNEL) == I2C_CH_SEND ||
+				    I2c_GetStatus(I2C_USED_CHANNEL) == I2C_CH_RECEIVE) break;
 				switch (index) {
 						case 0:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza modul Shutdown cu Reset Feature Register
 							AS1115_Async_Write(SHUTDOWN, 0x00);
 							index++;
 							break;
 						case 1:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza Luminozitatea Globala la 7 Segment Display-uri
 							AS1115_Async_Write(GLOBAL_INTENSITY, 0x0F);
 							index++;
 							break;
 						case 2:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Schimba Feature Register pentru modul de decodificare al 7 Segment Display
 							AS1115_Async_Write(FEATURE, 0x00);
 							index++;
 							break;
 						case 3:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza ca toate Segmentele de pe display sa fie stinse
 							// -- Se pune cifra cu cifra
 							AS1115_Async_Write((AS1115Registers_t)(DIGIT0 + indexDigits), 0x0F);
@@ -284,23 +275,20 @@ void Segments_Update(void){
 							}
 							break;
 						case 4:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza cati pini folosim de la dig0 pana la dig7 [ex: 0x00 - dig0 | 0x03 - dig0 -> dig3]
 							AS1115_Async_Write(SCAN_LIMIT, 0x07);
 							//aici era 3 pentru teste pe PCB
 							index++;
 							break;
 						case 5:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza pana la ce pin folosim decodificare pe digits [ex: 0x03 - 00000011 - Decodifica pe dig0 si dig1, ne luam dupa pozitia bitilor de la LSB la MSB]
 							AS1115_Async_Write(DECODE_MODE, 0xFF);
 							index++;
 							break;
 						case 6:
-							i2c_succes = false;
-							i2c_busy = true;
+							i2c_error_flag = false;
 							// -- Seteaza Normal Mode fara modificari la Feature Register
 							AS1115_Async_Write(SHUTDOWN, 0x81);
 							index++;
@@ -318,10 +306,10 @@ void Segments_Update(void){
 				break;
 
 			case OPERATIONAL:
-				if (i2c_busy) break;
+				if (I2c_GetStatus(I2C_USED_CHANNEL) == I2C_CH_SEND ||
+				    I2c_GetStatus(I2C_USED_CHANNEL) == I2C_CH_RECEIVE) break;
 				// resetare flag
-				i2c_succes = false;
-				i2c_busy = true;
+				i2c_error_flag = false;
 				// afisam date
 				switch (indexDigits) {
 					case 0:
@@ -359,26 +347,16 @@ void Segments_Update(void){
 				}
 				break;
 		}
-	// watchdog pentru i2c_busy
-	if (i2c_busy) {
-		i2c_busy_timeout++;
-		if (i2c_busy_timeout >= I2C_BUSY_TIMEOUT) {
-			i2c_busy = false;
-			i2c_busy_timeout = 0;
-			i2c_error_flag = true;
-	    }
-	} else {
-		i2c_busy_timeout = 0;
-	}
+
 	Segments_State_Update();
 }
 
 static void Segments_State_Update(void){
 	switch(i2c_system_state){
 		case INITIALIZING:
-			if ( i2c_succes == true && i2c_error_flag == false && index == 7 ) {
+			if ( i2c_error_flag == false && index == 7 ) {
 				i2c_system_state = OPERATIONAL;
-			} else if ( i2c_succes == false && i2c_busy == false) {
+			} else if ( i2c_error_flag == true ) {
 				i2c_system_state = I2C_ERROR;
 			}
 			break;
@@ -388,7 +366,7 @@ static void Segments_State_Update(void){
 			}
 			break;
 		case OPERATIONAL:
-			if ( (i2c_busy == false) && ((i2c_succes != true) || (i2c_error_flag != false)) ) {
+			if (i2c_error_flag == true) {
 			    i2c_system_state = I2C_ERROR;
 			}
 			break;
@@ -408,15 +386,11 @@ void Timer_Callback(void){
 	    Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_ALT3);
 	    I2c_Init(NULL_PTR);
 
-	    i2c_busy = false;
-	    i2c_succes = true;
 	    i2c_error_flag = false;
 	    recover_in_progress = false;
 
-	    index = 1;
-	    reset_flag = 0;
+	    index = 0;
 	    indexDigits = 0;
-	    i2c_busy_timeout = 0;
 	    recover_clk_count = 0;
 
 	    i2c_system_state = INITIALIZING;
