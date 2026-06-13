@@ -1,10 +1,7 @@
-#ifndef AS1115_H
-#define AS1115_H
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
-
 
 /*==================================================================================================
 *                                        INCLUDE FILES
@@ -12,53 +9,17 @@ extern "C"{
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-
-#include "stdint.h"
+#include"Mcu.h"
+#include "FT81_sound.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 
-typedef enum{
-    DIGIT0 = 0x01,
-    DIGIT1 = 0x02,
-    DIGIT2 = 0x03,
-    DIGIT3 = 0x04,
-    DIGIT4 = 0x05,
-    DIGIT5 = 0x06,
-    DIGIT6 = 0x07,
-    DIGIT7 = 0x08,
-    DECODE_MODE = 0x09,
-    GLOBAL_INTENSITY = 0x0a,
-    SCAN_LIMIT = 0x0b,
-    SHUTDOWN = 0x0c,
-    SELF_ADDRESSING = 0x0d,
-    FEATURE = 0x0e,
-    DISPLAY_TEST_MODE = 0x0f,
-    DIG0_DIG1_INTENSITY = 0x10,
-    DIG2_DIG3_INTENSITY = 0x11,
-    DIG4_DIG5_INTENSITY = 0x12,
-    DIG6_DIG7_INTENSITY = 0x13,
-    DIAGNOSTIC_DIGIT_0 = 0x14,
-    DIAGNOSTIC_DIGIT_1 = 0x15,
-    DIAGNOSTIC_DIGIT_2 = 0x16,
-    DIAGNOSTIC_DIGIT_3 = 0x17,
-    DIAGNOSTIC_DIGIT_4 = 0x18,
-    DIAGNOSTIC_DIGIT_5 = 0x19,
-    DIAGNOSTIC_DIGIT_6 = 0x1a,
-    DIAGNOSTIC_DIGIT_7 = 0x1b,
-    KEYA = 0x1c,
-    KEYB = 0x1d,
-}AS1115Registers_t;
-
-#define GPT_TIMEOUT_CHANNEL				1U
-#define GPT_TIMEOUT_CLOCKS  			60000U
-
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-// canalul folosit
-#define I2C_USED_CHANNEL 0
+
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -89,17 +50,49 @@ typedef enum{
 *                                       LOCAL FUNCTIONS
 ==================================================================================================*/
 
-
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
-void AS1115_Init(void);
-void AS1115_Write(AS1115Registers_t SelectedRegister, uint8_t Value);
-uint8_t AS1115_Read(AS1115Registers_t SelectedRegister);
-void AS1115_Async_Write(AS1115Registers_t SelectedRegister, uint8_t Value);
+uint32_t effect_start(void){
+	return 1;
+}
+
+uint32_t effect_select(SoundEffect_type effect, uint8_t pitch){
+	return (((uint32_t)pitch) << 8) | (effect & 0xFF);
+}
+
+uint32_t effect_volume(uint8_t sound_level){
+	return sound_level;
+}
+
+uint32_t file_volume(uint8_t sound_level){
+	return sound_level;
+}
+
+uint32_t file_playback_start(void){
+	return 1;
+}
+uint32_t file_playback_loop(boolean enable){
+	return enable;
+}
+
+uint32_t file_playback_format(SoundFormat_type format){
+	return format;
+}
+
+uint32_t file_playback_sampling_frequency(uint16_t frequency){
+	return frequency;
+}
+
+uint32_t file_playback_length(uint32_t length){
+	return length & 0xFFFFF;
+}
+
+uint32_t file_playback_start_address(uint32_t address){
+	return address & 0xFFFFFF;
+}
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif
+/** @} */

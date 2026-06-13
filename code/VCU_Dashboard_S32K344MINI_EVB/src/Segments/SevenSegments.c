@@ -13,12 +13,9 @@ extern "C" {
 #include "Dio.h"
 #include "Port.h"
 #include "Gpt.h"
-#include "stdint.h"
 #include "CDD_I2c.h"
 #include "AS1115.h"
 #include "SevenSegments.h"
-#include "Siul2_Dio_Ip.h"
-#include "Siul2_Port_Ip.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -28,10 +25,9 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-#define SCL_PORT						IP_SIUL2
 #define SCL_PIN_PCR                     71U
-#define SCL_PIN_IDX_NORMAL				28U
-#define GPT_RECOVER_CHANNEL  			2U
+#define SCL_PIN_IDX				2U
+#define GPT_RECOVER_CHANNEL  			0U
 #define GPT_RECOVER_CLOCKS   			4000U
 #define MESSAGES_UNTIL_FORCED_REINIT    500U
 #define RECOVER_CLK_COUNT               20U
@@ -40,18 +36,18 @@ extern "C" {
 ==================================================================================================*/
 static const SegmentsGroups_t SegmentsGroups = {
 	{//DigitGroup_Speed
-		DIGIT_0,
-		DIGIT_1,
-		DIGIT_2
+		DIGIT_6,
+		DIGIT_3,
+		DIGIT_0
 	},
 	{//DigitGroup_Battery
-		DIGIT_3,
-		DIGIT_4,
-		DIGIT_5
+		DIGIT_7,
+		DIGIT_5,
+		DIGIT_1
 	},
 	{//DigitGroup_Temperature
-		DIGIT_6,
-		DIGIT_7
+		DIGIT_4,
+		DIGIT_2
 	}
 };
 
@@ -288,7 +284,7 @@ void Segments_Update(void){
 
 		case I2C_ERROR:
 			I2c_DeInit();
-			Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_AS_GPIO);
+			Port_SetPinMode(SCL_PIN_IDX, PORT_MUX_AS_GPIO);
 			recover_clk_count = 0;
 			Gpt_StartTimer(GPT_RECOVER_CHANNEL, GPT_RECOVER_CLOCKS);
 			break;
@@ -301,7 +297,7 @@ void Segments_Update(void){
 				}
 				else{
 					recover_clk_count++;
-					Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_ALT3);
+					Port_SetPinMode(SCL_PIN_IDX, PORT_MUX_ALT3);
 					I2c_Init(NULL_PTR);
 
 					i2c_error_flag = false;
@@ -396,7 +392,7 @@ static void Segments_State_Update(void){
 void Segments_TimeoutTest(void){
 	uint8_t stare = 0;
 	uint8_t pin = 0;
-	Port_SetPinMode(SCL_PIN_IDX_NORMAL, PORT_MUX_AS_GPIO);
+	Port_SetPinMode(SCL_PIN_IDX, PORT_MUX_AS_GPIO);
 	while(1){
 		switch(stare){
 		case 0:
