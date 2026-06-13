@@ -53,3 +53,5 @@ dkms.conf
 
 # debug information files
 *.dwo
+/code/VCU_Dashboard_S32K344MINI_EVB/generate
+/code/VCU_Dashboard_S32K344MINI_EVB/RTD
