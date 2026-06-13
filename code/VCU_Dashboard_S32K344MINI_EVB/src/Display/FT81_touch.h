@@ -1,8 +1,9 @@
+#ifndef FT81_TOUCH_H
+#define FT81_TOUCH_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"{
 #endif
-
 
 /*==================================================================================================
 *                                        INCLUDE FILES
@@ -10,96 +11,65 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include "Port.h"
-#include "Det.h"
-#include "Spi.h"
-#include "Platform.h"
-#include "Mcu.h"
-#include "Dio.h"
-#include "Mcl.h"
-#include "Gpt.h"
-#include "CDD_I2c.h"
-
-#include "Display/display.h"
-#include "Segments/SevenSegments.h"
-
 /*==================================================================================================
-*                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
+*                              SOURCE FILE VERSION INFORMATION
 ==================================================================================================*/
 
-
 /*==================================================================================================
-*                                       LOCAL MACROS
+*                                     FILE VERSION CHECKS
 ==================================================================================================*/
 
-
 /*==================================================================================================
-*                                      LOCAL CONSTANTS
+*                                          CONSTANTS
 ==================================================================================================*/
 
-
 /*==================================================================================================
-*                                      LOCAL VARIABLES
+*                                      DEFINES AND MACROS
 ==================================================================================================*/
-
-
-/*==================================================================================================
-*                                      GLOBAL CONSTANTS
-==================================================================================================*/
-
-
-/*==================================================================================================
-*                                      GLOBAL VARIABLES
-==================================================================================================*/
+/*Touch screen engine registers*/
+#define REG_TOUCH_TRANSFORM_A	(RAM_REG + 0x150)
+#define REG_TOUCH_TRANSFORM_B	(RAM_REG + 0x154)
+#define REG_TOUCH_TRANSFORM_C	(RAM_REG + 0x158)
+#define REG_TOUCH_TRANSFORM_D	(RAM_REG + 0x15C)
+#define REG_TOUCH_TRANSFORM_E	(RAM_REG + 0x160)
+#define REG_TOUCH_TRANSFORM_F	(RAM_REG + 0x164)
+#define REG_TOUCH_CONFIG	(RAM_REG + 0x168)
+/*Resistive touch engine registers*/
+#define REG_TOUCH_TAG		(RAM_REG + 0x12C)
+#define REG_TOUCH_TAG_XY	(RAM_REG + 0x128)
+#define REG_TOUCH_SCREEN_XY	(RAM_REG + 0x124)
+#define REG_TOUCH_DIRECT_Z1Z2	(RAM_REG + 0x190)
+#define REG_TOUCH_DIRECT_XY	(RAM_REG + 0x18C)
+#define REG_TOUCH_RZ		(RAM_REG + 0x120)
+#define REG_TOUCH_RAW_XY	(RAM_REG + 0x11C)
+#define REG_TOUCH_RZTHRESH	(RAM_REG + 0x118)
+#define REG_TOUCH_OVERSAMPLE	(RAM_REG + 0x114)
+#define REG_TOUCH_SETTLE		(RAM_REG + 0x110)
+#define REG_TOUCH_CHARGE		(RAM_REG + 0x10C)
+#define REG_TOUCH_ADC_MODE		(RAM_REG + 0x108)
+#define REG_TOUCH_MODE			(RAM_REG + 0x104)
+/*Capacitive touch engine registers not needed*/
 
 
 /*==================================================================================================
-*                                   LOCAL FUNCTION PROTOTYPES
+*                                             ENUMS
 ==================================================================================================*/
-
 
 /*==================================================================================================
-*                                       LOCAL FUNCTIONS
+*                                STRUCTURES AND OTHER TYPEDEFS
 ==================================================================================================*/
-
 
 /*==================================================================================================
-*                                       GLOBAL FUNCTIONS
+*                                GLOBAL VARIABLE DECLARATIONS
 ==================================================================================================*/
 
-int main(void)
-{
-    Mcu_Init(NULL_PTR);
-    Mcu_InitClock(McuClockSettingConfig_0);
-    while(MCU_PLL_LOCKED != Mcu_GetPllStatus())
-    {
-    	;
-    }
-    Mcu_DistributePllClock();
-    Mcu_SetMode(McuModeSettingConf_0);
-    Mcl_Init(NULL_PTR);
-    Platform_Init(NULL_PTR);
-    Port_Init(NULL_PTR);
-    Gpt_Init(NULL_PTR);
-    Spi_Init(NULL_PTR);
-    I2c_Init(NULL_PTR);
-
-    Segments_Init();
-    //Segments_TimeoutTest();
-    Segments_Test();
-	//Display_Init();
-	//SoundTest();
-	//Display_Test();
-
-	while(1){
-
-
-	}
-}
+/*==================================================================================================
+*                                    FUNCTION PROTOTYPES
+==================================================================================================*/
 
 
 #ifdef __cplusplus
 }
 #endif
 
-/** @} */
+#endif

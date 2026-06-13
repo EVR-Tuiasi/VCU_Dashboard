@@ -26,7 +26,7 @@ extern "C" {
 *                                       LOCAL MACROS
 ==================================================================================================*/
 #define SCL_PIN_PCR                     71U
-#define SCL_PIN_IDX				2U
+#define SCL_PIN_IDX						1U
 #define GPT_RECOVER_CHANNEL  			0U
 #define GPT_RECOVER_CLOCKS   			4000U
 #define MESSAGES_UNTIL_FORCED_REINIT    500U
@@ -36,18 +36,18 @@ extern "C" {
 ==================================================================================================*/
 static const SegmentsGroups_t SegmentsGroups = {
 	{//DigitGroup_Speed
-		DIGIT_6,
+		DIGIT_0,
 		DIGIT_3,
-		DIGIT_0
+		DIGIT_6
 	},
 	{//DigitGroup_Battery
-		DIGIT_7,
+		DIGIT_1,
 		DIGIT_5,
-		DIGIT_1
+		DIGIT_7
 	},
 	{//DigitGroup_Temperature
-		DIGIT_4,
-		DIGIT_2
+		DIGIT_2,
+		DIGIT_4
 	}
 };
 
