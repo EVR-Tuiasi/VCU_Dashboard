@@ -44,7 +44,8 @@ typedef enum {
 typedef enum {
     INITIALIZING,
     OPERATIONAL,
-    I2C_ERROR
+    I2C_ERROR,
+	I2C_RECOVERING
 } SegmentsState_t;
 
 /*==================================================================================================
@@ -90,6 +91,7 @@ void Segments_Init(void);
 void Segments_Test(void);
 void Segments_Set(SegmentsMonitoredValue_t SelectedMonitor, uint16_t Value);
 void Segments_Update(void);
+void SegmentsTimeoutTest(void);
 
 #ifdef __cplusplus
 }
