@@ -20,7 +20,7 @@ extern "C" {
 /*==================================================================================================
  *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-
+#define PD_PIN_PCR			75U
 /*==================================================================================================
  *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -79,18 +79,12 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
  *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 void Display_Init(void){
-	/*Cod nebun display*/
-	Dio_WriteChannel(109, 0);
+	Dio_WriteChannel(PD_PIN_PCR, 0);
 	volatile int delei = 3000000;
 	while(delei){
 		delei--;
 	}
-	Dio_WriteChannel(109, 1);
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}
-	host_command(CLKEXT, 0);//send command to "CLKEXT" to FT81X
+	Dio_WriteChannel(PD_PIN_PCR, 1);
 	delei = 3000000;
 	while(delei){
 		delei--;
@@ -100,16 +94,7 @@ void Display_Init(void){
 	while(delei){
 		delei--;
 	}
-	/*host_command(RST_PULSE, 0);//send host command "RST_PULSE" to reset
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}*/
 	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
-	/*delei = 30000000;
-	while(delei){
-		delei--;
-	}*/
 	while (0x7C != rd8(REG_ID)); //Wait till clock is on
 	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
 	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/

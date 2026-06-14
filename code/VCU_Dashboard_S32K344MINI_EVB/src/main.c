@@ -86,8 +86,8 @@ int main(void)
 
     Segments_Init();
     //Segments_TimeoutTest();
-    Segments_Test();
-	//Display_Init();
+    //Segments_Test();
+	Display_Init();
 	//SoundTest();
 	//Display_Test();
 

@@ -16,8 +16,8 @@ extern "C" {
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-#define FT81_SPI_CHANNEL 0
-
+#define FT81_SPI_CHANNEL 	0U
+#define INVERTED_READS    	1U
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -81,6 +81,9 @@ uint8_t rd8(uint32_t address){
 	uint8_t bufferPrimire[5] = {0};
     Spi_SetupEB(FT81_SPI_CHANNEL, bufferTrimitere, bufferPrimire, 5U);
     Spi_SyncTransmit(FT81_SPI_CHANNEL);
+#if (INVERTED_READS == 1)
+    bufferPrimire[4] = ~bufferPrimire[4];
+#endif
     return bufferPrimire[4];
 }
 
@@ -89,6 +92,10 @@ uint16_t rd16(uint32_t address){
 	uint8_t bufferPrimire[6] = {0};
     Spi_SetupEB(FT81_SPI_CHANNEL, bufferTrimitere, bufferPrimire, 6U);
     Spi_SyncTransmit(FT81_SPI_CHANNEL);
+#if (INVERTED_READS == 1)
+    bufferPrimire[4] = ~bufferPrimire[4];
+    bufferPrimire[5] = ~bufferPrimire[5];
+#endif
     return (uint16_t)bufferPrimire[4] + ((uint16_t)bufferPrimire[5] << 8);
 }
 
@@ -97,6 +104,12 @@ uint32_t rd32(uint32_t address){//TODO toate returnurile trebuie facute pe dos
 	uint8_t bufferPrimire[8] = {0};
     Spi_SetupEB(FT81_SPI_CHANNEL, bufferTrimitere, bufferPrimire, 8U);
     Spi_SyncTransmit(FT81_SPI_CHANNEL);
+#if (INVERTED_READS == 1)
+    bufferPrimire[4] = ~bufferPrimire[4];
+    bufferPrimire[5] = ~bufferPrimire[5];
+    bufferPrimire[6] = ~bufferPrimire[6];
+    bufferPrimire[7] = ~bufferPrimire[7];
+#endif
     return (uint32_t)bufferPrimire[4] + ((uint32_t)bufferPrimire[5] << 8) + ((uint32_t)bufferPrimire[6] << 16) + ((uint32_t)bufferPrimire[7] << 24);
 }
 

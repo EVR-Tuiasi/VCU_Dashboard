@@ -58,25 +58,25 @@
                   </pin>
                   <pin peripheral="LPSPI1" signal="lpspi1_sck" pin_num="J17" pin_signal="PTB14">
                      <pin_features>
-                        <pin_feature name="direction" value="INPUT/OUTPUT"/>
+                        <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="outputInversionSelect" value="invert"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="LPSPI1" signal="lpspi1_sin" pin_num="J16" pin_signal="PTB15">
                      <pin_features>
-                        <pin_feature name="direction" value="INPUT/OUTPUT"/>
+                        <pin_feature name="direction" value="INPUT"/>
                         <pin_feature name="outputInversionSelect" value="doNotInvert"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="LPSPI1" signal="lpspi1_sout" pin_num="K17" pin_signal="PTB16">
                      <pin_features>
-                        <pin_feature name="direction" value="INPUT/OUTPUT"/>
+                        <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="outputInversionSelect" value="invert"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="LPSPI1" signal="lpspi1_pcs3" pin_num="K16" pin_signal="PTB17">
                      <pin_features>
-                        <pin_feature name="direction" value="INPUT/OUTPUT"/>
+                        <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="outputInversionSelect" value="invert"/>
                      </pin_features>
                   </pin>
@@ -1296,13 +1296,13 @@
                                  <setting name="Name" value="SpiChannel_0_display"/>
                                  <setting name="SpiChannelId" value="0"/>
                                  <setting name="SpiChannelType" value="EB"/>
-                                 <setting name="SpiDataWidth" value="32"/>
+                                 <setting name="SpiDataWidth" value="8"/>
                                  <array name="SpiDefaultData">
                                     <setting name="0" value="1"/>
                                  </array>
-                                 <setting name="SpiEbMaxLength" value="1"/>
+                                 <setting name="SpiEbMaxLength" value="30000"/>
                                  <setting name="SpiIbNBuffers" value="4"/>
-                                 <setting name="SpiTransferStart" value="LSB"/>
+                                 <setting name="SpiTransferStart" value="MSB"/>
                                  <setting name="SpiByteSwapTransfer" value="false"/>
                                  <array name="SpiChannelHalfDuplexDirection"/>
                                  <array name="SpiChannelEcucPartitionRef"/>
@@ -1339,9 +1339,7 @@
                            <array name="SpiJob">
                               <struct name="0">
                                  <setting name="Name" value="SpiJob_0"/>
-                                 <array name="SpiJobEndNotification">
-                                    <setting name="0" value="NULL_PTR"/>
-                                 </array>
+                                 <array name="SpiJobEndNotification"/>
                                  <array name="SpiJobStartNotification">
                                     <setting name="0" value="NULL_PTR"/>
                                  </array>
@@ -1361,9 +1359,7 @@
                               <struct name="0">
                                  <setting name="Name" value="SpiSequence_0"/>
                                  <setting name="SpiInterruptibleSequence" value="false"/>
-                                 <array name="SpiSeqEndNotification">
-                                    <setting name="0" value="NULL_PTR"/>
-                                 </array>
+                                 <array name="SpiSeqEndNotification"/>
                                  <setting name="SpiSequenceId" value="0"/>
                                  <setting name="SpiEnableDmaFastTransfer" value="false"/>
                                  <setting name="SpiDmaContMemTransferSequenceEnable" value="false"/>
@@ -1378,7 +1374,7 @@
                            <setting name="SpiMultipartitionSupport" value="false"/>
                            <setting name="SpiCancelApi" value="true"/>
                            <setting name="SpiChannelBuffersAllowed" value="2"/>
-                           <setting name="SpiDevErrorDetect" value="false"/>
+                           <setting name="SpiDevErrorDetect" value="true"/>
                            <setting name="SpiHwStatusApi" value="true"/>
                            <setting name="SpiInterruptibleSeqAllowed" value="false"/>
                            <setting name="SpiLevelDelivered" value="2"/>
