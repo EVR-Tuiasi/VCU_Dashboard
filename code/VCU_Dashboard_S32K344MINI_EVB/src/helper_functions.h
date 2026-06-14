@@ -1,5 +1,8 @@
+#ifndef HELPER_FUNCTIONS_H
+#define HELPER_FUNCTIONS_H
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"{
 #endif
 
 
@@ -9,23 +12,23 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include "Port.h"
-#include "Det.h"
-#include "Spi.h"
-#include "Platform.h"
-#include "Mcu.h"
-#include "Dio.h"
-#include "Mcl.h"
-#include "Gpt.h"
-#include "CDD_I2c.h"
+#include "stdint.h"
+#include "stdbool.h"
 
-#include "Display/display.h"
-#include "Segments/SevenSegments.h"
-#include "helper_functions.h"
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
+#define STATUS_LED_BATTERY_PIN_PCR		(96U+26U)	/*PTD26*/
+#define STATUS_LED_INVERTERS_PIN_PCR	(96U+29U)	/*PTD29*/
+#define STATUS_LED_DASHBOARD_PIN_PCR	(96U+28U)	/*PTD28*/
+#define STATUS_LED_PEDALS_PIN_PCR		(96U+31U)	/*PTD31*/
 
+typedef enum{
+	BATTERY_LED = STATUS_LED_BATTERY_PIN_PCR,
+	INVERTERS_LED = STATUS_LED_INVERTERS_PIN_PCR,
+	DASHBOARD_LED = STATUS_LED_DASHBOARD_PIN_PCR,
+	PEDALS_LED = STATUS_LED_PEDALS_PIN_PCR
+}StatusLed_t;
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -65,34 +68,11 @@ extern "C" {
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
-
-int main(void)
-{
-    Mcu_Init(NULL_PTR);
-    Mcu_InitClock(McuClockSettingConfig_0);
-    while(MCU_PLL_LOCKED != Mcu_GetPllStatus())
-    {
-    	;
-    }
-    Mcu_DistributePllClock();
-    Mcu_SetMode(McuModeSettingConf_0);
-    Mcl_Init(NULL_PTR);
-    Platform_Init(NULL_PTR);
-    Port_Init(NULL_PTR);
-    Gpt_Init(NULL_PTR);
-    Spi_Init(NULL_PTR);
-    I2c_Init(NULL_PTR);
-
-    Segments_Init();
-    //Segments_TimeoutTest();
-    //Segments_Test();
-	//Display_Init();
-	//SoundTest();
-	//Display_Test();
-	//StatusLed_Test();
-}
-
+void StatusLed_Set(StatusLed_t ledInstance, bool state);
+void StatusLed_Test(void);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

@@ -9,19 +9,9 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include "Port.h"
-#include "Det.h"
-#include "Spi.h"
-#include "Platform.h"
-#include "Mcu.h"
-#include "Dio.h"
-#include "Mcl.h"
-#include "Gpt.h"
-#include "CDD_I2c.h"
-
-#include "Display/display.h"
-#include "Segments/SevenSegments.h"
 #include "helper_functions.h"
+#include "Dio.h"
+
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
@@ -65,31 +55,23 @@ extern "C" {
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+void StatusLed_Set(StatusLed_t ledInstance, bool state){
+	Dio_WriteChannel((Dio_ChannelType)ledInstance, (Dio_LevelType)state);
+}
 
-int main(void)
-{
-    Mcu_Init(NULL_PTR);
-    Mcu_InitClock(McuClockSettingConfig_0);
-    while(MCU_PLL_LOCKED != Mcu_GetPllStatus())
-    {
-    	;
-    }
-    Mcu_DistributePllClock();
-    Mcu_SetMode(McuModeSettingConf_0);
-    Mcl_Init(NULL_PTR);
-    Platform_Init(NULL_PTR);
-    Port_Init(NULL_PTR);
-    Gpt_Init(NULL_PTR);
-    Spi_Init(NULL_PTR);
-    I2c_Init(NULL_PTR);
-
-    Segments_Init();
-    //Segments_TimeoutTest();
-    //Segments_Test();
-	//Display_Init();
-	//SoundTest();
-	//Display_Test();
-	//StatusLed_Test();
+void StatusLed_Test(void){
+	volatile uint64_t delei;
+	uint8_t valori_leduri = 0;
+	while(1){
+		delei=1000000;
+		while(delei--);
+		valori_leduri++;
+		valori_leduri = valori_leduri % 16;
+		StatusLed_Set(BATTERY_LED, (boolean)(valori_leduri % 2));
+		StatusLed_Set(INVERTERS_LED, (boolean)((valori_leduri >> 1) % 2));
+		StatusLed_Set(DASHBOARD_LED, (boolean)((valori_leduri >> 2) % 2));
+		StatusLed_Set(PEDALS_LED, (boolean)((valori_leduri  >> 3) % 2));
+	}
 }
 
 
