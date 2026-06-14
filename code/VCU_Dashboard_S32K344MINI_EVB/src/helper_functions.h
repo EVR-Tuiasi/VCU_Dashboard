@@ -18,10 +18,13 @@ extern "C"{
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-#define STATUS_LED_BATTERY_PIN_PCR		(96U+26U)	/*PTD26*/
-#define STATUS_LED_INVERTERS_PIN_PCR	(96U+29U)	/*PTD29*/
-#define STATUS_LED_DASHBOARD_PIN_PCR	(96U+28U)	/*PTD28*/
-#define STATUS_LED_PEDALS_PIN_PCR		(96U+31U)	/*PTD31*/
+#define STATUS_LED_BATTERY_PIN_PCR				(96U+26U)	/*PTD26*/
+#define STATUS_LED_INVERTERS_PIN_PCR			(96U+29U)	/*PTD29*/
+#define STATUS_LED_DASHBOARD_PIN_PCR			(96U+28U)	/*PTD28*/
+#define STATUS_LED_PEDALS_PIN_PCR				(96U+31U)	/*PTD31*/
+
+#define ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR	(32U+21U)	/*PTB21*/
+#define ACTIVATION_LOGIC_BUTTON_POWER_PIN_PCR	(32U+20U)	/*PTB20*/
 
 typedef enum{
 	BATTERY_LED = STATUS_LED_BATTERY_PIN_PCR,
@@ -70,6 +73,9 @@ typedef enum{
 ==================================================================================================*/
 void StatusLed_Set(StatusLed_t ledInstance, bool state);
 void StatusLed_Test(void);
+void ActivationLogicButton_Init(void);
+bool ActivationLogicButton_GetState(void);
+void ActivationLogicButton_Test(void);
 
 #ifdef __cplusplus
 }

@@ -67,13 +67,36 @@ void StatusLed_Test(void){
 		while(delei--);
 		valori_leduri++;
 		valori_leduri = valori_leduri % 16;
-		StatusLed_Set(BATTERY_LED, (boolean)(valori_leduri % 2));
-		StatusLed_Set(INVERTERS_LED, (boolean)((valori_leduri >> 1) % 2));
-		StatusLed_Set(DASHBOARD_LED, (boolean)((valori_leduri >> 2) % 2));
-		StatusLed_Set(PEDALS_LED, (boolean)((valori_leduri  >> 3) % 2));
+		StatusLed_Set(BATTERY_LED, (bool)(valori_leduri % 2));
+		StatusLed_Set(INVERTERS_LED, (bool)((valori_leduri >> 1) % 2));
+		StatusLed_Set(DASHBOARD_LED, (bool)((valori_leduri >> 2) % 2));
+		StatusLed_Set(PEDALS_LED, (bool)((valori_leduri  >> 3) % 2));
 	}
 }
 
+void ActivationLogicButton_Init(void){
+	Dio_WriteChannel(ACTIVATION_LOGIC_BUTTON_POWER_PIN_PCR, 1);
+}
+
+bool ActivationLogicButton_GetState(void){
+	return Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR);
+}
+
+void ActivationLogicButton_Test(void){
+	bool stare_buton;
+	while(1){
+		if(ActivationLogicButton_GetState()){
+			stare_buton = 1;
+		}
+		else{
+			stare_buton = 0;
+		}
+		StatusLed_Set(BATTERY_LED, stare_buton);
+		StatusLed_Set(INVERTERS_LED, stare_buton);
+		StatusLed_Set(DASHBOARD_LED, stare_buton);
+		StatusLed_Set(PEDALS_LED, stare_buton);
+	}
+}
 
 #ifdef __cplusplus
 }

@@ -86,9 +86,14 @@ int main(void)
     Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
+
+    ActivationLogicButton_Init();
+    //ActivationLogicButton_Test();
+
 	//Display_Init();
 	//SoundTest();
 	//Display_Test();
+
 	//StatusLed_Test();
 }
 
