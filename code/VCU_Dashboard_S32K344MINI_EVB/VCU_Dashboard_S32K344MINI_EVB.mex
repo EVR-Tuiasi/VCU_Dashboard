@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="S32K344" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_18 http://mcuxpresso.nxp.com/XSD/mex_configuration_18.xsd" uuid="cb0a0571-31b0-4026-b225-2a0da4ce6ac1" version="18" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_18" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="S32K344" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_19 http://mcuxpresso.nxp.com/XSD/mex_configuration_19.xsd" uuid="cb0a0571-31b0-4026-b225-2a0da4ce6ac1" version="19" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_19" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>S32K344</processor>
       <package>S32K344_257BGA</package>
@@ -131,7 +131,7 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="17.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="19.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="generate/include/Clock_Ip_Cfg.h" update_enabled="true"/>
             <file path="generate/include/Clock_Ip_Cfg_Defines.h" update_enabled="true"/>
@@ -3518,43 +3518,10 @@
                            <setting name="Name" value="CanIfInitCfg"/>
                            <array name="CanIfMaxRxPduCfg"/>
                            <array name="CanIfMaxTxPduCfg"/>
-                           <array name="CanIfTxPduCfg">
-                              <struct name="0">
-                                 <setting name="Name" value="CanIfTxPduCfg_0"/>
-                                 <array name="CanIfTxPduCanId"/>
-                                 <array name="CanIfTxPduCanIdType"/>
-                                 <setting name="CanIfTxPduId" value="0"/>
-                                 <array name="CanIfTxPduUserTxConfirmationName"/>
-                                 <array name="CanIfTxPduUserTxConfirmationUL"/>
-                                 <setting name="CanIfTxPduBufferRef" value=""/>
-                              </struct>
-                           </array>
+                           <array name="CanIfTxPduCfg"/>
                            <array name="CanIfRxPduCfg"/>
-                           <array name="CanIfBufferCfg">
-                              <struct name="0">
-                                 <setting name="Name" value="CanIfBufferCfg_0"/>
-                                 <setting name="CanIfBufferHthRef" value=""/>
-                              </struct>
-                           </array>
-                           <array name="CanIfInitHohCfg">
-                              <struct name="0">
-                                 <setting name="Name" value="CanIfInitHohCfg_0"/>
-                                 <array name="CanIfHthCfg">
-                                    <struct name="0">
-                                       <setting name="Name" value="CanIfHthCfg_0"/>
-                                       <setting name="CanIfHthCanCtrlIdRef" value="/CanIf/CanIf/CanIfCtrlDrvCfg_0/CanIfCtrlCfg_0"/>
-                                       <setting name="CanIfHthIdSymRef" value="/Can_43_FLEXCAN/Can/CanConfigSet/CanHardwareObject_1_Transmit"/>
-                                    </struct>
-                                 </array>
-                                 <array name="CanIfHrhCfg">
-                                    <struct name="0">
-                                       <setting name="Name" value="CanIfHrhCfg_0"/>
-                                       <setting name="CanIfHrhCanCtrlIdRef" value="/CanIf/CanIf/CanIfCtrlDrvCfg_0/CanIfCtrlCfg_0"/>
-                                       <setting name="CanIfHrhIdSymRef" value="/Can_43_FLEXCAN/Can/CanConfigSet/CanHardwareObject_0_Receive"/>
-                                    </struct>
-                                 </array>
-                              </struct>
-                           </array>
+                           <array name="CanIfBufferCfg"/>
+                           <array name="CanIfInitHohCfg"/>
                         </struct>
                         <struct name="CanIfDispatchCfg" quick_selection="Default">
                            <setting name="Name" value="CanIfDispatchCfg"/>

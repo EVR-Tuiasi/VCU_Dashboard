@@ -28,81 +28,23 @@ extern "C"{
 #define CAN_HTH_HANDLE 0x00000001
 
 typedef enum{
-	idCanFrana = 0x00000331,
-	idCanAcceleratie = 0x00000330,
-	idCanInvertorStanga = 0x00000110,
-	idCanInvertorDreapta = 0x00000111,
-	idCanInvertoare = 0x00000112,
-	idCanBaterie = 0x00000114,
-	idCanBord = 0x00000113
-}idCan_t;
+	ID_CAN_INVERTOR_STANGA = 	0x00000110,
+	ID_CAN_INVERTOR_DREAPTA = 	0x00000111,
+	ID_CAN_INVERTOARE = 		0x00000112,
 
-typedef enum{
-    /* TSAC */
-    Can_TSAC_MedianCellTemperature,
-    Can_TSAC_HighestCellTemperature,
-    Can_TSAC_LowestCellTemperature,
-    Can_TSAC_MedianCellVoltage,
-    Can_TSAC_HighestCellVoltage,
-    Can_TSAC_LowestCellVoltage,
-    Can_TSAC_OverallVoltage,
-    Can_TSAC_OverallCurrent,
-    Can_TSAC_IsAmsSafe,
-    Can_TSAC_IsImdSafe,
-    Can_TSAC_IsTransceiverWorking,
-    Can_TSAC_IsShuntWorking,
-    Can_TSAC_IsBms0Working,
-    Can_TSAC_IsBms1Working,
-    /* PEDALS */
-    Can_PEDALS_AcceleratorSensor1Voltage,
-    Can_PEDALS_AcceleratorSensor2Voltage,
-    Can_PEDALS_AcceleratorSensor1TravelPercentage,
-    Can_PEDALS_AcceleratorSensor2TravelPercentage,
-    Can_PEDALS_BrakeSensor1Voltage,
-    Can_PEDALS_BrakeSensor2Voltage,
-    Can_PEDALS_BrakeSensor1TravelPercentage,
-    Can_PEDALS_BrakeSensor2TravelPercentage,
-    Can_PEDALS_PressureSensorVoltage,
-    Can_PEDALS_PressureSensorBars,
-    Can_PEDALS_Accel_Sensor1_ShortToGnd,
-    Can_PEDALS_Accel_Sensor1_ShortToVcc,
-    Can_PEDALS_Accel_Sensor1_OutOfRangeOutput,
-    Can_PEDALS_Accel_Sensor2_ShortToGnd,
-    Can_PEDALS_Accel_Sensor2_ShortToVcc,
-    Can_PEDALS_Accel_Sensor2_OutOfRangeOutput,
-    Can_PEDALS_Accel_Implausibility,
-    Can_PEDALS_Brake_Sensor1_ShortToGnd,
-    Can_PEDALS_Brake_Sensor1_ShortToVcc,
-    Can_PEDALS_Brake_Sensor1_OutOfRangeOutput,
-    Can_PEDALS_Brake_Sensor2_ShortToGnd,
-    Can_PEDALS_Brake_Sensor2_ShortToVcc,
-    Can_PEDALS_Brake_Sensor2_OutOfRangeOutput,
-    Can_PEDALS_Brake_Implausibility,
-    /* INVERTERS */
-    Can_INVERTERS_LeftInverterTemperature,
-    Can_INVERTERS_LeftMotorTemperature,
-    Can_INVERTERS_LeftInverterInputVoltage,
-    Can_INVERTERS_LeftInverterCurrent,
-    Can_INVERTERS_LeftMotorRpm,
-    Can_INVERTERS_LeftMotorSpeedKmh,
-    Can_INVERTERS_LeftInverterThrottle,
-    Can_INVERTERS_LeftInverterThrottleFeedback,
-    Can_INVERTERS_RightInverterTemperature,
-    Can_INVERTERS_RightMotorTemperature,
-    Can_INVERTERS_RightInverterInputVoltage,
-    Can_INVERTERS_RightInverterCurrent,
-    Can_INVERTERS_RightMotorRpm,
-    Can_INVERTERS_RightMotorSpeedKmh,
-    Can_INVERTERS_RightInverterSentThrottle,
-    Can_INVERTERS_RightInverterThrottleFeedback,
-    Can_INVERTERS_IsCarInReverse,
-    Can_INVERTERS_IsCarRunning,
-    /* DASHBOARD */
-    Can_DASHBOARD_ActivationButtonPressed,
-    Can_DASHBOARD_CarReverseCommandPressed,
-    Can_DASHBOARD_IsDisplayWorking,
-    Can_DASHBOARD_IsSegmentsDriverWorking
-}CanMonitoredValue_t;
+	ID_CAN_BORD = 				0x00000113,
+
+	ID_CAN_ACCELERATIE = 		0x00000330,
+	ID_CAN_FRANA = 				0x00000331,
+
+	ID_CAN_BATERIE = 			0x00000114,
+	/*ID_CAN_BATERIE_TENSIUNI_CELULE nu se trimite pe CAN*/
+	/*ID_CAN_BATERIE_TEMPERATURI_CELULE nu se trimite pe CAN*/
+	ID_CAN_BATERIE_2 = 			0x00000117,
+	ID_CAN_BATERIE_CHARGER =    0x00000119,
+
+	ID_CAN_COMUNICATII = 		0x00000118
+}idCan_t;
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -141,13 +83,12 @@ typedef enum{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+#define ReadDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->value
+#define WriteDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->value = (data)
 
 void CanMessaging_Init(void);
 void CanMessaging_Test(void);
 void CanMessaging_Update(void);
-void CanMessaging_SetValue(CanMonitoredValue_t DesiredValueType, uint32_t Value);
-uint32_t CanMessaging_ReadValue(CanMonitoredValue_t DesiredValueType);
-boolean CanMessaging_ReceiveData(Can_HwHandleType handle, Can_IdType id, PduLengthType length, uint8_t* data);
 void CanMessaging_CreateBuffer(idCan_t type);
 void CanMessaging_AppTest(void);
 
