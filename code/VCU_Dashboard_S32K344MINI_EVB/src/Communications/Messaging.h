@@ -23,6 +23,37 @@ extern "C"{
 #define CELLS_LINES 5U
 #define THERMISTORS_LINES 26U
 
+typedef enum{
+	ID_CAN_INVERTOR_STANGA = 	0x00000110,
+	ID_UART_INVERTOR_STANGA =   0x10,
+	ID_CAN_INVERTOR_DREAPTA = 	0x00000111,
+	ID_UART_INVERTOR_DREAPTA =  0x11,
+	ID_CAN_INVERTOARE = 		0x00000112,
+	ID_UART_INVERTOARE = 		0x12,
+
+	ID_CAN_BORD = 				0x00000113,
+	ID_UART_BORD = 				0x13,
+
+	ID_CAN_ACCELERATIE = 		0x00000330,
+	ID_UART_ACCELERATIE = 		0x30,
+	ID_CAN_FRANA = 				0x00000331,
+	ID_UART_FRANA =				0x31,
+
+	ID_CAN_BATERIE = 			0x00000114,
+	ID_UART_BATERIE = 			0x14,
+	ID_CAN_BATERIE_TENSIUNI_CELULE = 0x00000115,
+	ID_UART_BATERIE_TENSIUNI_CELULE = 0x15,
+	ID_CAN_BATERIE_TEMPERATURI_CELULE = 0x00000116,
+	ID_UART_BATERIE_TEMPERATURI_CELULE = 0x16,
+	ID_CAN_BATERIE_2 = 			0x00000117,
+	ID_UART_BATERIE_2 = 		0x0000017,
+	ID_CAN_BATERIE_CHARGER =    0x00000119,
+	ID_UART_BATERIE_CHARGER = 	0x0000019,
+
+	ID_CAN_COMUNICATII = 		0x00000118,
+	ID_UART_COMUNICATII = 		0x18
+}MessageId_t;
+
 typedef struct{
 	uint8_t valueCan;
 	uint8_t valueUart;
@@ -204,7 +235,12 @@ typedef struct{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+/*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
+#define WriteDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
+	(xMonitoredValue_t_Address)->valueCan = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
 
+
+void Messaging_CreateBuffer(MessageId_t type, uint8_t *buffer);
 
 #ifdef __cplusplus
 }
