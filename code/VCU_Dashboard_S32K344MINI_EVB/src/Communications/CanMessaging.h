@@ -17,7 +17,7 @@ extern "C"{
 #include"Mcu.h"
 #include"Can_43_FLEXCAN.h"
 #include "CDD_Uart.h"
-#include "Messaging_Types.h"
+#include "Messaging.h"
 #include "UartMessaging.h"
 
 /*==================================================================================================
@@ -83,8 +83,8 @@ typedef enum{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
-#define ReadDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->value
-#define WriteDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->value = (data)
+#define ReadDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan
+#define WriteDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan = (data)
 
 void CanMessaging_Init(void);
 void CanMessaging_Test(void);

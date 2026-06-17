@@ -1,3 +1,4 @@
+
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -22,18 +23,18 @@ extern "C"{
 #include "Dio.h"
 #include "Mcl.h"
 #include "CanMessaging.h"
-#include "Messaging_Types.h"
+#include "Messaging.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 /*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
 #define WriteDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
-	(xMonitoredValue_t_Address)->value = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
+	(xMonitoredValue_t_Address)->valueCan = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
 
 /*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
 #define ReadDataFromAddressAndWriteInRawBuffer(rawBufferU64, xMonitoredValue_t_Address) \
-		(rawBufferU64) |= (((xMonitoredValue_t_Address)->value & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) << (xMonitoredValue_t_Address)->shift)
+		(rawBufferU64) |= (((xMonitoredValue_t_Address)->valueCan & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) << (xMonitoredValue_t_Address)->shift)
 
 
 
@@ -50,350 +51,6 @@ extern "C"{
 /*==================================================================================================
 *                                      LOCAL VARIABLES
 ==================================================================================================*/
-static MonitoredValues_t CanMonitoredValues ={
-	.TsacMonitoredValues = {/* START TsacMonitoredValues */
-				{/* MedianCellTemperature */
-						0,	/* value */
-						10U,/* nrOfBits */
-						54U	/* shift */
-				},
-				{/* HighestCellTemperature */
-						0,	/* value */
-						10U,/* nrOfBits */
-						24U	/* shift */
-				},
-				{/* LowestCellTemperature */
-						0,	/* value */
-						10U,/* nrOfBits */
-						54U	/* shift */
-				},
-				{/* MedianCellVoltage */
-						0,	/* value */
-						10U,	/* nrOfBits */
-						44U	/* shift */
-				},
-				{/* HighestCellVoltage */
-						0,	/* value */
-						10U,/* nrOfBits */
-						34U	/* shift */
-				},
-				{/* LowestCellVoltage */
-						0,	/* value */
-						10U,/* nrOfBits */
-						44U	/* shift */
-				},
-				{/* OverallVoltage */
-						0,	/* value */
-						11,	/* nrOfBits */
-						13U	/* shift */
-				},
-				{/* OverallCurrent */
-						0,	/* value */
-						13U,/* nrOfBits */
-						0U	/* shift */
-				},
-				{/* CellVoltage */
-						0	/* zero-initializing array */
-				},
-				{/* ThermistorTemperature */
-						0	/* zero-initializing array */
-				},
-				{/* AmsError */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						38U	/* shift */
-				},
-				{/* TransceiverError */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						42U	/* shift */
-				},
-				{/* ShuntError */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						43U	/* shift */
-				},
-				{/* Bms0Error */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						41U	/* shift */
-				},
-				{/* Bms1Error */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						40U	/* shift */
-				},
-				{/* ThermistorsError */
-						0,	/* value */
-						1U,/* nrOfBits */
-						39U	/* shift */
-				},
-				{/* ChargerStatus */
-						0,	/* value */
-						1U,/* nrOfBits */
-						32U	/* shift */
-				}
-		},/* END TsacMonitoredValues */
-		{/* START PedalsMonitoredValues*/
-				{/* AcceleratorSensor1Voltage */
-						0,	/* value */
-						14U,/* nrOfBits */
-						0U	/* shift */
-				},
-				{/* AcceleratorSensor2Voltage */
-						0,	/* value */
-						14U,/* nrOfBits */
-						14U	/* shift */
-				},
-				{/* AcceleratorSensor1TravelPercentage */
-						0,	/* value */
-						7U,	/* nrOfBits */
-						28U	/* shift */
-				},
-				{/* AcceleratorSensor2TravelPercentage */
-						0,	/* value */
-						7U,	/* nrOfBits */
-						35U	/* shift */
-				},
-				{/* BrakeSensor1Voltage */
-						0,	/* value */
-						14U,/* nrOfBits */
-						0U	/* shift */
-				},
-				{/* BrakeSensor2Voltage */
-						0,	/* value */
-						14U,/* nrOfBits */
-						14U	/* shift */
-				},
-				{/* BrakeSensor1TravelPercentage */
-						0,	/* value */
-						7U,	/* nrOfBits */
-						28U	/* shift */
-				},
-				{/* BrakeSensor2TravelPercentage */
-						0,	/* value */
-						7U,	/* nrOfBits */
-						35U	/* shift */
-				},
-				{/* PressureSensorVoltage */
-						0,	/* value */
-						9U,	/* nrOfBits */
-						42U	/* shift */
-				},
-				{/* PressureSensorBars */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						42U	/* shift */
-				},
-				{/* Accel_Sensor1_ShortToGnd */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						63U	/* shift */
-				},
-				{/* Accel_Sensor1_ShortToVcc */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						62U	/* shift */
-				},
-				{/* Accel_Sensor1_OutOfRangeOutput */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						61U	/* shift */
-				},
-				{/* Accel_Sensor2_ShortToGnd */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						60U	/* shift */
-				},
-				{/* Accel_Sensor2_ShortToVcc */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						59U	/* shift */
-				},
-				{/* Accel_Sensor2_OutOfRangeOutput */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						58U	/* shift */
-				},
-				{/* Accel_Implausibility */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						57U	/* shift */
-				},
-				{/* Brake_Sensor1_ShortToGnd */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						63U	/* shift */
-				},
-				{/* Brake_Sensor1_ShortToVcc */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						62U	/* shift */
-				},
-				{/* Brake_Sensor1_OutOfRangeOutput */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						61U	/* shift */
-				},
-				{/* Brake_Sensor2_ShortToGnd */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						60U	/* shift */
-				},
-				{/* Brake_Sensor2_ShortToVcc */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						59U	/* shift */
-				},
-				{/* Brake_Sensor2_OutOfRangeOutput */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						58U	/* shift */
-				},
-				{/* Brake_Implausibility */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						57U	/* shift */
-				}
-		},/* END PedalsMonitoredValues*/
-		{/* START InvertersMonitoredValues */
-				{/* LeftInverterTemperature */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						8U	/* shift */
-				},
-				{/* LeftMotorTemperature */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						0	/* shift */
-				},
-				{/* LeftInverterInputVoltage */
-						0,	/* value */
-						11U,/* nrOfBits */
-						40U	/* shift */
-				},
-				{/* LeftInverterCurrent */
-						0,	/* value */
-						12,	/* nrOfBits */
-						0	/* shift */
-				},
-				{/* LeftMotorRpm */
-						0,	/* value */
-						13U,/* nrOfBits */
-						51U	/* shift */
-				},
-				{/* LeftMotorSpeedKmh */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						24U	/* shift */
-				},
-				{/* LeftInverterThrottle */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						16U	/* shift */
-				},
-				{/* LeftInverterThrottleFeedback */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						32U	/* shift */
-				},
-				{/* RightInverterTemperature */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						8U	/* shift */
-				},
-				{/* RightMotorTemperature */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						0	/* shift */
-				},
-				{/* RightInverterInputVoltage */
-						0,	/* value */
-						11U,/* nrOfBits */
-						40U	/* shift */
-				},
-				{/* RightInverterCurrent */
-						0,	/* value */
-						12U,/* nrOfBits */
-						12U	/* shift */
-				},
-				{/* RightMotorRpm */
-						0,	/* value */
-						13U,/* nrOfBits */
-						51U	/* shift */
-				},
-				{/* RightMotorSpeedKmh */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						24U	/* shift */
-				},
-				{/* RightInverterSentThrottle */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						16U	/* shift */
-				},
-				{/* RightInverterThrottleFeedback */
-						0,	/* value */
-						8U,	/* nrOfBits */
-						32U	/* shift */
-				},
-				{/* IsCarInReverse */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						62U	/* shift */
-				},
-				{/* IsCarRunning */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						63U	/* shift */
-				}
-		},/* END InvertersMonitoredValues */
-		{/* START DashboardMonitoredValues */
-				{/* ActivationButtonPressed */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						63U	/* shift */
-				},
-				{/* CarReverseCommandPressed */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						62U	/* shift */
-				},
-				{/* IsDisplayWorking */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						61U	/* shift */
-				},
-				{/* IsSegmentsDriverWorking */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						60U	/* shift */
-				}
-		},/* END DashboardMonitoredValues */
-		{/* START CommunicationsMonitoredValues */
-				{/* IsInvertersVCUSimulated */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						63U	/* shift */
-				},
-				{/* IsTsacVCUSimulated */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						62U	/* shift */
-				},
-				{/* IsDashboardVCUSimulated */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						61U	/* shift */
-				},
-				{/* IsPedalsVCUSimulated */
-						0,	/* value */
-						1U,	/* nrOfBits */
-						60U	/* shift */
-				}
-		}/* END CommunicationsMonitoredValues */
-};
-
 static uint8_t bufferCan[8];
 
 /*==================================================================================================
@@ -404,7 +61,7 @@ static uint8_t bufferCan[8];
 /*==================================================================================================
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
-
+extern MonitoredValues_t CanMonitoredValues;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -498,7 +155,7 @@ void CanMessaging_Test(void){
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightInverterCurrent);
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightMotorRpm);
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
-		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightInverterSentThrottle);
+		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.IsCarInReverse);
 		WriteDataAtAddress(cnt, &CanMonitoredValues.InvertersMonitoredValues.IsCarRunning);
@@ -610,7 +267,7 @@ boolean CanMessaging_ReceiveData(Can_HwHandleType handle, Can_IdType id, PduLeng
 			//extragere date
 			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightMotorTemperature);
 			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterTemperature);
-			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterSentThrottle);
+			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
 			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
 			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
 			WriteDataFromRawBufferAtAddress(data_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage);
@@ -679,7 +336,7 @@ void CanMessaging_CreateBuffer(idCan_t type){
 		case ID_CAN_INVERTOR_DREAPTA:
 			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightMotorTemperature);
 			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterTemperature);
-			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterSentThrottle);
+			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
 			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
 			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
 			ReadDataFromAddressAndWriteInRawBuffer(buffer_merged, &CanMonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage);
@@ -804,7 +461,7 @@ void CanMessaging_AppTest(void){
 		//Right Inverters
 		UartMessaging_SetValue(UART_INVERTERS_RIGHT_MOTOR_TEMP, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightMotorTemperature));
 		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_TEMP, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightInverterTemperature));
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_THROTTLE, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightInverterSentThrottle));
+		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_THROTTLE, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottle));
 		UartMessaging_SetValue(UART_INVERTERS_RIGHT_MOTOR_KMH, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh));
 		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_THROTTLE_FEEDBACK, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback));
 		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_INPUT_VOLT, ReadDataFromAddress(&CanMonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage));

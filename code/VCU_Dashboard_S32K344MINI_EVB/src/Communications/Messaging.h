@@ -1,5 +1,5 @@
-#ifndef MESSAGING_TYPES_H
-#define MESSAGING_TYPES_H
+#ifndef MESSAGING_H
+#define MESSAGING_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -12,41 +12,48 @@ extern "C"{
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-
+#include "stdbool.h"
 #include "stdint.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-#define CELLS_NUM 400
-#define THERMISTOR_NUM 100
+#define CELLS_NUM 24U
+#define THERMISTOR_NUM 128U
+#define CELLS_LINES 5U
+#define THERMISTORS_LINES 26U
 
 typedef struct{
-	uint8_t value;
+	uint8_t valueCan;
+	uint8_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
 }U8MonitoredValue_t;
 
 typedef struct{
-	uint16_t value;
+	uint16_t valueCan;
+	uint16_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
 }U16MonitoredValue_t;
 
 typedef struct{
-	uint32_t value;
+	uint32_t valueCan;
+	uint32_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
 }U32MonitoredValue_t;
 
 typedef struct{
-	uint64_t value;
+	uint64_t valueCan;
+	uint64_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
 }U64MonitoredValue_t;
 
 typedef struct{
-	bool value;
+	bool valueCan;
+	bool valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
 }BoolMonitoredValue_t;
@@ -62,16 +69,23 @@ typedef struct{
 	U16MonitoredValue_t OverallVoltage;                            /* 11 bits, 0-2047, 0 to 204.7 Volts, 0.1 Volts per bit */
 	U16MonitoredValue_t OverallCurrent;                            /* 13 bits, 0-8095, 0 to 809.5 Amps, 0.1 Amps per bit */
     /* Cell voltages and temperatures*/
-	uint16 CellVoltage[CELLS_NUM];                    /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
-	uint16 ThermistorTemperature[THERMISTOR_NUM];     /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
+	uint16_t CellVoltage[CELLS_NUM];                    			   /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
+	bool CellVoltageError[CELLS_NUM];							   /* 1 bit, 0 means safe, 1 means errors */
+	uint16_t ThermistorTemperature[THERMISTOR_NUM];     			   /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
+	bool ThermistorTemperatureError[THERMISTOR_NUM];			   /* 1 bit, 0 means safe, 1 means errors */
     /* Status and errors */
-	BoolMonitoredValue_t AmsError;                                      /* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t TransceiverError;                              /* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t ShuntError;                                    /* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t Bms0Error;                                     /* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t Bms1Error;                                     /* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t ThermistorsError;								/* 1 bit, 0 means safe, 1 means errors */
-	BoolMonitoredValue_t ChargerStatus;									/* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t AmsError;                                 /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t TransceiverError;                         /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t ShuntError;                               /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t Bms0Error;                                /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t Bms1Error;                                /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t ThermistorsError;						   /* 1 bit, 0 means safe, 1 means errors */
+	BoolMonitoredValue_t ChargerStatus;							   /* 1 bit, 0 means safe, 1 means errors */
+	U16MonitoredValue_t ReportedChargingCurrent;				   /* 16 bits, 0-65535, 0 to 6553.5A, 0.1 Amps per bit */
+	U16MonitoredValue_t ReportedChargingVolts;  				   /* 16 bits, 0-65535, 0 to 6553.5V, 0.1 Volts per bit */
+	BoolMonitoredValue_t ChargerCommand;						   /* 1 bit, 0 means charger should be charging, 1 means charger should NOT be charging */
+	U16MonitoredValue_t DesiredChargingCurrent;					   /* 9 bits, 0-320, 0 to 32.0A, 0.1 Amps per bit */
+	U16MonitoredValue_t DesiredChargingVoltage;					   /* 10 bits, 0-1008, 0 to 100.8V, 0.1 Volts per bit */
 }TsacMonitoredValues_t;
 
 typedef struct{
@@ -122,7 +136,7 @@ typedef struct{
 	U16MonitoredValue_t RightInverterCurrent;                      /* 12 bits, 0-4000, 0 to 400.0 Amps, 0.1 Amps per bit */
 	U16MonitoredValue_t RightMotorRpm;                             /* 13 bits, 0-6000, 0 to 6000 RPM, 1 RPM per bit */
 	U8MonitoredValue_t RightMotorSpeedKmh;                         /* 8 bits, 0-255, 0 to 255 Km/h, 1 Km/h per bit */
-	U8MonitoredValue_t RightInverterSentThrottle;                  /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
+	U8MonitoredValue_t RightInverterThrottle;                      /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
 	U8MonitoredValue_t RightInverterThrottleFeedback;              /* 8 bits, 0-250, 0 to 5.00 Volts, 0.02 Volts per bit */
     /* Status and errors */ 
 	BoolMonitoredValue_t IsCarInReverse;                                /* 1 bit, 0 means car is in FORWARD, 1 means car is in REVERSE */

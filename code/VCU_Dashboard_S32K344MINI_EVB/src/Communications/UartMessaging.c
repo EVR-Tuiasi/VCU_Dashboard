@@ -1,3 +1,4 @@
+
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -22,7 +23,7 @@ extern "C"{
 #include "Dio.h"
 #include "Mcl.h"
 #include "UartMessaging.h"
-#include "Messaging_Types.h"
+#include "Messaging.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
