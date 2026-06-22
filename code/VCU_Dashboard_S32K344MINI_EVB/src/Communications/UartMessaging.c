@@ -224,81 +224,79 @@ void UartMessaging_Init(void){
 	Uart_Init(NULL_PTR);
 }
 
-/*void UartMessaging_Test(void){
+void UartMessaging_Test(void){
 	int cnt = 0;
 	volatile int i;
 	while(1){
-		UartMessaging_SetValue(UART_TSAC_MEDIAN_CELL_TEMP, cnt);
-		UartMessaging_SetValue(UART_TSAC_HIGHEST_CELL_TEMP, cnt);
-		UartMessaging_SetValue(UART_TSAC_LOWEST_CELL_TEMP, cnt);
-		UartMessaging_SetValue(UART_TSAC_MEDIAN_CELL_VOLT, cnt);
-		UartMessaging_SetValue(UART_TSAC_HIGHEST_CELL_VOLT, cnt);
-		UartMessaging_SetValue(UART_TSAC_LOWEST_CELL_VOLT, cnt);
-		UartMessaging_SetValue(UART_TSAC_OVERALL_VOLT, cnt);
-		UartMessaging_SetValue(UART_TSAC_OVERALL_AMPS, cnt);
-		//baterieUart.CellVoltage[CELLS_NUM];
-		//baterieUart.ThermistorTemperature[THERMISTOR_NUM];
-		UartMessaging_SetValue(UART_TSAC_IS_AMS_SAFE, 1);
-		UartMessaging_SetValue(UART_TSAC_IS_AMS_SAFE, 1);
-		UartMessaging_SetValue(UART_TSAC_IS_SHUNT_WORKING, 1);
-		UartMessaging_SetValue(UART_TSAC_IS_BMS_0_WORKING, 1);
-		UartMessaging_SetValue(UART_TSAC_IS_BMS_1_WORKING, 1);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.MedianCellTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.HighestCellTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.LowestCellTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.MedianCellVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.HighestCellVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.LowestCellVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.OverallVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.OverallCurrent);
 
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_1_VOLTAGE, cnt);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_2_VOLTAGE, cnt);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_1_TRAVEL_PERCENT, cnt%101);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_2_TRAVEL_PERCENT, cnt%101);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_1_VOLT, cnt);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_2_VOLT, cnt);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_1_TRAVEL_PERCENT, cnt%101);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_2_TRAVEL_PERCENT, cnt%101);
-		UartMessaging_SetValue(UART_PEDALS_PRESSURE_SENS_VOLT, cnt%501);
-		UartMessaging_SetValue(UART_PEDALS_PRESSURE_SENS_BARS, cnt);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_1_SHORT_TO_GND, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_1_SHORT_TO_VCC, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_1_OUT_OF_RANGE, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_2_SHORT_TO_GND, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_2_SHORT_TO_VCC, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_SENS_2_OUT_OF_RANGE, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_ACCEL_IMPLAUSIBILITY, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_1_SHORT_TO_GND, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_1_SHORT_TO_VCC, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_1_OUT_OF_RANGE, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_2_SHORT_TO_GND, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_2_SHORT_TO_VCC, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_SENS_2_OUT_OF_RANGE, cnt & 1);
-		UartMessaging_SetValue(UART_PEDALS_BRAKE_IMPLAUSIBILITY, cnt & 1);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.AmsError);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.TransceiverError);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.ShuntError);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.Bms0Error);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.Bms1Error);
 
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_INVERT_TEMP, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_MOTOR_TEMP, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_INVERTER_INPUT_VOLT, cnt%1801);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_INVERTER_AMPS, cnt%4001);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_MOTOR_RPM, cnt%6001);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_MOTOR_KMH, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_INVERTER_THROTTLE, cnt%251);
-		UartMessaging_SetValue(UART_INVERTERS_LEFT_INVERTER_THROTTLE_FEEDBACK, cnt%251);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_TEMP, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_MOTOR_TEMP, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_INPUT_VOLT, cnt%1801);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_AMPS, cnt%4001);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_MOTOR_RPM, cnt%6001);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_MOTOR_KMH, cnt);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_THROTTLE, cnt%251);
-		UartMessaging_SetValue(UART_INVERTERS_RIGHT_INVERTER_THROTTLE_FEEDBACK, cnt%251);
-		UartMessaging_SetValue(UART_INVERTERS_IS_CAR_IN_REVERSE, cnt & 1);
-		UartMessaging_SetValue(UART_INVERTERS_IS_CAR_RUNNING, cnt & 1);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1Voltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2Voltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor1Voltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor2Voltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.PressureSensorVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.PressureSensorBars);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Implausibility);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Implausibility);
 
-		UartMessaging_SetValue(UART_DASHBOARD_ACTIVATION_COMMAND, cnt & 1);
-		UartMessaging_SetValue(UART_DASHBOARD_CAR_REVERSE_COMMAND, cnt & 1);
-		UartMessaging_SetValue(UART_DASHBOARD_IS_DISPLAY_WORKING, cnt & 1);
-		UartMessaging_SetValue(UART_DASHBOARD_IS_SEGMENTS_DRIVER_WORKING, cnt & 1);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterInputVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterCurrent);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorRpm);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottle);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottleFeedback);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorTemperature);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterCurrent);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorRpm);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.IsCarInReverse);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.IsCarRunning);
 
+		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.ActivationButtonPressed);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.CarReverseCommandPressed);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.IsDisplayWorking);
+		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking);
 		cnt++;
 		UartMessaging_Update();
 		i=100000;
 		while(i--);
 	}
-}*/
+}
 
 void UartMessaging_Update(void){
 	volatile int i;

@@ -24,7 +24,6 @@ extern "C"{
 *                                       LOCAL MACROS
 ==================================================================================================*/
 
-
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
 ==================================================================================================*/
@@ -57,6 +56,9 @@ extern "C"{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+
+#define ReadUartDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueUart
+#define WriteUartDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueUart = (data)
 
 void UartMessaging_Init(void);
 void UartMessaging_Test(void);

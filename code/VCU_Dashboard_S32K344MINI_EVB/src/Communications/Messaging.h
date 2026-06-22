@@ -236,8 +236,11 @@ typedef struct{
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 /*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
-#define WriteDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
+#define WriteCanDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
 	(xMonitoredValue_t_Address)->valueCan = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
+
+#define WriteUartDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
+	(xMonitoredValue_t_Address)->valueUart = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
 
 
 void Messaging_CreateBuffer(MessageId_t type, uint8_t *buffer);

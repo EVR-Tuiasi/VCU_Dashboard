@@ -61,8 +61,8 @@ extern "C"{
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
-#define ReadDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan
-#define WriteDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan = (data)
+#define ReadCanDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan
+#define WriteCanDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan = (data)
 
 void CanMessaging_Init(void);
 void CanMessaging_Test(void);
