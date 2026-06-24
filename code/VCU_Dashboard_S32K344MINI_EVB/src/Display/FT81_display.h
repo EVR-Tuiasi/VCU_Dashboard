@@ -29,27 +29,41 @@ extern "C"{
 *                                      DEFINES AND MACROS
 ==================================================================================================*/
 /*Graphics Engine Registers*/
-#define REG_PCLK 		(RAM_REG + 0x70)
-#define REG_PCLK_POL	(RAM_REG + 0x6C)
-#define REG_CSPREAD		(RAM_REG + 0x68)
-#define REG_DITHER		(RAM_REG + 0x60)
-#define REG_SWIZZLE 	(RAM_REG + 0x64)
-#define REG_OUTBITS		(RAM_REG + 0x5C)
-#define REG_ROTATE		(RAM_REG + 0x58)
-#define REG_VSYNC1		(RAM_REG + 0x50)
-#define REG_VSYNC0		(RAM_REG + 0x4C)
-#define REG_VSIZE		(RAM_REG + 0x48)
-#define REG_VOFFSET		(RAM_REG + 0x44)
-#define REG_VCYCLE		(RAM_REG + 0x40)
-#define REG_HSYNC1		(RAM_REG + 0x3C)
-#define REG_HSYNC0		(RAM_REG + 0x38)
-#define REG_HSIZE		(RAM_REG + 0x34)
-#define REG_HOFFSET		(RAM_REG + 0x30)
-#define REG_HCYCLE		(RAM_REG + 0x2C)
-#define REG_DLSWAP		(RAM_REG + 0x54)
-#define REG_TAG			(RAM_REG + 0x7C)
-#define REG_TAG_Y		(RAM_REG + 0x78)
-#define REG_TAG_X		(RAM_REG + 0x74)
+#define REG_PCLK 			(RAM_REG + 0x70)
+#define REG_PCLK_POL		(RAM_REG + 0x6C)
+#define REG_CSPREAD			(RAM_REG + 0x68)
+#define REG_DITHER			(RAM_REG + 0x60)
+#define REG_SWIZZLE 		(RAM_REG + 0x64)
+#define REG_OUTBITS			(RAM_REG + 0x5C)
+#define REG_ROTATE			(RAM_REG + 0x58)
+#define REG_VSYNC1			(RAM_REG + 0x50)
+#define REG_VSYNC0			(RAM_REG + 0x4C)
+#define REG_VSIZE			(RAM_REG + 0x48)
+#define REG_VOFFSET			(RAM_REG + 0x44)
+#define REG_VCYCLE			(RAM_REG + 0x40)
+#define REG_HSYNC1			(RAM_REG + 0x3C)
+#define REG_HSYNC0			(RAM_REG + 0x38)
+#define REG_HSIZE			(RAM_REG + 0x34)
+#define REG_HOFFSET			(RAM_REG + 0x30)
+#define REG_HCYCLE			(RAM_REG + 0x2C)
+#define REG_DLSWAP			(RAM_REG + 0x54)
+#define REG_TAG				(RAM_REG + 0x7C)
+#define REG_TAG_Y			(RAM_REG + 0x78)
+#define REG_TAG_X			(RAM_REG + 0x74)
+
+/* Touch Engine Registers */
+#define CAPACITIVE_TOUCH		0
+#define RESISTIVE_TOUCH			1
+#define REG_TOUCH_CONFIG		(RAM_REG + 0x168)
+#define REG_TOUCH_SCREEN_XY		(RAM_REG + 0x124)
+#define REG_TOUCH_MODE			(RAM_REG + 0x104)
+#define REG_TOUCH_TRANSFORM_F	(RAM_REG + 0x164)
+#define REG_TOUCH_TRANSFORM_E	(RAM_REG + 0x160)
+#define REG_TOUCH_TRANSFORM_D	(RAM_REG + 0x15C)
+#define REG_TOUCH_TRANSFORM_C	(RAM_REG + 0x158)
+#define REG_TOUCH_TRANSFORM_B	(RAM_REG + 0x154)
+#define REG_TOUCH_TRANSFORM_A	(RAM_REG + 0x150)
+
 
 /*==================================================================================================
 *                                             ENUMS
@@ -172,6 +186,8 @@ uint32_t vertex2ii(uint16_t x, uint16_t y, uint8_t handle, uint8_t cell);
 uint32_t display(void);
 uint32_t stencil_func(AlphaFunc_type func, uint8_t ref, uint8_t mask);
 uint32_t stencil_op(StencilOp_t sfail, StencilOp_t spass);
+uint32_t touch_config(uint8_t mode, uint8_t i2c_address);
+uint32_t touch_coordinates(uint16_t coordinate_x, uint16_t coordinate_y);
 
 
 #ifdef __cplusplus

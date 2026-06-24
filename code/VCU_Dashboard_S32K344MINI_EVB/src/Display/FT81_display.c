@@ -11,6 +11,7 @@ extern "C" {
 ==================================================================================================*/
 #include "Mcu.h"
 #include "FT81_display.h"
+#include "stdbool.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
@@ -177,6 +178,14 @@ uint32_t clear_stencil(void){
 
 uint32_t stencil_op(StencilOp_t sfail, StencilOp_t spass){
 	return (0x0C << 24) | (sfail << 3) | spass;
+}
+
+uint32_t touch_config(uint8_t mode, uint8_t i2c_address){
+	return (mode << 15) | (i2c_address << 10);
+}
+
+uint32_t touch_coordinates(uint16_t coordinate_x, uint16_t coordinate_y){
+	return (coordinate_x << 31) | coordinate_y;
 }
 
 

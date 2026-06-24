@@ -83,14 +83,15 @@ int main(void)
     Spi_Init(NULL_PTR);
     I2c_Init(NULL_PTR);
 
-    Segments_Init();
+    //Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
 
-    ActivationLogicButton_Init();
+    //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
 
-	//Display_Init();
+	Display_Init();
+	TouchTest();
 	//SoundTest();
 	//Display_Test();
 
