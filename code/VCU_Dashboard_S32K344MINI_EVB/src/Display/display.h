@@ -322,7 +322,7 @@ typedef struct{
 
 typedef enum
 {
-	INITIALIZING,
+	INIT,
 	STORAGE,
 	UPDATE
 } DisplayState_t;
@@ -330,7 +330,7 @@ typedef enum
 typedef enum
 {
 	READ,
-	OPERATIONAL,
+	FUNCTIONAL,
 	WRITE
 } MicroStateDisplay_t;
 

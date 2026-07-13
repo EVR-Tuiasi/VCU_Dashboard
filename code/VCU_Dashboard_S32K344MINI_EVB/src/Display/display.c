@@ -35,12 +35,14 @@ extern "C" {
  *                                      LOCAL VARIABLES
 ==================================================================================================*/
 static uint32_t displayBuffer[2048] = {0};
-static DisplayState_t displayState = INITIALIZING;
+static DisplayState_t displayState = INIT;
 static MicroStateDisplay_t microState = READ;
 static uint16_t contorStorage = 0;
+static uint8_t contorInit = 0;
 static uint16_t indexSendMessage = 0;
 static uint8_t readMessage = 1;
 static bool dataStorageFlag = false;
+static uint32_t index = 0;
 
 /*==================================================================================================
  *                                      GLOBAL CONSTANTS
@@ -75,7 +77,8 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
 /*==================================================================================================
  *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
-
+static void Display_State_Update(void);
+static void Display_Data_Save(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds);
 
 /*==================================================================================================
  *                                       LOCAL FUNCTIONS
@@ -85,55 +88,140 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
  *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 void Display_Init(void){
-	displayState = INITIALIZING;
+	displayState = INIT;
 	microState = READ;
 	contorStorage = 0;
 	indexSendMessage = 0;
 	readMessage = 1;
 	dataStorageFlag = false;
 
-	Dio_WriteChannel(PD_PIN_PCR, 0);
-	volatile int delei = 3000000;
-	while(delei){
-		delei--;
-	}
-	Dio_WriteChannel(PD_PIN_PCR, 1);
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}
-	host_command(CLKSEL, 0x86);//select the system clock frequency
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}
-	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
-	while (0x7C != rd8(REG_ID)); //Wait till clock is on
-	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
+	switch(contorInit)
+	{
+	case 0:
+		Dio_WriteChannel(PD_PIN_PCR, 0);
+		volatile int delei = 3000000;
+		while(delei){
+			delei--;
+		}
+		contorInit++;
+		break;
+	case 1:
+		Dio_WriteChannel(PD_PIN_PCR, 1);
+		delei = 3000000;
+		while(delei){
+			delei--;
+		}
+		host_command(CLKSEL, 0x86);//select the system clock frequency
+		contorInit++;
+		break;
+	case 2:
+		delei = 3000000;
+		while(delei){
+			delei--;
+		}
+		host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
+		contorInit++;
+		break;
+	case 3:
+		while (0x7C != rd8(REG_ID)); //Wait till clock is on
+		contorInit++;
+		break;
+	case 4:
+		while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
+		contorInit++;
+		break;
+
 	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
-	wr16(REG_HCYCLE, 928);
-	wr16(REG_HOFFSET, 88);
-	wr16(REG_HSYNC0, 0);
-	wr16(REG_HSYNC1, 48);
-	wr16(REG_VCYCLE, 525);
-	wr16(REG_VOFFSET, 32);
-	wr16(REG_VSYNC0, 0);
-	wr16(REG_VSYNC1, 3);
-	wr8(REG_SWIZZLE, 0);
-	wr8(REG_PCLK_POL, 1);
-	wr8(REG_CSPREAD, 1);
-	wr16(REG_HSIZE, 800);
-	wr16(REG_VSIZE, 480);
-	wr8(REG_DITHER, 1);
+	case 5:
+		wr16(REG_HCYCLE, 928);
+		contorInit++;
+		break;
+	case 6:
+		wr16(REG_HOFFSET, 88);
+		contorInit++;
+		break;
+	case 7:
+		wr16(REG_HSYNC0, 0);
+		contorInit++;
+		break;
+	case 8:
+		wr16(REG_HSYNC1, 48);
+		contorInit++;
+		break;
+	case 9:
+		wr16(REG_VCYCLE, 525);
+		contorInit++;
+		break;
+	case 10:
+		wr16(REG_VOFFSET, 32);
+		contorInit++;
+		break;
+	case 11:
+		wr16(REG_VSYNC0, 0);
+		contorInit++;
+		break;
+	case 12:
+		wr16(REG_VSYNC1, 3);
+		contorInit++;
+		break;
+	case 13:
+		wr8(REG_SWIZZLE, 0);
+		contorInit++;
+		break;
+	case 14:
+		wr8(REG_PCLK_POL, 1);
+		contorInit++;
+		break;
+	case 15:
+		wr8(REG_CSPREAD, 1);
+		contorInit++;
+		break;
+	case 16:
+		wr16(REG_HSIZE, 800);
+		contorInit++;
+		break;
+	case 17:
+		wr16(REG_VSIZE, 480);
+		contorInit++;
+		break;
+	case 18:
+		wr8(REG_DITHER, 1);
+		contorInit++;
+		break;
 
 	/* write first display list */
-	wr32(RAM_DL+0,clear_color_rgb(0,0,0));
-	wr32(RAM_DL+4,clear(1,1,1));
-	wr32(RAM_DL+8,display());
-	wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
-	wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR);
-	wr8(REG_GPIO,0x80);// | rd8(REG_GPIO);//enable display bit
-	wr8(REG_PCLK,2);//after this display is visible on the LCD
+	case 19:
+		wr32(RAM_DL+0,clear_color_rgb(0,0,0));
+		contorInit++;
+		break;
+	case 20:
+		wr32(RAM_DL+4,clear(1,1,1));
+		contorInit++;
+		break;
+	case 21:
+		wr32(RAM_DL+8,display());
+		contorInit++;
+		break;
+	case 22:
+		wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
+		contorInit++;
+		break;
+	case 23:
+		wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR);
+		contorInit++;
+		break;
+	case 24:
+		wr8(REG_GPIO,0x80);// | rd8(REG_GPIO);//enable display bit
+		contorInit++;
+		break;
+	case 25:
+		wr8(REG_PCLK,2);//after this display is visible on the LCD
+		contorInit++;
+		break;
+	default:
+		contorInit = 0;
+		break;
+	}
 }
 
 
@@ -252,30 +340,35 @@ void Display_Test(){
 
 }
 
-static void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds)
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds)
 {
 	switch(displayState)
 	{
-	case INITIALIZING:
+	case INIT:
 		Display_Init();
 		break;
 	case STORAGE:
+		contorStorage = 0;
 		Display_Data_Save(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current,Total_Voltage, Minutes, Seconds, Miliseconds);
+		dataStorageFlag = true;
 		break;
 	case UPDATE:
 		switch(microState)
 		{
 		case READ:
-			readMessage = rd8(DL_SWAP);
+			readMessage = rd8(REG_DLSWAP);
 			break;
-		case OPERATIONAL:
-			if(indexSendMessage < contorMessage)
+		case FUNCTIONAL:
+			if(indexSendMessage < contorStorage)
 			{
 				wr32(RAM_DL + (index+=4), displayBuffer[indexSendMessage++]);
 			}
 			break;
 		case WRITE:
 			wr8(REG_DLSWAP, DLSWAP_FRAME);
+			index = 0;
+			indexSendMessage = 0;
+			dataStorageFlag = false;
 			break;
 		}
 		break;
@@ -283,17 +376,21 @@ static void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_
 	Display_State_Update();
 }
 
-static void Display_State_Update()
+static void Display_State_Update(void)
 {
 	switch(displayState)
 	{
-	case INITIALIZING:
-		displayState = STORAGE;
+	case INIT:
+		if (contorInit == 26)
+		{
+			displayState = STORAGE;
+		}
 		break;
 	case STORAGE:
 		if(dataStorageFlag == true)
 		{
 			displayState = UPDATE;
+			microState = READ;
 		}
 		break;
 	case UPDATE:
@@ -302,10 +399,10 @@ static void Display_State_Update()
 		case READ:
 			if (readMessage == 0)
 			{
-				microState = OPERATIONAL;
+				microState = FUNCTIONAL;
 			}
 			break;
-		case OPERATIONAL:
+		case FUNCTIONAL:
 			if (contorStorage == indexSendMessage)
 			{
 				microState = WRITE;
@@ -313,7 +410,6 @@ static void Display_State_Update()
 			break;
 		case WRITE:
 			displayState = STORAGE;
-			microState = READ;
 			break;
 		}
 		break;
@@ -1140,7 +1236,6 @@ static void Display_Data_Save(uint8_t Acceleration, uint8_t Brake, uint8_t Batte
 	displayBuffer[contorStorage++] = restore_context();
 
 	displayBuffer[contorStorage++] = display();
-	dataStorageFlag = true;
 }
 
 #ifdef __cplusplus
