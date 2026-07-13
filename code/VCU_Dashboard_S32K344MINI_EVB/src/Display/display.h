@@ -320,6 +320,19 @@ typedef struct{
 	bool Brake;
 }Witnesses_t;
 
+typedef enum
+{
+	INITIALIZING,
+	STORAGE,
+	UPDATE
+} DisplayState_t;
+
+typedef enum
+{
+	READ,
+	OPERATIONAL,
+	WRITE
+} MicroStateDisplay_t;
 
 /*==================================================================================================
  *                                GLOBAL VARIABLE DECLARATIONS
