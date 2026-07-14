@@ -21,6 +21,8 @@ extern "C" {
  *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 #define PD_PIN_PCR			75U
+#define MAX_COUNTER_INIT	30U
+
 /*==================================================================================================
  *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -36,12 +38,11 @@ extern "C" {
 ==================================================================================================*/
 static uint32_t displayBuffer[2048] = {0};
 static DisplayState_t displayState = INIT;
-static MicroStateDisplay_t microState = READ;
+static UpdateState_t updateState = READ;
 static uint16_t contorStorage = 0;
 static uint8_t contorInit = 0;
 static uint16_t indexSendMessage = 0;
-static uint8_t readMessage = 1;
-static bool dataStorageFlag = false;
+static int8_t readMessage = -1;
 static uint32_t index = 0;
 
 /*==================================================================================================
@@ -89,139 +90,10 @@ static void Display_Data_Save(uint8_t Acceleration, uint8_t Brake, uint8_t Batte
 ==================================================================================================*/
 void Display_Init(void){
 	displayState = INIT;
-	microState = READ;
+	updateState = READ;
 	contorStorage = 0;
 	indexSendMessage = 0;
-	readMessage = 1;
-	dataStorageFlag = false;
-
-	switch(contorInit)
-	{
-	case 0:
-		Dio_WriteChannel(PD_PIN_PCR, 0);
-		volatile int delei = 3000000;
-		while(delei){
-			delei--;
-		}
-		contorInit++;
-		break;
-	case 1:
-		Dio_WriteChannel(PD_PIN_PCR, 1);
-		delei = 3000000;
-		while(delei){
-			delei--;
-		}
-		host_command(CLKSEL, 0x86);//select the system clock frequency
-		contorInit++;
-		break;
-	case 2:
-		delei = 3000000;
-		while(delei){
-			delei--;
-		}
-		host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
-		contorInit++;
-		break;
-	case 3:
-		while (0x7C != rd8(REG_ID)); //Wait till clock is on
-		contorInit++;
-		break;
-	case 4:
-		while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
-		contorInit++;
-		break;
-
-	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
-	case 5:
-		wr16(REG_HCYCLE, 928);
-		contorInit++;
-		break;
-	case 6:
-		wr16(REG_HOFFSET, 88);
-		contorInit++;
-		break;
-	case 7:
-		wr16(REG_HSYNC0, 0);
-		contorInit++;
-		break;
-	case 8:
-		wr16(REG_HSYNC1, 48);
-		contorInit++;
-		break;
-	case 9:
-		wr16(REG_VCYCLE, 525);
-		contorInit++;
-		break;
-	case 10:
-		wr16(REG_VOFFSET, 32);
-		contorInit++;
-		break;
-	case 11:
-		wr16(REG_VSYNC0, 0);
-		contorInit++;
-		break;
-	case 12:
-		wr16(REG_VSYNC1, 3);
-		contorInit++;
-		break;
-	case 13:
-		wr8(REG_SWIZZLE, 0);
-		contorInit++;
-		break;
-	case 14:
-		wr8(REG_PCLK_POL, 1);
-		contorInit++;
-		break;
-	case 15:
-		wr8(REG_CSPREAD, 1);
-		contorInit++;
-		break;
-	case 16:
-		wr16(REG_HSIZE, 800);
-		contorInit++;
-		break;
-	case 17:
-		wr16(REG_VSIZE, 480);
-		contorInit++;
-		break;
-	case 18:
-		wr8(REG_DITHER, 1);
-		contorInit++;
-		break;
-
-	/* write first display list */
-	case 19:
-		wr32(RAM_DL+0,clear_color_rgb(0,0,0));
-		contorInit++;
-		break;
-	case 20:
-		wr32(RAM_DL+4,clear(1,1,1));
-		contorInit++;
-		break;
-	case 21:
-		wr32(RAM_DL+8,display());
-		contorInit++;
-		break;
-	case 22:
-		wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
-		contorInit++;
-		break;
-	case 23:
-		wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR);
-		contorInit++;
-		break;
-	case 24:
-		wr8(REG_GPIO,0x80);// | rd8(REG_GPIO);//enable display bit
-		contorInit++;
-		break;
-	case 25:
-		wr8(REG_PCLK,2);//after this display is visible on the LCD
-		contorInit++;
-		break;
-	default:
-		contorInit = 0;
-		break;
-	}
+	readMessage = -1;
 }
 
 
@@ -342,18 +214,157 @@ void Display_Test(){
 
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds)
 {
+	volatile int delei = 3000000;
+
 	switch(displayState)
 	{
 	case INIT:
-		Display_Init();
+		updateState = READ;
+		contorStorage = 0;
+		indexSendMessage = 0;
+		readMessage = -1;
+
+		switch(contorInit)
+		{
+		case 0:
+			Dio_WriteChannel(PD_PIN_PCR, 0);
+			contorInit++;
+			break;
+		case 1:
+			while(delei){
+				delei--;
+			}
+			contorInit++;
+			break;
+		case 2:
+			Dio_WriteChannel(PD_PIN_PCR, 1);
+			contorInit++;
+			break;
+		case 3:
+			while(delei){
+				delei--;
+			}
+			contorInit++;
+			break;
+		case 4:
+			host_command(CLKSEL, 0x86);//select the system clock frequency
+			contorInit++;
+			break;
+		case 5:
+			while(delei){
+				delei--;
+			}
+			contorInit++;
+			break;
+		case 6:
+			host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
+			contorInit++;
+			break;
+		case 7:
+			readMessage = rd8(REG_ID); //Wait till clock is on
+			break;
+		case 8:
+			readMessage = rd8(REG_CPURESET); //Check if EVE is in working status.
+			break;
+
+		/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
+		case 9:
+			wr16(REG_HCYCLE, 928);
+			contorInit++;
+			break;
+		case 10:
+			wr16(REG_HOFFSET, 88);
+			contorInit++;
+			break;
+		case 11:
+			wr16(REG_HSYNC0, 0);
+			contorInit++;
+			break;
+		case 12:
+			wr16(REG_HSYNC1, 48);
+			contorInit++;
+			break;
+		case 13:
+			wr16(REG_VCYCLE, 525);
+			contorInit++;
+			break;
+		case 14:
+			wr16(REG_VOFFSET, 32);
+			contorInit++;
+			break;
+		case 15:
+			wr16(REG_VSYNC0, 0);
+			contorInit++;
+			break;
+		case 16:
+			wr16(REG_VSYNC1, 3);
+			contorInit++;
+			break;
+		case 17:
+			wr8(REG_SWIZZLE, 0);
+			contorInit++;
+			break;
+		case 18:
+			wr8(REG_PCLK_POL, 1);
+			contorInit++;
+			break;
+		case 19:
+			wr8(REG_CSPREAD, 1);
+			contorInit++;
+			break;
+		case 20:
+			wr16(REG_HSIZE, 800);
+			contorInit++;
+			break;
+		case 21:
+			wr16(REG_VSIZE, 480);
+			contorInit++;
+			break;
+		case 22:
+			wr8(REG_DITHER, 1);
+			contorInit++;
+			break;
+
+		/* write first display list */
+		case 23:
+			wr32(RAM_DL+0,clear_color_rgb(0,0,0));
+			contorInit++;
+			break;
+		case 24:
+			wr32(RAM_DL+4,clear(1,1,1));
+			contorInit++;
+			break;
+		case 25:
+			wr32(RAM_DL+8,display());
+			contorInit++;
+			break;
+		case 26:
+			wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
+			contorInit++;
+			break;
+		case 27:
+			wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR);
+			contorInit++;
+			break;
+		case 28:
+			wr8(REG_GPIO,0x80);// | rd8(REG_GPIO);//enable display bit
+			contorInit++;
+			break;
+		case 29:
+			wr8(REG_PCLK,2);//after this display is visible on the LCD
+			contorInit++;
+			break;
+		default:
+			contorInit = 0;
+			break;
+		}
 		break;
 	case STORAGE:
 		contorStorage = 0;
 		Display_Data_Save(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current,Total_Voltage, Minutes, Seconds, Miliseconds);
-		dataStorageFlag = true;
 		break;
 	case UPDATE:
-		switch(microState)
+		switch(updateState)
 		{
 		case READ:
 			readMessage = rd8(REG_DLSWAP);
@@ -368,7 +379,6 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr8(REG_DLSWAP, DLSWAP_FRAME);
 			index = 0;
 			indexSendMessage = 0;
-			dataStorageFlag = false;
 			break;
 		}
 		break;
@@ -381,31 +391,70 @@ static void Display_State_Update(void)
 	switch(displayState)
 	{
 	case INIT:
-		if (contorInit == 26)
+		switch(contorInit)
+		{
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			break;
+		case 7:
+			if (0x7C != readMessage) //Wait till clock is on
+				contorInit++;
+			break;
+		case 8:
+			if (0x0 != rd8(REG_CPURESET)) //Check if EVE is in working status.
+				contorInit++;
+			break;
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+		case 16:
+		case 17:
+		case 18:
+		case 19:
+		case 20:
+		case 21:
+		case 22:
+		case 23:
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 28:
+		case 29:
+		default:
+			break;
+		}
+
+		if (contorInit == MAX_COUNTER_INIT)
 		{
 			displayState = STORAGE;
 		}
 		break;
 	case STORAGE:
-		if(dataStorageFlag == true)
-		{
-			displayState = UPDATE;
-			microState = READ;
-		}
+		updateState = READ;
+		displayState = UPDATE;
 		break;
 	case UPDATE:
-		switch (microState)
+		switch (updateState)
 		{
 		case READ:
 			if (readMessage == 0)
 			{
-				microState = FUNCTIONAL;
+				updateState = FUNCTIONAL;
 			}
 			break;
 		case FUNCTIONAL:
 			if (contorStorage == indexSendMessage)
 			{
-				microState = WRITE;
+				updateState = WRITE;
 			}
 			break;
 		case WRITE:
