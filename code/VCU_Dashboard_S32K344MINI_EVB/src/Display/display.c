@@ -402,11 +402,11 @@ static void Display_State_Update(void)
 		case 6:
 			break;
 		case 7:
-			if (0x7C != readMessage) //Wait till clock is on
+			if (0x7C == readMessage) //Wait till clock is on
 				contorInit++;
 			break;
 		case 8:
-			if (0x0 != rd8(REG_CPURESET)) //Check if EVE is in working status.
+			if (0x0 == readMessage) //Check if EVE is in working status.
 				contorInit++;
 			break;
 		case 9:
