@@ -220,6 +220,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 	{
 	case INIT:
 		updateState = READ;
+		index = 0;
 		contorStorage = 0;
 		indexSendMessage = 0;
 		readMessage = -1;
