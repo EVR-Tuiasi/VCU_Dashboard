@@ -27,7 +27,10 @@ extern "C" {
 #include "Port.h"
 #include "Dio.h"
 #include "Spi.h"
+#include "Spi_Ipw.h"
 #include "Gpt.h"
+#include "CDD_Mcl.h"
+#include "CDD_Rm.h"
 #include "Platform.h"
 #include "display.h"
 #include "FT81_misc.h"
@@ -128,6 +131,8 @@ int main(void)
 
 	/* Initialize all pins using the Port driver */
 	Port_Init(NULL_PTR);
+	Rm_Init(NULL_PTR);
+	Mcl_Init(NULL_PTR);
 	Spi_Init(NULL_PTR);
 	Platform_Init(NULL_PTR);
 	Gpt_Init(NULL_PTR);
@@ -137,7 +142,7 @@ int main(void)
 
 	trailingArray();
 	Display_Init();
-	while(1){
+	/*while(1){
 		for(i = 0; i < 18; i++)
 		{
 			for(j = 0; j < 70; j++)
@@ -148,6 +153,10 @@ int main(void)
 			}
 		}
 
+	}*/
+
+	while(1){
+		TouchTest();
 	}
 }
 

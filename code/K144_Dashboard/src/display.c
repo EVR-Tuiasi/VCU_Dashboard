@@ -21,6 +21,8 @@ extern "C" {
  *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 
+static DisplayState_t displayState = INIT;
+static volatile bool display_error_flag = false;
 
 /*==================================================================================================
  *                                       LOCAL MACROS
@@ -62,6 +64,209 @@ uint32_t FTDI_Array[2048];
 /*==================================================================================================
  *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
+void DisplayInit(void){
+	uint32_t index = 0;
+	/* DISPLAY INITIALIZATION */
+	Dio_WriteChannel(109, 0);
+	volatile int delei = 3000000;
+	while(delei){
+		delei--;
+	}
+	Dio_WriteChannel(109, 1);
+	delei = 3000000;
+	while(delei){
+		delei--;
+	}
+	host_command(CLKEXT, 0);//send command to "CLKEXT" to FT81X
+	delei = 3000000;
+	while(delei){
+		delei--;
+	}
+	host_command(CLKSEL, 0x86);//select the system clock frequency
+	delei = 3000000;
+	while(delei){
+		delei--;
+	}
+
+	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
+
+	while (0x7C != rd8(REG_ID)); //Wait till clock is on
+	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
+	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
+	wr16(REG_HCYCLE, 928);
+	wr16(REG_HOFFSET, 88);
+	wr16(REG_HSYNC0, 0);
+	wr16(REG_HSYNC1, 48);
+	wr16(REG_VCYCLE, 525);
+	wr16(REG_VOFFSET, 32);
+	wr16(REG_VSYNC0, 0);
+	wr16(REG_VSYNC1, 3);
+	wr8(REG_SWIZZLE, 0);
+	wr8(REG_PCLK_POL, 1);
+	wr8(REG_CSPREAD, 1);
+	wr16(REG_HSIZE, 800);
+	wr16(REG_VSIZE, 480);
+	wr8(REG_DITHER, 1);
+
+	/* write first display list */
+	wr32(RAM_DL+0,clear_color_rgb(0,0,0));
+	wr32(RAM_DL+4,clear(1,1,1));
+	wr32(RAM_DL+8,display());
+	wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
+	wr8(REG_GPIO_DIR,0x81);//| rd8(REG_GPIO_DIR));
+	wr8(REG_GPIO,0x81);// | rd8(REG_GPIO));//enable display bit
+
+	wr8(REG_PCLK,2);//after this display is visible on the LCD
+
+	/* STATIC DESIGN OF THE UI */
+	//Diagonal ends
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_START, UPPER_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_START - UPPER_BORDER_DIAGONAL, 0));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_END, UPPER_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_END + UPPER_BORDER_DIAGONAL, 0));
+	//Vertical upper indicators
+	wr32(RAM_DL + (index+=4), line_width(64));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_MIDDLE_LINE, 0));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_MIDDLE_LINE, UPPER_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_LEFT_LINE, 0));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_LEFT_LINE, UPPER_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_RIGHT_LINE, 0));
+	wr32(RAM_DL + (index+=4), vertex2f(UPPER_VERTICAL_RIGHT_LINE, UPPER_BORDER_HEIGHT));
+
+	//Lower Text
+	wr32(RAM_DL + (index+=4), save_context());
+	wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+	wr32(RAM_DL + (index+=4), bitmap_handle(31));
+	wr32(RAM_DL + (index+=4), bitmap_transform_a(200));
+	wr32(RAM_DL + (index+=4), bitmap_transform_e(256));
+	wr32(RAM_DL + (index+=4), begin(BITMAPS));
+	wr32(RAM_DL + (index+=4), vertex2ii(157, 326, 31, 'k'));
+	wr32(RAM_DL + (index+=4), vertex2ii(185, 326, 31, 'm'));
+	wr32(RAM_DL + (index+=4), vertex2ii(230, 326, 31, '/'));
+	wr32(RAM_DL + (index+=4), vertex2ii(251, 326, 31, 'h'));
+
+	/* SPEEDOMETER HASH MARKS */
+	wr32(RAM_DL + (index+=4), begin(LINES));
+	wr32(RAM_DL + (index+=4), line_width(25));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH1_X, HASH1_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH1_END_X, HASH1_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH1_X, HASH1_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH1_END_X, HASH1_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH2_X, HASH2_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH2_END_X, HASH2_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH3_X, HASH3_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH3_END_X, HASH3_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH4_X, HASH4_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH4_END_X, HASH4_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH5_X, HASH5_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH5_END_X, HASH5_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH6_X, HASH6_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH6_END_X, HASH6_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH7_X, HASH7_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH7_END_X, HASH7_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH8_X, HASH8_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH8_END_X, HASH8_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH9_X, HASH9_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH9_END_X, HASH9_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH10_X, HASH10_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH10_END_X, HASH10_END_Y));
+
+	wr32(RAM_DL + (index+=4), vertex2f(HASH11_X, HASH11_Y));
+	wr32(RAM_DL + (index+=4), vertex2f(HASH11_END_X, HASH11_END_Y));
+
+	wr32(RAM_DL + (index+=4), restore_context());
+	/* END FOR SPEEDOMETER HASH MARKS */
+
+	/* BATTERY PERCENTAGE BAR BOX*/
+	wr32(RAM_DL + (index+=4), line_width(16));
+	wr32(RAM_DL + (index+=4), begin(RECTS));
+	wr32(RAM_DL + (index+=4), vertex2f(VERTICAL_BATTERY_BORDER, VERTICAL_BATTERY_BORDER_ORIGIN));
+	wr32(RAM_DL + (index+=4), vertex2f(VERTICAL_BATTERY_BORDER + 8, VERTICAL_BATTERY_BORDER_END));
+	wr32(RAM_DL + (index+=4), vertex2f(HORIZONTAL_BATTERY_BORDER_ORIGIN, HORIZONTAL_BATTERY_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(HORIZONTAL_BATTER_BORDER_END, HORIZONTAL_BATTERY_BORDER_HEIGHT + BORDER_THICKNESS));
+	wr32(RAM_DL + (index+=4), vertex2ii(239, 24, 30, '%'));	//Percentage symbol for battery
+
+	//Motors Text
+
+	wr32(RAM_DL + (index+=4), vertex_translate_x(8000));
+	wr32(RAM_DL + (index+=4), begin(BITMAPS));
+	wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));				//50, 255, 150
+	wr32(RAM_DL + (index+=4), vertex2ii(150, 410, 31, 'M'));
+	wr32(RAM_DL + (index+=4), vertex2ii(183, 410, 31, 'o'));
+	wr32(RAM_DL + (index+=4), vertex2ii(204, 410, 31, 't'));
+	wr32(RAM_DL + (index+=4), vertex2ii(217, 410, 31, 'o'));
+	wr32(RAM_DL + (index+=4), vertex2ii(240, 410, 31, 'r'));
+
+	//Inverter Text
+	wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+	wr32(RAM_DL + (index+=4), begin(BITMAPS));
+	wr32(RAM_DL + (index+=4), vertex2ii(5, 410, 31, 'I'));
+	wr32(RAM_DL + (index+=4), vertex2ii(15, 410, 31, 'n'));
+	wr32(RAM_DL + (index+=4), vertex2ii(37, 410, 31, 'v'));
+	wr32(RAM_DL + (index+=4), vertex2ii(57, 410, 31, 'e'));
+	wr32(RAM_DL + (index+=4), vertex2ii(78, 410, 31, 'r'));
+	wr32(RAM_DL + (index+=4), vertex2ii(93, 410, 31, 't'));
+	wr32(RAM_DL + (index+=4), vertex2ii(107, 410, 31, 'e'));
+	wr32(RAM_DL + (index+=4), vertex2ii(127, 410, 31, 'r'));
+
+	/* LOWER BORDERS */
+	wr32(RAM_DL + (index+=4), save_context());
+	wr32(RAM_DL + (index+=4), line_width(56));
+	wr32(RAM_DL + (index+=4), color_rgb(80, 80, 80));
+	wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
+	wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(INVERTER_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER));
+	wr32(RAM_DL + (index+=4), vertex2f(MIDDLE_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER));
+	wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER_START, LOWER_HORIZONTAL_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(MOTOR_HORIZONTAL_BORDER_END, LOWER_HORIZONTAL_BORDER_HEIGHT));
+	wr32(RAM_DL + (index+=4), line_width(48));
+	wr32(RAM_DL + (index+=4), begin(LINES));
+	wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, LOWER_HORIZONTAL_BORDER + BORDER_THICKNESS));
+	wr32(RAM_DL + (index+=4), vertex2f(LOWER_INVERTER_DELIMITER, 480));
+	wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, LOWER_HORIZONTAL_BORDER + BORDER_THICKNESS));
+	wr32(RAM_DL + (index+=4), vertex2f(LOWER_MOTOR_DELIMITER, 480));
+
+	/* END FOR LOWER BORDERS DESIGN */
+
+	wr32(RAM_DL + (index+=4), line_width(64));
+	//Data underline
+	wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
+	wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_DIAGONAL_LINE_START, TEMPERATURE_DIAGONAL_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_DIAGONAL_LINE_END, TEMPERATURE_UNDERLINE_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(TEMPERATURE_UNDERLINE, TEMPERATURE_UNDERLINE_HEIGHT));
+	//Data underline
+	wr32(RAM_DL + (index+=4), begin(LINE_STRIP));
+	wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_DIAGONAL_LINE_START, VOLTAGE_DIAGONAL_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_DIAGONAL_LINE_END, VOLTAGE_UNDERLINE_HEIGHT));
+	wr32(RAM_DL + (index+=4), vertex2f(VOLTAGE_UNDERLINE, VOLTAGE_UNDERLINE_HEIGHT));
+	wr32(RAM_DL + (index+=4), restore_context());
+
+	wr32(RAM_DL + (index+=4), save_context());
+	wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+	wr32(RAM_DL + (index+=4), begin(BITMAPS));
+	wr32(RAM_DL + (index+=4), bitmap_transform_a(110));
+	wr32(RAM_DL + (index+=4), bitmap_transform_e(110));
+
+	//Voltage indicator for total voltage
+	wr32(RAM_DL + (index+=4), begin(BITMAPS));
+	wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+	wr32(RAM_DL + (index+=4), vertex2ii(10, 52, 31, 'U'));
+	wr32(RAM_DL + (index+=4), vertex2ii(40, 65, 30, 't'));
+	wr32(RAM_DL + (index+=4), vertex2ii(55, 52, 31, '='));
+}
+
 void Display_Init(void){
 	/*Cod nebun display*/
 	Dio_WriteChannel(109, 0);
@@ -117,8 +322,8 @@ void Display_Init(void){
 	wr32(RAM_DL+4,clear(1,1,1));
 	wr32(RAM_DL+8,display());
 	wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
-	wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR));
-	wr8(REG_GPIO,0x80);// | rd8(REG_GPIO));//enable display bit
+	wr8(REG_GPIO_DIR,0x81);//| rd8(REG_GPIO_DIR));
+	wr8(REG_GPIO,0x81);// | rd8(REG_GPIO));//enable display bit
 	/*wr16(REG_PWM_HZ, 1000);
 	for(int i = 0; i< 128; i++){
 		wr8(REG_PWM_DUTY, i);
@@ -154,6 +359,104 @@ void SoundTest(void){
 		}
 	}
 }
+
+void TouchTest(void){
+	volatile uint32_t xy_coordinates, index = 0;
+	volatile uint16_t  x_coordinate = 0, y_coordinate = 0;
+	xy_coordinates = rd32(REG_CTOUCH_TOUCH_XY);
+	y_coordinate = xy_coordinates;
+	x_coordinate = xy_coordinates >> 16;
+	if(rd8(REG_DLSWAP) == 0){
+		wr32(RAM_DL + (index+=4), clear(1, 1, 1));
+		wr32(RAM_DL + (index+=4), vertex_format(0));
+		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+		wr32(RAM_DL + (index+=4), begin(BITMAPS));
+		wr32(RAM_DL + (index+=4), vertex2ii(0, 0, 31, 'x'));
+		wr32(RAM_DL + (index+=4), vertex2ii(20, 0, 31, '='));
+		if(x_coordinate > 9999){
+			wr32(RAM_DL + (index+=4), vertex2ii(40, 0, 31, ((x_coordinate / 10000) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(60, 0, 31, (((x_coordinate / 1000) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31, (((x_coordinate / 100) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+		}
+		else if(x_coordinate > 999){
+			wr32(RAM_DL + (index+=4), vertex2ii(60, 0, 31, ((x_coordinate / 1000 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31, (((x_coordinate / 100) % 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate  % 10) + '0')));
+		}
+
+		else if(x_coordinate > 99){
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31,((x_coordinate / 100 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+		}
+
+		else if(x_coordinate > 9){
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, ((x_coordinate / 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+		}
+		else{
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, (x_coordinate + '0')));
+		}
+
+		wr32(RAM_DL + (index+=4), vertex2ii(0, 40, 31, 'y'));
+		wr32(RAM_DL + (index+=4), vertex2ii(20, 40, 31, '='));
+
+		if(y_coordinate > 9999){
+			wr32(RAM_DL + (index+=4), vertex2ii(40, 40, 31, ((y_coordinate / 10000) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(60, 40, 31, (((y_coordinate / 1000) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31, (((y_coordinate / 100) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+		}
+		else if(y_coordinate > 999){
+			wr32(RAM_DL + (index+=4), vertex2ii(60, 40, 31, ((y_coordinate / 1000 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31, (((y_coordinate / 100) % 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate  % 10) + '0')));
+		}
+
+		else if(y_coordinate > 99){
+			wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31,((y_coordinate / 100 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+		}
+
+		else if(y_coordinate > 9){
+			wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, ((y_coordinate / 10 ) + '0')));
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+		}
+		else{
+			wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, (y_coordinate + '0')));
+		}
+
+		wr32(RAM_DL + (index+=4), display());
+		wr8(REG_DLSWAP, DLSWAP_FRAME);
+	}
+}
+
+
+/*void TouchCalibrate(){
+	uint16_t write_cmd = rd16(REG_CMD_WRITE);
+	uint16_t read_cmd = rd16(REG_CMD_READ);
+	volatile uint32_t a, b, c, d, e, f;
+
+	wr32(RAM_CMD + write_cmd, CMD_DLSTART); write_cmd = (write_cmd + 4) & 0xFFF;
+	wr32(RAM_CMD + write_cmd, clear(1, 1, 1)); write_cmd = (write_cmd + 4) & 0xFFF;
+	wr32(RAM_CMD + write_cmd, CMD_CALIBRATE); write_cmd = (write_cmd + 4) & 0xFFF;
+	wr16(REG_CMD_WRITE, write_cmd);
+	while(write_cmd != read_cmd);
+
+	a = rd32(REG_TOUCH_TRANSFORM_A);
+	b = rd32(REG_TOUCH_TRANSFORM_B);
+	c = rd32(REG_TOUCH_TRANSFORM_C);
+	d = rd32(REG_TOUCH_TRANSFORM_D);
+	e = rd32(REG_TOUCH_TRANSFORM_E);
+	f = rd32(REG_TOUCH_TRANSFORM_F);
+
+}*/
 
 void newDisplayUpdate(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t witness, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds){
 	uint32_t arrayIndex = 0;
@@ -977,6 +1280,53 @@ void newDisplayUpdate(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Perce
 	}
 }
 
+void DisplayStateUpdate(void){
+	//fiecare case face logica pentru fiecare stare in parte(codul tau)
+	switch (displayState){
+	case INIT:
+	{
+		DisplayInit();
+		break;
+	}
+	case UPDATE:
+	{
+		Display_Test(0, 0, 0, 0);
+		break;
+	}
+	case ERROR:
+		break;
+	}
+
+	DisplayStatus();
+}
+
+void DisplayStatus()
+{
+	//se verifica in fiecare case prin if uri ce tranzitii ai si in ce state intra
+	switch (displayState){
+	case INIT:
+	{
+		if(display_error_flag == false){
+			displayState = UPDATE;
+		}
+		else{
+			displayState = ERROR;
+		}
+		break;
+	}
+	case UPDATE:
+	{
+		break;
+	}
+	case ERROR:
+		break;
+	}
+}
+
+void DisplayStateTest(){
+	DisplayStateUpdate();
+	DisplayStatus();
+}
 
 void trailingArray(){
 	double theta = 0;
@@ -1808,7 +2158,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), vertex2ii(456, 435, 31, (Miliseconds % 10) + '0'));
 		wr32(RAM_DL + (index+=4), restore_context());
 
-		//Celsius indicator for cell temp
+		//Voltage indicator for total voltage
 		wr32(RAM_DL + (index+=4), begin(BITMAPS));
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
 		wr32(RAM_DL + (index+=4), vertex2ii(10, 52, 31, 'U'));
@@ -1834,6 +2184,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr8(REG_DLSWAP, DLSWAP_FRAME);
 	}
 }
+
 
 #ifdef __cplusplus
 }

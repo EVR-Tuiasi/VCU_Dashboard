@@ -9,9 +9,10 @@ extern "C" {
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
-#include"Mcu.h"
+#include "Mcu.h"
 #include "FT81_touch.h"
-
+#include "FT81_misc.h"
+#include "stdbool.h"
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
@@ -19,7 +20,6 @@ extern "C" {
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
-
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -40,6 +40,7 @@ extern "C" {
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
+bool enableReversing;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -54,6 +55,24 @@ extern "C" {
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 
+void reversingToggle(void){
+	uint32_t xy_Coordinates;
+	uint16_t x = 0;
+	uint16_t y = 0;
+
+	xy_Coordinates = rd32(REG_CTOUCH_TOUCH_XY);
+	x = xy_Coordinates >> 16;
+	y = xy_Coordinates & 0xFFFF;
+
+	if(x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X){
+		if(y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y){
+			enableReversing = true;
+		}
+		else{
+			enableReversing = false;
+		}
+	}
+}
 
 #ifdef __cplusplus
 }
