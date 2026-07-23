@@ -80,16 +80,16 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
 ==================================================================================================*/
 void Display_Init(void){
 	Dio_WriteChannel(PD_PIN_PCR, 0);
-	volatile int delei = 3000000;
+	volatile uint64_t delei = 3000000;
 	while(delei){
 		delei--;
 	}
 	Dio_WriteChannel(PD_PIN_PCR, 1);
-	delei = 3000000;
+	delei = 30000000;
 	while(delei){
 		delei--;
 	}
-	host_command(CLKSEL, 0x86);//select the system clock frequency
+	host_command(CLKSEL, 0x00);//select the system clock frequency
 	delei = 3000000;
 	while(delei){
 		delei--;
@@ -117,10 +117,22 @@ void Display_Init(void){
 	wr32(RAM_DL+0,clear_color_rgb(0,0,0));
 	wr32(RAM_DL+4,clear(1,1,1));
 	wr32(RAM_DL+8,display());
+
 	wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
-	wr8(REG_GPIO_DIR,0x80);//| rd8(REG_GPIO_DIR));
-	wr8(REG_GPIO,0x80);// | rd8(REG_GPIO));//enable display bit
+	wr8(REG_GPIO_DIR,0x81);//| rd8(REG_GPIO_DIR));
+	wr8(REG_GPIO,0x81);// | rd8(REG_GPIO));//enable display bit
+	delei = 3000000;
+	while(delei){
+		delei--;
+	}
 	wr8(REG_PCLK,2);//after this display is visible on the LCD
+
+	wr32(REG_PWM_DUTY, 100);
+	delei = 1000000;
+	while(delei){
+		delei--;
+	}
+	wr32(REG_PWM_DUTY, 128);
 }
 
 void SoundTest(void){
@@ -236,6 +248,53 @@ void Display_Test(){
 	}
 
 
+}
+
+void Display_Touch_Test(void){
+	volatile uint32_t coordinates;
+	volatile uint16_t x, y;
+	uint32_t index;
+	volatile uint32_t readvalue;
+	volatile uint32_t delei;
+	while(1){
+		delei = 100000;
+		while(delei--);
+		coordinates = rd32(REG_CTOUCH_TOUCH_XY);
+		if(coordinates == 0x80008000){
+			x = 0;
+			y = 0;
+		}
+		else{
+			x = (uint16_t)(coordinates >> 16U);
+			y = (uint16_t)(coordinates && 0xFFFF);
+		}
+		//text
+		if(rd8(REG_DLSWAP) == 0){
+			index = 0;
+			wr32(RAM_DL + (index+=4), clear(1, 1, 1));
+			wr32(RAM_DL + (index+=4), vertex_format(0));
+			wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+			wr32(RAM_DL + (index+=4), bitmap_handle(31));
+			wr32(RAM_DL + (index+=4), begin(BITMAPS));
+			if(x >= 100U){
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS, 0, LARGE_FONT, (x / 100U) + '0'));
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS + 20, 0, LARGE_FONT, ((x / 10U) % 10) + '0'));
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS + 40, 0, LARGE_FONT, (x % 10) + '0'));
+			}
+
+			else if(x >= 10U)
+			{
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_TENS, 0, LARGE_FONT, (x / 10U) + '0'));
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_TENS + 20, 0, LARGE_FONT, (x % 10) + '0'));
+			}
+
+			else{
+				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_UNITS, 0, LARGE_FONT, x + '0'));
+			}
+			wr32(RAM_DL + (index+=4), display());
+			wr8(REG_DLSWAP, DLSWAP_FRAME);
+		}
+	}
 }
 
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds){
