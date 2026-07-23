@@ -297,6 +297,89 @@ void Display_Touch_Test(void){
 	}
 }
 
+void TouchTest(void){
+	volatile uint32_t xy_coordinates, index = 0;
+	volatile uint16_t  x_coordinate = 0, y_coordinate = 0;
+	volatile uint32_t delai = 50000;
+	while(1){
+		delai = 50000;
+		index = 0;
+		while(delai--);
+		xy_coordinates = rd32(REG_CTOUCH_TOUCH_XY);
+		y_coordinate = xy_coordinates;
+		x_coordinate = xy_coordinates >> 16;
+		if(rd8(REG_DLSWAP) == 0){
+			wr32(RAM_DL + (index+=4), clear(1, 1, 1));
+			wr32(RAM_DL + (index+=4), vertex_format(0));
+			wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
+			wr32(RAM_DL + (index+=4), begin(BITMAPS));
+			wr32(RAM_DL + (index+=4), vertex2ii(0, 0, 31, 'x'));
+			wr32(RAM_DL + (index+=4), vertex2ii(20, 0, 31, '='));
+			if(x_coordinate > 9999){
+				wr32(RAM_DL + (index+=4), vertex2ii(40, 0, 31, ((x_coordinate / 10000) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(60, 0, 31, (((x_coordinate / 1000) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31, (((x_coordinate / 100) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+			}
+			else if(x_coordinate > 999){
+				wr32(RAM_DL + (index+=4), vertex2ii(60, 0, 31, ((x_coordinate / 1000 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31, (((x_coordinate / 100) % 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate  % 10) + '0')));
+			}
+
+			else if(x_coordinate > 99){
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 0, 31,((x_coordinate / 100 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, (((x_coordinate / 10) % 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+			}
+
+			else if(x_coordinate > 9){
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 0, 31, ((x_coordinate / 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, ((x_coordinate % 10) + '0')));
+			}
+			else{
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 0, 31, (x_coordinate + '0')));
+			}
+
+			wr32(RAM_DL + (index+=4), vertex2ii(0, 40, 31, 'y'));
+			wr32(RAM_DL + (index+=4), vertex2ii(20, 40, 31, '='));
+
+			if(y_coordinate > 9999){
+				wr32(RAM_DL + (index+=4), vertex2ii(40, 40, 31, ((y_coordinate / 10000) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(60, 40, 31, (((y_coordinate / 1000) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31, (((y_coordinate / 100) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+			}
+			else if(y_coordinate > 999){
+				wr32(RAM_DL + (index+=4), vertex2ii(60, 40, 31, ((y_coordinate / 1000 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31, (((y_coordinate / 100) % 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate  % 10) + '0')));
+			}
+
+			else if(y_coordinate > 99){
+				wr32(RAM_DL + (index+=4), vertex2ii(80, 40, 31,((y_coordinate / 100 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, (((y_coordinate / 10) % 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+			}
+
+			else if(y_coordinate > 9){
+				wr32(RAM_DL + (index+=4), vertex2ii(100, 40, 31, ((y_coordinate / 10 ) + '0')));
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, ((y_coordinate % 10) + '0')));
+			}
+			else{
+				wr32(RAM_DL + (index+=4), vertex2ii(120, 40, 31, (y_coordinate + '0')));
+			}
+
+			wr32(RAM_DL + (index+=4), display());
+			wr8(REG_DLSWAP, DLSWAP_FRAME);
+		}
+	}
+}
+
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds){
 	uint32_t index = 0;
 	uint8_t Red, Green, Blue = 0;
@@ -415,8 +498,8 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		//Diagonal ends
 		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X, UPPER_BORDER_Y));
 		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X - UPPER_BORDER_OFFSET, 0));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH, UPPER_BORDER_Y));
-		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH + UPPER_BORDER_OFFSET, 0));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH - 100, UPPER_BORDER_Y));
+		wr32(RAM_DL + (index+=4), vertex2f(UPPER_BORDER_X + UPPER_BORDER_WIDTH + UPPER_BORDER_OFFSET - 100, 0));
 
 		//Vertical upper indicators
 		wr32(RAM_DL + (index+=4), line_width(64));
@@ -728,20 +811,20 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		//Dynamic Shadows for Motor Temperature
 		wr32(RAM_DL + (index+=4), color_rgb(0, 0, 0));				//50, 255, 150
 		if(Motor_Temperature >=10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X - 2, MOTOR_TEMP_POSITION_X + 2, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X - 2, MOTOR_TEMP_POSITION_Y + 2, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
 		}
-		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 20, MOTOR_TEMP_POSITION_X + 2, LARGE_FONT, (Motor_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 45, MOTOR_TEMP_POSITION_X + 2, CELSIUS_SYMBOL, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 52, MOTOR_TEMP_POSITION_X + 2, LARGE_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 20, MOTOR_TEMP_POSITION_Y + 2, LARGE_FONT, (Motor_Temperature % 10) + '0'));
+		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 45, MOTOR_TEMP_POSITION_Y + 2, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 52, MOTOR_TEMP_POSITION_Y + 2, LARGE_FONT, 'C'));
 
 		wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));				//50, 255, 150
 		//Dynamic Text for Motor Temperature
 		if(Motor_Temperature >=10U){
-			wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X, MOTOR_TEMP_POSITION_X, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
+			wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X, MOTOR_TEMP_POSITION_Y, LARGE_FONT, (Motor_Temperature / 10U) + '0'));
 		}
 		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 22, MOTOR_TEMP_POSITION_Y, LARGE_FONT, (Motor_Temperature % 10) + '0'));
-		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 47, MOTOR_TEMP_POSITION_X, CELSIUS_SYMBOL, 'o'));
-		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 54, MOTOR_TEMP_POSITION_X, LARGE_FONT, 'C'));
+		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 47, MOTOR_TEMP_POSITION_Y, CELSIUS_SYMBOL, 'o'));
+		wr32(RAM_DL + (index+=4), vertex2ii(MOTOR_TEMP_POSITION_X + 54, MOTOR_TEMP_POSITION_Y, LARGE_FONT, 'C'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 
 		/* THE END FOR MOTOR TEMPERATURE */

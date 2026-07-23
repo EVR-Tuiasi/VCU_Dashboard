@@ -48,7 +48,6 @@
 								</option>
 								<option id="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.mcpu.1255564378" name="Arm family" superClass="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.mcpu" useByScannerDiscovery="true" value="com.nxp.s32ds.cle.arm.mbs.arm32.bare.tool.c.compiler.option.target.mcpu.cortex-m7" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.1163537026" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="D_CACHE_ENABLE"/>
 									<listOptionValue builtIn="false" value="I_CACHE_ENABLE"/>
 									<listOptionValue builtIn="false" value="ENABLE_FPU"/>
 									<listOptionValue builtIn="false" value="MPU_ENABLE"/>
@@ -768,5 +767,18 @@
 	<storageModule moduleId="com.nxp.s32ds.cle.uct.core">
 		<sdkComponents>platform.driver.Platform;platform.driver.det;platform.driver.rte_platform;platform.driver.clock;platform.driver.rte_mcu;platform.driver.osif;platform.driver.rte_osif;platform.driver.mcu;platform.driver.ecum;platform.driver.port;platform.driver.rte_port;platform.driver.dio;platform.driver.rte_dio;platform.driver.spi;platform.driver.rte_spi;platform.driver.dem;platform.driver.rte_dem;platform.driver.gpt;platform.driver.rte_gpt;platform.driver.cdd_i2c;platform.driver.rte_i2c;platform.driver.Can_43_FLEXCAN;platform.driver.rte_can;platform.driver.uart;platform.driver.rte_uart;platform.driver.mcl;platform.driver.rte_mcl;platform.driver.CanIf</sdkComponents>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release_FLASH">
+			<resource resourceType="PROJECT" workspacePath="/VCU_Dashboard_S32K344MINI_EVB"/>
+		</configuration>
+		<configuration configurationName="Release_RAM">
+			<resource resourceType="PROJECT" workspacePath="/VCU_Dashboard_S32K344MINI_EVB"/>
+		</configuration>
+		<configuration configurationName="Debug_FLASH">
+			<resource resourceType="PROJECT" workspacePath="/VCU_Dashboard_S32K344MINI_EVB"/>
+		</configuration>
+		<configuration configurationName="Debug_RAM">
+			<resource resourceType="PROJECT" workspacePath="/VCU_Dashboard_S32K344MINI_EVB"/>
+		</configuration>
+	</storageModule>
 </cproject>

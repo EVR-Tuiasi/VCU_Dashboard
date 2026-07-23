@@ -35,7 +35,7 @@ extern "C"{
 ==================================================================================================*/
 /*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
 #define ReadDataFromAddressAndWriteInRawBufferUart(rawBufferU64, xMonitoredValue_t_Address) \
-		(rawBufferU64) |= (((xMonitoredValue_t_Address)->valueUart & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) << (xMonitoredValue_t_Address)->shift)
+		(rawBufferU64) |= ((((uint64_t)((xMonitoredValue_t_Address)->valueUart) & (~(0xFFFFFFFFFFFFFFFFULL << (xMonitoredValue_t_Address)->nrOfBits))) << (xMonitoredValue_t_Address)->shift))
 
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
@@ -206,15 +206,41 @@ static void UartMessaging_CreateBuffer(MessageId_t type, uint8_t *buffer){
 			break;
 	}
 	buffer[0] = type;
-	buffer[1] = (uint8_t)(buffer_merged << 56U);
-	buffer[2] = (uint8_t)(buffer_merged << 48U);
-	buffer[3] = (uint8_t)(buffer_merged << 40U);
-	buffer[4] = (uint8_t)(buffer_merged << 32U);
-	buffer[5] = (uint8_t)(buffer_merged << 24U);
-	buffer[6] = (uint8_t)(buffer_merged << 16U);
-	buffer[7] = (uint8_t)(buffer_merged << 8U);
+	buffer[1] = (uint8_t)(buffer_merged >> 56U);
+	buffer[2] = (uint8_t)(buffer_merged >> 48U);
+	buffer[3] = (uint8_t)(buffer_merged >> 40U);
+	buffer[4] = (uint8_t)(buffer_merged >> 32U);
+	buffer[5] = (uint8_t)(buffer_merged >> 24U);
+	buffer[6] = (uint8_t)(buffer_merged >> 16U);
+	buffer[7] = (uint8_t)(buffer_merged >> 8U);
 	buffer[8] = (uint8_t)buffer_merged;
 	buffer[9] = CRC_calculate(10);
+}
+
+void UartMessaging_CreateCellVoltageBuffer(uint16_t index){
+	bufferUart[0] = ID_UART_BATERIE_TENSIUNI_CELULE;
+	bufferUart[1] = index | (UartMessaging_ReadCellVoltageErrors(index*5+0) << 7) | (UartMessaging_ReadCellVoltageErrors(index*5+1) << 6) | (UartMessaging_ReadCellVoltageErrors(index*5+2) << 5) | (UartMessaging_ReadCellVoltageErrors(index*5+3) << 4) | (UartMessaging_ReadCellVoltageErrors(index*5+4) << 3);
+	bufferUart[2] = (UartMessaging_ReadCellVoltage(index*5+0) >> 8);
+	bufferUart[3] = UartMessaging_ReadCellVoltage(index*5+0) & (0x00FF);
+	bufferUart[4] = UartMessaging_ReadCellVoltage(index*5+1) >> 2;
+	bufferUart[5] = ((UartMessaging_ReadCellVoltage(index*5+1) & (0x0003)) << 6) | (UartMessaging_ReadCellVoltage(index*5+2) >> 4);
+	bufferUart[6] = ((UartMessaging_ReadCellVoltage(index*5+2) & (0x000F)) << 4) | (UartMessaging_ReadCellVoltage(index*5+3) >> 6);
+	bufferUart[7] = ((UartMessaging_ReadCellVoltage(index*5+3) & (0x003F)) << 2) | (UartMessaging_ReadCellVoltage(index*5+4) >> 8);
+	bufferUart[8] = UartMessaging_ReadCellVoltage(index*5+4) & (0x00FF);//PENTRU URMATORUL NEFERICIT, DACA APAR PROBLEME INSEAMNA CA AI MODIFICAT FUNCTIA DE READ VALUE SI AI SCORS SIGURANTA (god have mercy on your soul)
+	bufferUart[9] = CRC_calculate(10);
+}
+
+void UartMessaging_CreateCellTemperatureBuffer(uint16_t index){
+	bufferUart[0] = ID_UART_BATERIE_TEMPERATURI_CELULE;
+	bufferUart[1] = (index >> 2) | (UartMessaging_ReadCellTemperatureErrors(index*5+0) << 7) | (UartMessaging_ReadCellTemperatureErrors(index*5+1) << 6) | (UartMessaging_ReadCellTemperatureErrors(index*5+2) << 5) | (UartMessaging_ReadCellTemperatureErrors(index*5+3) << 4) | (UartMessaging_ReadCellTemperatureErrors(index*5+4) << 3);
+	bufferUart[2] = ((index & (0x0003)) << 6) | (UartMessaging_ReadCellTemperature(index*5+0) >> 8);
+	bufferUart[3] = UartMessaging_ReadCellTemperature(index*5+0) & (0x00FF);
+	bufferUart[4] = UartMessaging_ReadCellTemperature(index*5+1) >> 2;
+	bufferUart[5] = ((UartMessaging_ReadCellTemperature(index*5+1) & (0x0003)) << 6) | (UartMessaging_ReadCellTemperature(index*5+2) >> 4);
+	bufferUart[6] = ((UartMessaging_ReadCellTemperature(index*5+2) & (0x000F)) << 4) | (UartMessaging_ReadCellTemperature(index*5+3) >> 6);
+	bufferUart[7] = ((UartMessaging_ReadCellTemperature(index*5+3) & (0x003F)) << 2) | (UartMessaging_ReadCellTemperature(index*5+4) >> 8);
+	bufferUart[8] = UartMessaging_ReadCellTemperature(index*5+4) & (0x00FF); //PENTRU URMATORUL NEFERICIT, DACA APAR PROBLEME INSEAMNA CA AI MODIFICAT FUNCTIA DE READ VALUE SI AI SCORS SIGURANTA (god have mercy on your soul)
+	bufferUart[9] = CRC_calculate(10);
 }
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
@@ -225,72 +251,90 @@ void UartMessaging_Init(void){
 }
 
 void UartMessaging_Test(void){
-	int cnt = 0;
+	uint64_t cnt = 0;
 	volatile int i;
 	while(1){
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.MedianCellTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.HighestCellTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.LowestCellTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.MedianCellVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.HighestCellVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.LowestCellVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.OverallVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.OverallCurrent);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.MedianCellTemperature.maxValue+1), &MonitoredValues.TsacMonitoredValues.MedianCellTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.HighestCellTemperature.maxValue+1), &MonitoredValues.TsacMonitoredValues.HighestCellTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.LowestCellTemperature.maxValue+1), &MonitoredValues.TsacMonitoredValues.LowestCellTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.MedianCellVoltage.maxValue+1), &MonitoredValues.TsacMonitoredValues.MedianCellVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.HighestCellVoltage.maxValue+1), &MonitoredValues.TsacMonitoredValues.HighestCellVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.LowestCellVoltage.maxValue+1), &MonitoredValues.TsacMonitoredValues.LowestCellVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.OverallVoltage.maxValue+1), &MonitoredValues.TsacMonitoredValues.OverallVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.OverallCurrent.maxValue+1), &MonitoredValues.TsacMonitoredValues.OverallCurrent);
 
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.AmsError);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.TransceiverError);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.ShuntError);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.Bms0Error);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.TsacMonitoredValues.Bms1Error);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.AmsError);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.TransceiverError);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.ShuntError);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.Bms0Error);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.Bms1Error);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.ThermistorsError);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.ChargerStatus);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.TsacMonitoredValues.ChargerCommand);
 
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1Voltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2Voltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor1Voltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor2Voltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.PressureSensorVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.PressureSensorBars);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Accel_Implausibility);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.PedalsMonitoredValues.Brake_Implausibility);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.ReportedChargingCurrent.maxValue+1), &MonitoredValues.TsacMonitoredValues.ReportedChargingCurrent);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.ReportedChargingVolts.maxValue+1), &MonitoredValues.TsacMonitoredValues.ReportedChargingVolts);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.DesiredChargingCurrent.maxValue+1), &MonitoredValues.TsacMonitoredValues.DesiredChargingCurrent);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.TsacMonitoredValues.DesiredChargingVoltage.maxValue+1), &MonitoredValues.TsacMonitoredValues.DesiredChargingVoltage);
 
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterInputVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterCurrent);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorRpm);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottle);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottleFeedback);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorTemperature);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterCurrent);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorRpm);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.IsCarInReverse);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.InvertersMonitoredValues.IsCarRunning);
+		for(uint16_t index = 0; index < CELLS_NUM; index++){
+			UartMessaging_SetCellVoltageErrors(cnt & 1, index);
+			UartMessaging_SetCellVoltage(cnt%1024, index);
+		}
 
-		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.ActivationButtonPressed);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.CarReverseCommandPressed);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.IsDisplayWorking);
-		WriteUartDataAtAddress(cnt, &MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking);
+		for(uint16_t index = 0; index < THERMISTORS_NUM; index++){
+			UartMessaging_SetCellTemperatureErrors(cnt & 1, index);
+			UartMessaging_SetCellTemperature(cnt%1024, index);
+		}
+
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1Voltage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1Voltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2Voltage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2Voltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.BrakeSensor1Voltage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.BrakeSensor1Voltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.BrakeSensor2Voltage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.BrakeSensor2Voltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.PressureSensorVoltage.maxValue+1), &MonitoredValues.PedalsMonitoredValues.PressureSensorVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.PedalsMonitoredValues.PressureSensorBars.maxValue+1), &MonitoredValues.PedalsMonitoredValues.PressureSensorBars);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Accel_Implausibility);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.PedalsMonitoredValues.Brake_Implausibility);
+
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftInverterInputVoltage.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftInverterInputVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftInverterCurrent.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftInverterCurrent);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftMotorRpm.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftMotorRpm);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftInverterThrottle.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottle);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.LeftInverterThrottleFeedback.maxValue+1), &MonitoredValues.InvertersMonitoredValues.LeftInverterThrottleFeedback);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightInverterTemperature.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightInverterTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightMotorTemperature.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightMotorTemperature);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightInverterInputVoltage);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightInverterCurrent.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightInverterCurrent);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightMotorRpm.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightMotorRpm);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightInverterThrottle.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightInverterThrottle);
+		WriteUartDataAtAddress(cnt%(MonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback.maxValue+1), &MonitoredValues.InvertersMonitoredValues.RightInverterThrottleFeedback);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.InvertersMonitoredValues.IsCarInReverse);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.InvertersMonitoredValues.IsCarRunning);
+
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.DashboardMonitoredValues.ActivationButtonPressed);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.DashboardMonitoredValues.CarReverseCommandPressed);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.DashboardMonitoredValues.IsDisplayWorking);
+		WriteUartDataAtAddress(cnt&1, &MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking);
 		cnt++;
 		UartMessaging_Update();
 		i=100000;
@@ -299,35 +343,90 @@ void UartMessaging_Test(void){
 }
 
 void UartMessaging_Update(void){
-	volatile int i;
 	UartMessaging_CreateBuffer(ID_UART_INVERTOR_STANGA, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_INVERTOR_DREAPTA, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_INVERTOARE, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_BORD, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_ACCELERATIE, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_FRANA, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
 	UartMessaging_CreateBuffer(ID_UART_BATERIE, bufferUart);
 	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
-	i=100000;
-	while(i--);
+	for(uint16_t index = 0; index < CELLS_LINES; index++){
+		UartMessaging_CreateCellVoltageBuffer(index);
+		Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
+	}
+	for(uint16_t index = 0; index < THERMISTORS_LINES; index++){
+		UartMessaging_CreateCellTemperatureBuffer(index);
+		Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
+	}
+	UartMessaging_CreateBuffer(ID_UART_BATERIE_2, bufferUart);
+	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
+	UartMessaging_CreateBuffer(ID_UART_BATERIE_CHARGER, bufferUart);
+	Uart_SyncSend(UART_Channel, bufferUart, 10, 10000000);
+}
+
+uint16_t UartMessaging_ReadCellVoltage(uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < CELLS_NUM)
+		return MonitoredValues.TsacMonitoredValues.CellVoltage[index].valueUart;
+	else
+		return 0;
+}
+boolean UartMessaging_ReadCellVoltageErrors(uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < CELLS_NUM)
+		return MonitoredValues.TsacMonitoredValues.CellVoltage[index].errorUart;
+	else
+		return 0;
+}
+uint16_t UartMessaging_ReadCellTemperature(uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < THERMISTORS_NUM)
+		return MonitoredValues.TsacMonitoredValues.ThermistorTemperature[index].valueUart;
+	else
+		return 0;
+}
+boolean UartMessaging_ReadCellTemperatureErrors(uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < THERMISTORS_NUM)
+		return MonitoredValues.TsacMonitoredValues.ThermistorTemperature[index].errorUart;
+	else
+		return 0;
+}
+
+void UartMessaging_SetCellVoltage(uint16_t Value, uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < CELLS_NUM){
+		if(Value <= 1023)
+			MonitoredValues.TsacMonitoredValues.CellVoltage[index].valueUart = Value;
+		else
+			MonitoredValues.TsacMonitoredValues.CellVoltage[index].valueUart = 1023;
+	}
+}
+void UartMessaging_SetCellVoltageErrors(boolean Value, uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < CELLS_NUM)
+		MonitoredValues.TsacMonitoredValues.CellVoltage[index].errorUart = Value;
+}
+void UartMessaging_SetCellTemperature(uint16_t Value, uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < THERMISTORS_NUM){
+		if(Value <= 1023)
+			MonitoredValues.TsacMonitoredValues.ThermistorTemperature[index].valueUart = Value;
+		else
+			MonitoredValues.TsacMonitoredValues.ThermistorTemperature[index].valueUart = 1023;
+	}
+}
+void UartMessaging_SetCellTemperatureErrors(boolean Value, uint16_t index){
+	//NU SCOATE IF-URILE: SUNT DE SIGURANTA
+	if(index < THERMISTORS_NUM)
+		MonitoredValues.TsacMonitoredValues.ThermistorTemperature[index].errorUart = Value;
 }
 
 #ifdef __cplusplus

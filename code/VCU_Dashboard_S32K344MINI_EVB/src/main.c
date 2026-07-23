@@ -90,11 +90,12 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
 	Display_Init();
-	//Display_Touch_Test();
+	//TouchTest();
 	//SoundTest();
-	while(1){
+	/*while(1){
 		Display_Test();
-	}
+	}*/
+	TouchTest();
 	//StatusLed_Test();
 }
 

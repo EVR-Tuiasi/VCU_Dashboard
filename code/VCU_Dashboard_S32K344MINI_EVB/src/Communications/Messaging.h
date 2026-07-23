@@ -19,7 +19,7 @@ extern "C"{
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
 #define CELLS_NUM 24U
-#define THERMISTOR_NUM 128U
+#define THERMISTORS_NUM 128U
 #define CELLS_LINES 5U
 #define THERMISTORS_LINES 26U
 
@@ -59,6 +59,7 @@ typedef struct{
 	uint8_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
+	const uint8_t maxValue;
 }U8MonitoredValue_t;
 
 typedef struct{
@@ -66,6 +67,7 @@ typedef struct{
 	uint16_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
+	const uint16_t maxValue;
 }U16MonitoredValue_t;
 
 typedef struct{
@@ -73,6 +75,7 @@ typedef struct{
 	uint32_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
+	const uint32_t maxValue;
 }U32MonitoredValue_t;
 
 typedef struct{
@@ -80,6 +83,7 @@ typedef struct{
 	uint64_t valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
+	const uint64_t maxValue;
 }U64MonitoredValue_t;
 
 typedef struct{
@@ -87,7 +91,15 @@ typedef struct{
 	bool valueUart;
 	const uint8_t nrOfBits;
 	const uint8_t shift;
+	const bool maxValue;
 }BoolMonitoredValue_t;
+
+typedef struct{
+	uint16_t valueCan;
+	bool errorCan;												   /* 1 bit, 0 means safe, 1 means errors */
+	uint16_t valueUart;
+	bool errorUart;												   /* 1 bit, 0 means safe, 1 means errors */
+}CellsMonitoredValue_t;
 
 typedef struct{
     /* General values */
@@ -100,10 +112,9 @@ typedef struct{
 	U16MonitoredValue_t OverallVoltage;                            /* 11 bits, 0-2047, 0 to 204.7 Volts, 0.1 Volts per bit */
 	U16MonitoredValue_t OverallCurrent;                            /* 13 bits, 0-8095, 0 to 809.5 Amps, 0.1 Amps per bit */
     /* Cell voltages and temperatures*/
-	uint16_t CellVoltage[CELLS_NUM];                    			   /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
-	bool CellVoltageError[CELLS_NUM];							   /* 1 bit, 0 means safe, 1 means errors */
-	uint16_t ThermistorTemperature[THERMISTOR_NUM];     			   /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
-	bool ThermistorTemperatureError[THERMISTOR_NUM];			   /* 1 bit, 0 means safe, 1 means errors */
+	CellsMonitoredValue_t CellVoltage[CELLS_NUM];                  /* 10 bits, 0-1023, 0 to 10.23 Volts, 0.01 Volts per bit */
+
+	CellsMonitoredValue_t ThermistorTemperature[THERMISTORS_NUM];  /* 10 bits, 0-1023, 0 to 102.3 degrees C, 0.1 degrees C per bit */
     /* Status and errors */
 	BoolMonitoredValue_t AmsError;                                 /* 1 bit, 0 means safe, 1 means errors */
 	BoolMonitoredValue_t TransceiverError;                         /* 1 bit, 0 means safe, 1 means errors */
@@ -237,13 +248,14 @@ typedef struct{
 ==================================================================================================*/
 /*Takes a uint64_t argument and any xMonitoredValue_t type of argument.*/
 #define WriteCanDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
-	(xMonitoredValue_t_Address)->valueCan = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
+	(xMonitoredValue_t_Address)->valueCan = ((((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) <= ((xMonitoredValue_t_Address)->maxValue)) ? \
+			(((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) : \
+			((xMonitoredValue_t_Address)->maxValue)
 
 #define WriteUartDataFromRawBufferAtAddress(rawBufferU64, xMonitoredValue_t_Address) \
-	(xMonitoredValue_t_Address)->valueUart = ((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))
-
-
-void Messaging_CreateBuffer(MessageId_t type, uint8_t *buffer);
+		(xMonitoredValue_t_Address)->valueUart = ((((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) <= ((xMonitoredValue_t_Address)->maxValue)) ? \
+			(((rawBufferU64) >> (xMonitoredValue_t_Address)->shift) & (~(0xFFFFFFFFFFFFFFFF << (xMonitoredValue_t_Address)->nrOfBits))) : \
+			((xMonitoredValue_t_Address)->maxValue)
 
 #ifdef __cplusplus
 }
