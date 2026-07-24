@@ -22,6 +22,7 @@ extern "C" {
 #include "Display/display.h"
 #include "Segments/SevenSegments.h"
 #include "helper_functions.h"
+#include "Messaging.h"
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
@@ -50,7 +51,7 @@ extern "C" {
 /*==================================================================================================
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
-
+extern MonitoredValues_t MonitoredValues;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -92,9 +93,9 @@ int main(void)
 	Display_Init();
 	//TouchTest();
 	//SoundTest();
-	/*while(1){
-		Display_Test();
-	}*/
+	while(1){
+		Display_Update(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan, MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan, 100, MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.valueCan, 0, 0, 0, 0, 0, 0, 0);
+	}
 	TouchTest();
 	//StatusLed_Test();
 }
