@@ -18,11 +18,14 @@ extern "C" {
 #include "Mcl.h"
 #include "Gpt.h"
 #include "CDD_I2c.h"
+#include "Can_43_FlexCan.h"
+#include "CanIf.h"
 
 #include "Display/display.h"
 #include "Segments/SevenSegments.h"
 #include "helper_functions.h"
 #include "Messaging.h"
+#include "CanMessaging.h"
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
@@ -83,6 +86,8 @@ int main(void)
     Gpt_Init(NULL_PTR);
     Spi_Init(NULL_PTR);
     I2c_Init(NULL_PTR);
+    Can_43_FLEXCAN_Init(NULL_PTR);
+    CanIf_Init(NULL_PTR);
 
     //Segments_Init();
     //Segments_TimeoutTest();
@@ -90,6 +95,7 @@ int main(void)
 
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
+    CanMessaging_Init();
 	Display_Init();
 	//TouchTest();
 	//SoundTest();
