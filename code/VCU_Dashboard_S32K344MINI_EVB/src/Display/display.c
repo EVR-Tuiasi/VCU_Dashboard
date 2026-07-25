@@ -90,10 +90,6 @@ void Display_Init(void){
 		delei--;
 	}
 	host_command(CLKSEL, 0x00);//select the system clock frequency
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}
 	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
 	while (0x7C != rd8(REG_ID)); //Wait till clock is on
 	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
@@ -121,10 +117,6 @@ void Display_Init(void){
 	wr8(REG_DLSWAP,DLSWAP_FRAME);//display list swap
 	wr8(REG_GPIO_DIR,0x81);//| rd8(REG_GPIO_DIR));
 	wr8(REG_GPIO,0x81);// | rd8(REG_GPIO));//enable display bit
-	delei = 3000000;
-	while(delei){
-		delei--;
-	}
 	wr8(REG_PCLK,2);//after this display is visible on the LCD
 
 	wr32(REG_PWM_DUTY, 100);
@@ -171,133 +163,87 @@ void SoundTest(void){
 }*/
 
 void Display_Test(){
-	static uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0;
-	static uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
+	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0;
+	uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
 
-	static uint32_t milis = 0;
-	static uint8_t seconds = 0;
-	static uint8_t mins = 0;
-	volatile uint32_t delay = 35000;
+	uint32_t milis = 0;
+	uint8_t seconds = 0;
+	uint8_t mins = 0;
+	uint32_t prescaler = 0;
+	while(1){
+		prescaler++;
+		if(prescaler >= 100U){
+			prescaler = 0;
+			Battery_Percentage++;
+			Motor_Temperature++;
+			Inverter_Temperature++;
+			Cell_Voltage+=2;
+			Cell_Temperature+=3;
+			Battery_Percentage %= 101;
+			Motor_Temperature %= 100;
+			Inverter_Temperature %= 100;
+			Cell_Voltage %= 999;
+			Cell_Temperature %= 999;
+			Speed++;
+			Speed %= 151;
+			Total_Current++;
+			Total_Current %= 1000;
+			Total_Voltage += 2;
+			Total_Voltage %= 999;
+			Acceleration++;
+			Acceleration %= 110;
+			Brake++;
+			Brake %= 110;
+			Witness_Delay++;
+			Witness_Delay %= 251;
+			seconds = (milis / 1000U) % 60;
+			mins = milis / 60000U;
 
-	milis++;
-	while(delay--);
-	Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis);
-	Battery_Percentage++;
-	Motor_Temperature++;
-	Inverter_Temperature++;
-	Cell_Voltage+=2;
-	Cell_Temperature+=3;
-	Battery_Percentage %= 101;
-	Motor_Temperature %= 100;
-	Inverter_Temperature %= 100;
-	Cell_Voltage %= 999;
-	Cell_Temperature %= 999;
-	Speed++;
-	Speed %= 151;
-	Total_Current++;
-	Total_Current %= 1000;
-	Total_Voltage += 2;
-	Total_Voltage %= 999;
-	Acceleration++;
-	Acceleration %= 110;
-	Brake++;
-	Brake %= 110;
-	Witness_Delay++;
-	Witness_Delay %= 251;
-	seconds = (milis / 1000U) % 60;
-	mins = milis / 60000U;
+			if(Witness_Delay < 50U)
+			{
+				Witnesses.Inverter = true;
+				Witnesses.Battery = false;
+				Witnesses.Acceleration = false;
+				Witnesses.Brake = false;
+			}
 
-	if(Witness_Delay < 50U)
-	{
-		Witnesses.Inverter = true;
-		Witnesses.Battery = false;
-		Witnesses.Acceleration = false;
-		Witnesses.Brake = false;
+			else if(Witness_Delay >= 50U && Witness_Delay < 100U)
+			{
+				Witnesses.Inverter = false;
+				Witnesses.Battery = true;
+				Witnesses.Acceleration = false;
+				Witnesses.Brake = false;
+			}
+
+			else if(Witness_Delay >= 100U && Witness_Delay < 150U)
+			{
+				Witnesses.Inverter = false;
+				Witnesses.Battery = false;
+				Witnesses.Acceleration = true;
+				Witnesses.Brake = false;
+			}
+
+			else if(Witness_Delay >= 150U && Witness_Delay < 200U)
+			{
+				Witnesses.Inverter = false;
+				Witnesses.Battery = false;
+				Witnesses.Acceleration = false;
+				Witnesses.Brake = true;
+			}
+
+			else
+			{
+				Witnesses.Inverter = false;
+				Witnesses.Battery = false;
+				Witnesses.Acceleration = false;
+				Witnesses.Brake = false;
+			}
+		}
+		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis);
 	}
-
-	else if(Witness_Delay >= 50U && Witness_Delay < 100U)
-	{
-		Witnesses.Inverter = false;
-		Witnesses.Battery = true;
-		Witnesses.Acceleration = false;
-		Witnesses.Brake = false;
-	}
-
-	else if(Witness_Delay >= 100U && Witness_Delay < 150U)
-	{
-		Witnesses.Inverter = false;
-		Witnesses.Battery = false;
-		Witnesses.Acceleration = true;
-		Witnesses.Brake = false;
-	}
-
-	else if(Witness_Delay >= 150U && Witness_Delay < 200U)
-	{
-		Witnesses.Inverter = false;
-		Witnesses.Battery = false;
-		Witnesses.Acceleration = false;
-		Witnesses.Brake = true;
-	}
-
-	else
-	{
-		Witnesses.Inverter = false;
-		Witnesses.Battery = false;
-		Witnesses.Acceleration = false;
-		Witnesses.Brake = false;
-	}
-
-
 }
 
 void Display_Touch_Test(void){
-	volatile uint32_t coordinates;
-	volatile uint16_t x, y;
-	uint32_t index;
-	volatile uint32_t readvalue;
-	volatile uint32_t delei;
-	while(1){
-		delei = 100000;
-		while(delei--);
-		coordinates = rd32(REG_CTOUCH_TOUCH_XY);
-		if(coordinates == 0x80008000){
-			x = 0;
-			y = 0;
-		}
-		else{
-			x = (uint16_t)(coordinates >> 16U);
-			y = (uint16_t)(coordinates && 0xFFFF);
-		}
-		//text
-		if(rd8(REG_DLSWAP) == 0){
-			index = 0;
-			wr32(RAM_DL + (index+=4), clear(1, 1, 1));
-			wr32(RAM_DL + (index+=4), vertex_format(0));
-			wr32(RAM_DL + (index+=4), color_rgb(255, 255, 255));
-			wr32(RAM_DL + (index+=4), bitmap_handle(31));
-			wr32(RAM_DL + (index+=4), begin(BITMAPS));
-			if(x >= 100U){
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS, 0, LARGE_FONT, (x / 100U) + '0'));
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS + 20, 0, LARGE_FONT, ((x / 10U) % 10) + '0'));
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_HUNDREDS + 40, 0, LARGE_FONT, (x % 10) + '0'));
-			}
-
-			else if(x >= 10U)
-			{
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_TENS, 0, LARGE_FONT, (x / 10U) + '0'));
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_TENS + 20, 0, LARGE_FONT, (x % 10) + '0'));
-			}
-
-			else{
-				wr32(RAM_DL + (index+=4), vertex2ii(SPEED_UNITS, 0, LARGE_FONT, x + '0'));
-			}
-			wr32(RAM_DL + (index+=4), display());
-			wr8(REG_DLSWAP, DLSWAP_FRAME);
-		}
-	}
-}
-
-void TouchTest(void){
 	volatile uint32_t xy_coordinates, index = 0;
 	volatile uint16_t  x_coordinate = 0, y_coordinate = 0;
 	volatile uint32_t delai = 50000;

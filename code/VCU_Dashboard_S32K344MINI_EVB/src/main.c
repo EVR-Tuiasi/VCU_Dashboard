@@ -95,15 +95,16 @@ int main(void)
 
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
-    CanMessaging_Init();
+    //CanMessaging_Init();
 	Display_Init();
-	//TouchTest();
-	//SoundTest();
-	while(1){
-		Display_Update(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan, MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan, 100, MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.valueCan, 0, 0, 0, 0, 0, 0, 0);
-	}
-	TouchTest();
+	Display_Test();
+	//Display_Touch_Test();
+	//Display_Sound_Test();
 	//StatusLed_Test();
+
+	/*while(1){
+		Display_Update(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan, MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan, 100, MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.valueCan, 0, 0, 0, 0, 0, 0, 0);
+	}*/
 }
 
 
