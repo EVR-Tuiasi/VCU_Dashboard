@@ -91,10 +91,20 @@ int main(void)
     //ActivationLogicButton_Test();
 
 	Display_Init();
+<<<<<<< Updated upstream
 	TouchTest();
 	//SoundTest();
 	//Display_Test();
 
+=======
+	//TouchTest();
+	//SoundTest();
+	while(1){
+		reversingToggle();
+		Display_Test();
+	}
+	//TouchTest();
+>>>>>>> Stashed changes
 	//StatusLed_Test();
 }
 

@@ -48,7 +48,17 @@ extern "C"{
 #define REG_TOUCH_CHARGE		(RAM_REG + 0x10C)
 #define REG_TOUCH_ADC_MODE		(RAM_REG + 0x108)
 #define REG_TOUCH_MODE			(RAM_REG + 0x104)
+<<<<<<< Updated upstream
 /*Capacitive touch engine registers not needed*/
+=======
+/*Capacitive touch engine registers*/
+#define REG_CTOUCH_TOUCH_XY		(RAM_REG + 0x124)
+/*Screen area for touch*/
+#define TOUCH_AREA_MIN_CORNER_X		255U
+#define TOUCH_AREA_MIN_CORNER_Y		121U
+#define TOUCH_AREA_MAX_CORNER_X		526U
+#define TOUCH_AREA_MAX_CORNER_Y		364U
+>>>>>>> Stashed changes
 
 
 /*==================================================================================================
