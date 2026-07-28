@@ -55,6 +55,7 @@ extern "C" {
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 extern MonitoredValues_t MonitoredValues;
+extern Witnesses_t Witnesses;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -89,22 +90,85 @@ int main(void)
     Can_43_FLEXCAN_Init(NULL_PTR);
     CanIf_Init(NULL_PTR);
 
-    //Segments_Init();
+    Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
 
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
-    //CanMessaging_Init();
+    CanMessaging_Init();
 	Display_Init();
-	Display_Test();
+	//Display_Test();
 	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
+	uint8_t acceleration, braking, batteryPercentage, speed;
+	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
+	int motorTemperature, inverterTemperature;
+	bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
+	while(1){
+		acceleration = MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan;
+		if(acceleration > MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage.valueCan)
+			acceleration = MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage.valueCan;
 
-	/*while(1){
-		Display_Update(MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan, MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan, 100, MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan, MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.valueCan, 0, 0, 0, 0, 0, 0, 0);
-	}*/
+		braking = MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan;
+		if(braking > MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage.valueCan)
+			braking = MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage.valueCan;
+
+		batteryPercentage = 55; //TODO!!!!!
+
+		motorTemperature = (int)MonitoredValues.InvertersMonitoredValues.LeftMotorTemperature.valueCan;
+		if(motorTemperature > (int)MonitoredValues.InvertersMonitoredValues.RightMotorTemperature.valueCan)
+			motorTemperature = (int)MonitoredValues.InvertersMonitoredValues.RightMotorTemperature.valueCan;
+		motorTemperature -= 30;
+		if(motorTemperature < 0)
+			motorTemperature = 0;
+
+		inverterTemperature = (int)MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan;
+		if(inverterTemperature > (int)MonitoredValues.InvertersMonitoredValues.RightInverterTemperature.valueCan)
+			inverterTemperature = (int)MonitoredValues.InvertersMonitoredValues.RightInverterTemperature.valueCan;
+		inverterTemperature -= 30;
+		if(inverterTemperature < 0)
+			inverterTemperature = 0;
+
+		speed = MonitoredValues.InvertersMonitoredValues.LeftMotorSpeedKmh.valueCan;
+		if(speed < MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh.valueCan)
+			speed = MonitoredValues.InvertersMonitoredValues.RightMotorSpeedKmh.valueCan;
+
+		cellVoltage = MonitoredValues.TsacMonitoredValues.HighestCellVoltage.valueCan;
+		cellTemperature = MonitoredValues.TsacMonitoredValues.HighestCellTemperature.valueCan;
+		totalCurrent = MonitoredValues.TsacMonitoredValues.OverallCurrent.valueCan / 10U;
+		totalVoltage = MonitoredValues.TsacMonitoredValues.OverallVoltage.valueCan / 10U;
+
+		Segments_Set(SPEED_KMH, speed * 10U);
+		Segments_Set(BATTERY_PERCENTAGE, batteryPercentage * 10U);
+		maxTemperature = motorTemperature*10U;
+		if(maxTemperature < inverterTemperature*10U)
+			maxTemperature = inverterTemperature*10U;
+		if(maxTemperature < cellTemperature)
+			maxTemperature = cellTemperature;
+		Segments_Set(TEMPERATURE, maxTemperature);
+
+		battery_error = MonitoredValues.TsacMonitoredValues.AmsError.valueCan | MonitoredValues.TsacMonitoredValues.Bms0Error.valueCan | MonitoredValues.TsacMonitoredValues.Bms1Error.valueCan | MonitoredValues.TsacMonitoredValues.ThermistorsError.valueCan | MonitoredValues.TsacMonitoredValues.TransceiverError.valueCan | MonitoredValues.TsacMonitoredValues.ShuntError.valueCan;
+		acceleration_error = MonitoredValues.PedalsMonitoredValues.Accel_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc.valueCan;
+		brake_error = MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
+		pedals_error = acceleration_error | brake_error;
+		inverters_error = 0;
+		dashboard_error = MonitoredValues.DashboardMonitoredValues.IsDisplayWorking.valueCan | MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking.valueCan;
+
+		Witnesses.Acceleration = acceleration_error;
+		Witnesses.Battery = battery_error;
+		Witnesses.Brake = brake_error;
+		Witnesses.Inverter = inverters_error;
+
+		StatusLed_Set(BATTERY_LED, battery_error);
+		StatusLed_Set(PEDALS_LED, pedals_error);
+		StatusLed_Set(INVERTERS_LED, inverters_error);
+		StatusLed_Set(DASHBOARD_LED, dashboard_error);
+		Segments_Update();
+		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0);
+		Segments_Update();
+	}
 }
 
 
