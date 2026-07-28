@@ -302,6 +302,11 @@ extern "C"{
 
 #define BRAKE_START									56U
 
+#define INVERTER_WARNING							1U
+#define BATTERY_WARNING								2U
+#define ACCEL_WARNING								4U
+#define BRAKE_WARNING								8U
+
 /*==================================================================================================
  *                                             ENUMS
 ==================================================================================================*/
@@ -332,7 +337,12 @@ void Display_Init(void);
 //void ImageTest(void);
 void SoundTest(void);
 void Display_Test(void);
+<<<<<<< Updated upstream
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds);
+=======
+void Display_Touch_Test(void);
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses);
+>>>>>>> Stashed changes
 //void trailingArray(void);
 void newDisplayUpdate(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds);
 void TouchTest(void);
