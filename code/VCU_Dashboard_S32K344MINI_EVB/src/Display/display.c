@@ -163,7 +163,7 @@ void SoundTest(void){
 }*/
 
 void Display_Test(){
-	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0;
+	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0, Witness = 0;
 	uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
 
 	uint32_t milis = 0;
@@ -199,47 +199,37 @@ void Display_Test(){
 			seconds = (milis / 1000U) % 60;
 			mins = milis / 60000U;
 
+
 			if(Witness_Delay < 50U)
 			{
-				Witnesses.Inverter = true;
-				Witnesses.Battery = false;
-				Witnesses.Acceleration = false;
-				Witnesses.Brake = false;
+				Witness = INVERTER_WARNING;
 			}
 
 			else if(Witness_Delay >= 50U && Witness_Delay < 100U)
 			{
-				Witnesses.Inverter = false;
-				Witnesses.Battery = true;
-				Witnesses.Acceleration = false;
-				Witnesses.Brake = false;
+				Witness = BATTERY_WARNING;
+
 			}
 
 			else if(Witness_Delay >= 100U && Witness_Delay < 150U)
 			{
-				Witnesses.Inverter = false;
-				Witnesses.Battery = false;
-				Witnesses.Acceleration = true;
-				Witnesses.Brake = false;
+				Witness = ACCEL_WARNING;
+
 			}
 
 			else if(Witness_Delay >= 150U && Witness_Delay < 200U)
 			{
-				Witnesses.Inverter = false;
-				Witnesses.Battery = false;
-				Witnesses.Acceleration = false;
-				Witnesses.Brake = true;
+				Witness = BRAKE_WARNING;
+
 			}
 
 			else
 			{
-				Witnesses.Inverter = false;
-				Witnesses.Battery = false;
-				Witnesses.Acceleration = false;
-				Witnesses.Brake = false;
+				Witness = 0U;
+
 			}
 		}
-		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis);
+		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness);
 	}
 }
 
@@ -326,7 +316,7 @@ void Display_Touch_Test(void){
 	}
 }
 
-void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds){
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses){
 	uint32_t index = 0;
 	uint8_t Red, Green, Blue = 0;
 	uint16_t x_memory_inner[151];
@@ -902,7 +892,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//INVERTER_TEMP STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses.Inverter)
+		if(Witnesses &= INVERTER_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -917,7 +907,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BATTERY STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses.Battery)
+		if(Witnesses &= BATTERY_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -932,7 +922,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//ACCELERATION STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses.Acceleration)
+		if(Witnesses &= ACCEL_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -947,7 +937,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BRAKE STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses.Brake)
+		if(Witnesses &= BRAKE_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}

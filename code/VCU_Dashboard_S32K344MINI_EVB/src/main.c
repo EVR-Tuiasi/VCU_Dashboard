@@ -166,7 +166,7 @@ int main(void)
 		StatusLed_Set(INVERTERS_LED, inverters_error);
 		StatusLed_Set(DASHBOARD_LED, dashboard_error);
 		Segments_Update();
-		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0);
+		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING);
 		Segments_Update();
 	}
 }
