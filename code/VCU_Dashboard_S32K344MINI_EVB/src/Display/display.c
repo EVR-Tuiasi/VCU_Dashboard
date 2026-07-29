@@ -45,7 +45,7 @@ extern "C" {
  *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 
-<<<<<<< Updated upstream
+
 Witnesses_t Witnesses = {.Inverter = false,
 		.Battery = false,
 		.Acceleration = false,
@@ -55,8 +55,6 @@ Witnesses_t Witnesses = {.Inverter = false,
 uint32_t FTDI_Array[2048];
 bool isReversing = false;
 
-=======
->>>>>>> Stashed changes
 volatile uint8_t Witness_Delay = 0;
 //double trail_x[151];
 //double trail_y[151];
@@ -1575,7 +1573,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 	}
 }
 
-<<<<<<< Updated upstream
+
 void TouchTest(void){
 	volatile uint32_t xy_coordinates, index = 0;
 	volatile uint16_t  x_coordinate = 0, y_coordinate = 0;
@@ -1657,7 +1655,6 @@ void TouchTest(void){
 }
 
 
-=======
 void newDisplayUpdate(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses){
 	uint32_t arrayIndex = 0;
 	uint32_t index = 0;
@@ -2495,7 +2492,7 @@ void newDisplayUpdate(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Perce
 	}
 }
 
->>>>>>> Stashed changes
+
 #ifdef __cplusplus
 }
 #endif
