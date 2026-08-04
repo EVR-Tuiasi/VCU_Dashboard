@@ -163,6 +163,31 @@ void SoundTest(void){
 	}
 }*/
 
+void reversingToggle(void)
+{
+    static uint8_t wasTouched = 0;
+
+    uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
+    uint16_t x = xy >> 16;
+    uint16_t y = xy & 0xFFFF;
+
+    uint8_t touched = (x != 0x8000 && y != 0x8000);
+
+    if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
+    {
+        if (!wasTouched)
+        {
+            isReversing ^= 1;
+        }
+
+        wasTouched = 1;
+    }
+    else
+    {
+        wasTouched = 0;
+    }
+}
+
 void Display_Test(){
 	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0, Witness = 0;
 	uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
@@ -174,6 +199,7 @@ void Display_Test(){
 	while(1){
 		prescaler++;
 		if(prescaler >= 100U){
+			reversingToggle();
 			prescaler = 0;
 			Battery_Percentage++;
 			Motor_Temperature++;
@@ -232,31 +258,6 @@ void Display_Test(){
 		}
 		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness);
 	}
-}
-
-void reversingToggle(void)
-{
-    static uint8_t wasTouched = 0;
-
-    uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
-    uint16_t x = xy >> 16;
-    uint16_t y = xy & 0xFFFF;
-
-    uint8_t touched = (x != 0x8000 && y != 0x8000);
-
-    if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
-    {
-        if (!wasTouched)
-        {
-            isReversing ^= 1;
-        }
-
-        wasTouched = 1;
-    }
-    else
-    {
-        wasTouched = 0;
-    }
 }
 
 void Display_Touch_Test(void){
@@ -918,7 +919,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//INVERTER_TEMP STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= INVERTER_WARNING)
+		if((Witnesses & INVERTER_WARNING) == INVERTER_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -933,7 +934,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BATTERY STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= BATTERY_WARNING)
+		if((Witnesses & BATTERY_WARNING) == BATTERY_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -948,7 +949,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//ACCELERATION STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= ACCEL_WARNING)
+		if((Witnesses & ACCEL_WARNING) == ACCEL_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -963,7 +964,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BRAKE STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= BRAKE_WARNING)
+		if((Witnesses & BRAKE_WARNING) == BRAKE_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -1168,6 +1169,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		/* CODE FOR ENTERING REVERSING MODE */
 		if(isReversing == true){
+			wr32(RAM_DL + (index+=4), vertex_format(0));
 			wr32(RAM_DL + (index+=4),color_rgb(210, 0, 0));
 			wr32(RAM_DL + (index+=4),begin(RECTS));
 			wr32(RAM_DL + (index+=4),vertex2f(210, 392));
@@ -1184,8 +1186,6 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 			wr32(RAM_DL + (index+=4),vertex2ii(463, 385, 31, 'N'));
 			wr32(RAM_DL + (index+=4),vertex2ii(494, 385, 31, 'G'));
 		}
-		wr32(RAM_DL + (index+=4),restore_context());
-
 		wr32(RAM_DL + (index+=4), display());
 		wr8(REG_DLSWAP, DLSWAP_FRAME);
 	}

@@ -97,9 +97,13 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     //CanMessaging_Init();
+    reversingToggle();
 	Display_Init();
+
+	/* IF Display_Test is used, then the reversingToggle function should be COMMENTED */
 	//Display_Test();
-	Display_Touch_Test();
+
+	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
 	/*uint8_t acceleration, braking, batteryPercentage, speed;

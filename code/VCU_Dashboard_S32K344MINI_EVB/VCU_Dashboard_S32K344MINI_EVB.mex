@@ -84,6 +84,7 @@
                   <pin peripheral="SIUL2" signal="gpio, 75" pin_num="T15" pin_signal="PTC11">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
+                        <pin_feature name="outputInversionSelect" value="invert"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="CAN0" signal="can0_tx" pin_num="M16" pin_signal="PTA7"/>
@@ -1026,7 +1027,7 @@
                                        <setting name="PortPinIfe" value="false"/>
                                        <setting name="PortPinDirectionChangeable" value="true"/>
                                        <setting name="PortPinModeChangeable" value="true"/>
-                                       <setting name="PortPinInvertControl" value="false"/>
+                                       <setting name="PortPinInvertControl" value="true"/>
                                        <setting name="PortPinSiul2Instance" value="SIUL2_0"/>
                                        <setting name="PortPinId" value="8"/>
                                        <setting name="PortPinInitialMode" value="PORT_GPIO_MODE"/>
