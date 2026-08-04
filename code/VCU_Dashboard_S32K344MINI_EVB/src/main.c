@@ -90,15 +90,16 @@ int main(void)
     Can_43_FLEXCAN_Init(NULL_PTR);
     CanIf_Init(NULL_PTR);
 
-    Segments_Init();
+    //Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
 
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     CanMessaging_Init();
-	Display_Init();
-	Display_Test();
+    CanMessaging_Test();
+	//Display_Init();
+	//Display_Test();
 	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
