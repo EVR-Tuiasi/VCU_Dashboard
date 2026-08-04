@@ -23,7 +23,10 @@ extern "C"{
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-
+typedef enum{
+	CAN_IDLE,
+	CAN_TRANSMITTING
+}CAN_STATE;
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -46,8 +49,7 @@ extern "C"{
 /*==================================================================================================
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
-
-
+extern volatile bool transmission_data_updated;
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
 ==================================================================================================*/
@@ -69,11 +71,26 @@ void Can_Receive_Interrupt_BATERIE_2(PduIdType RxPduId, const PduInfoType * PduI
 void Can_Receive_Interrupt_BATERIE_CHARGER(PduIdType RxPduId, const PduInfoType * PduInfoPtr);
 void Can_Receive_Interrupt_COMUNICATII(PduIdType RxPduId, const PduInfoType * PduInfoPtr);
 
+void Can_Transmit_Interrupt_INVERTOR_STANGA(void);
+void Can_Transmit_Interrupt_INVERTOR_DREAPTA(void);
+void Can_Transmit_Interrupt_INVERTOARE(void);
+void Can_Transmit_Interrupt_BORD(void);
+void Can_Transmit_Interrupt_ACCELERATIE(void);
+void Can_Transmit_Interrupt_FRANA(void);
+void Can_Transmit_Interrupt_BATERIE(void);
+void Can_Transmit_Interrupt_BATERIE_TENSIUNI_CELULE(void);
+void Can_Transmit_Interrupt_BATERIE_TEMPERATURI_CELULE(void);
+void Can_Transmit_Interrupt_BATERIE_2(void);
+void Can_Transmit_Interrupt_BATERIE_CHARGER(void);
+void Can_Transmit_Interrupt_COMUNICATII(void);
+
+void Can_Timer_Timeout(void);
+
 /*==================================================================================================
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 #define ReadCanDataFromAddress(xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan
-#define WriteCanDataAtAddress(data, xMonitoredValue_t_Address) (xMonitoredValue_t_Address)->valueCan = ((data) <= (xMonitoredValue_t_Address)->maxValue) ? (data) : ((xMonitoredValue_t_Address)->maxValue)
+#define WriteCanDataAtAddress(data, xMonitoredValue_t_Address) ((xMonitoredValue_t_Address)->valueCan = ((data) <= (xMonitoredValue_t_Address)->maxValue) ? (data) : ((xMonitoredValue_t_Address)->maxValue), transmission_data_updated = 1)
 
 void CanMessaging_Init(void);
 void CanMessaging_Test(void);
@@ -87,7 +104,11 @@ uint16_t CanMessaging_ReadCellVoltage(uint16_t index);
 boolean CanMessaging_ReadCellVoltageErrors(uint16_t index);
 uint16_t CanMessaging_ReadCellTemperature(uint16_t index);
 boolean CanMessaging_ReadCellTemperatureErrors(uint16_t index);
-
+bool CanMessaging_GetInvertersReceiveTimeout(void);
+bool CanMessaging_GetPedalsReceiveTimeout(void);
+bool CanMessaging_GetBatteryReceiveTimeout(void);
+bool CanMessaging_GetDashboardReceiveTimeout(void);
+bool CanMessaging_GetCommunicationsReceiveTimeout(void);
 #ifdef __cplusplus
 }
 #endif

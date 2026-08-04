@@ -98,7 +98,7 @@ int main(void)
     //ActivationLogicButton_Test();
     CanMessaging_Init();
 	Display_Init();
-	//Display_Test();
+	Display_Test();
 	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
