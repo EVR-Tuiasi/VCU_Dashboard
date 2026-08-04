@@ -307,6 +307,11 @@ extern "C"{
 #define ACCEL_WARNING								4U
 #define BRAKE_WARNING								8U
 
+#define TOUCH_AREA_MIN_CORNER_X						255U
+#define TOUCH_AREA_MIN_CORNER_Y						121U
+#define TOUCH_AREA_MAX_CORNER_X						526U
+#define TOUCH_AREA_MAX_CORNER_Y						364U
+
 /*==================================================================================================
  *                                             ENUMS
 ==================================================================================================*/

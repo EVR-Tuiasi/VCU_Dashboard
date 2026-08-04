@@ -90,19 +90,19 @@ int main(void)
     Can_43_FLEXCAN_Init(NULL_PTR);
     CanIf_Init(NULL_PTR);
 
-    Segments_Init();
+    //Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
 
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
-    CanMessaging_Init();
+    //CanMessaging_Init();
 	Display_Init();
 	//Display_Test();
-	//Display_Touch_Test();
+	Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
-	uint8_t acceleration, braking, batteryPercentage, speed;
+	/*uint8_t acceleration, braking, batteryPercentage, speed;
 	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
 	int motorTemperature, inverterTemperature;
 	bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
@@ -168,7 +168,8 @@ int main(void)
 		Segments_Update();
 		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING);
 		Segments_Update();
-	}
+	}*/
+	//Display_Test();
 }
 
 

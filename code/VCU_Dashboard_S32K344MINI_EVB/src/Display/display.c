@@ -54,6 +54,7 @@ Witnesses_t Witnesses = {.Inverter = false,
 volatile uint8_t Witness_Delay = 0;
 //double trail_x[151];
 //double trail_y[151];
+bool isReversing = false;
 
 
 
@@ -231,6 +232,31 @@ void Display_Test(){
 		}
 		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness);
 	}
+}
+
+void reversingToggle(void)
+{
+    static uint8_t wasTouched = 0;
+
+    uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
+    uint16_t x = xy >> 16;
+    uint16_t y = xy & 0xFFFF;
+
+    uint8_t touched = (x != 0x8000 && y != 0x8000);
+
+    if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
+    {
+        if (!wasTouched)
+        {
+            isReversing ^= 1;
+        }
+
+        wasTouched = 1;
+    }
+    else
+    {
+        wasTouched = 0;
+    }
 }
 
 void Display_Touch_Test(void){
@@ -1139,6 +1165,26 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), vertex2ii(TOTAL_VOLTAGE_POSITION_X + 38, TOTAL_VOLTAGE_POSITION_Y + 144, MEDIUM_FONT, 'o'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 		wr32(RAM_DL + (index+=4), restore_context());
+
+		/* CODE FOR ENTERING REVERSING MODE */
+		if(isReversing == true){
+			wr32(RAM_DL + (index+=4),color_rgb(210, 0, 0));
+			wr32(RAM_DL + (index+=4),begin(RECTS));
+			wr32(RAM_DL + (index+=4),vertex2f(210, 392));
+			wr32(RAM_DL + (index+=4),vertex2f(585, 424));
+			wr32(RAM_DL + (index+=4),color_rgb(255, 255, 255));
+			wr32(RAM_DL + (index+=4),begin(BITMAPS));
+			wr32(RAM_DL + (index+=4),vertex2ii(282, 385, 31, 'R'));
+			wr32(RAM_DL + (index+=4),vertex2ii(312, 385, 31, 'E'));
+			wr32(RAM_DL + (index+=4),vertex2ii(337, 385, 31, 'V'));
+			wr32(RAM_DL + (index+=4),vertex2ii(365, 385, 31, 'E'));
+			wr32(RAM_DL + (index+=4),vertex2ii(392, 385, 31, 'R'));
+			wr32(RAM_DL + (index+=4),vertex2ii(422, 385, 31, 'S'));
+			wr32(RAM_DL + (index+=4),vertex2ii(450, 385, 31, 'I'));
+			wr32(RAM_DL + (index+=4),vertex2ii(463, 385, 31, 'N'));
+			wr32(RAM_DL + (index+=4),vertex2ii(494, 385, 31, 'G'));
+		}
+		wr32(RAM_DL + (index+=4),restore_context());
 
 		wr32(RAM_DL + (index+=4), display());
 		wr8(REG_DLSWAP, DLSWAP_FRAME);
