@@ -20,7 +20,8 @@ extern "C" {
 /*==================================================================================================
  *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-#define PD_PIN_PCR			75U
+#define PD_PIN_PCR				75U
+#define AUDIO_SHUTDOWN_PIN_PCR	85U
 /*==================================================================================================
  *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -127,18 +128,19 @@ void Display_Init(void){
 	wr32(REG_PWM_DUTY, 128);
 }
 
-void SoundTest(void){
+void Display_Sound_Test(void){
 	while(1){
 		wr8(REG_VOL_SOUND,0xFF);
-		wr32(REG_GPIOX_DIR, 0x00008004);
+		//wr32(REG_GPIOX_DIR, 0x00008004);
+		Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_ON);
 		volatile uint32_t delei;
 		while(1){
-			wr32(REG_GPIOX, 0x00008004); // enable amp
+			//wr32(REG_GPIOX, 0x00008004); // enable amp
 			wr16(REG_SOUND, (0x6C<< 8) | 0x41);
 			wr8(REG_PLAY, 1);
 			delei = 10000000;
 			while(delei--);
-			wr32(REG_GPIOX, 0x00008000); // disable amp
+			//wr32(REG_GPIOX, 0x00008000); // disable amp
 			wr8(REG_PLAY, 0);
 			wr16(REG_SOUND, 0x0);
 			wr8(REG_PLAY, 1);

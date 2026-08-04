@@ -97,11 +97,11 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     CanMessaging_Init();
-    CanMessaging_Test();
-	//Display_Init();
+    //CanMessaging_Test();
+	Display_Init();
 	//Display_Test();
 	//Display_Touch_Test();
-	//Display_Sound_Test();
+	Display_Sound_Test();
 	//StatusLed_Test();
 	uint8_t acceleration, braking, batteryPercentage, speed;
 	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
