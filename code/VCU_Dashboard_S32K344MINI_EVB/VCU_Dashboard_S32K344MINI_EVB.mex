@@ -2331,6 +2331,10 @@
                                        <setting name="Name" value="FLEXCAN0"/>
                                        <setting name="McuClockFrequencySelect" value="FIRC_CLK"/>
                                     </struct>
+                                    <struct name="5">
+                                       <setting name="Name" value="pit0"/>
+                                       <setting name="McuClockFrequencySelect" value="AIPS_SLOW_CLK"/>
+                                    </struct>
                                  </array>
                               </struct>
                            </array>
@@ -3138,7 +3142,7 @@
                                  <setting name="GptHwIp" value="PIT"/>
                                  <setting name="GptModuleRef" value="/Gpt/Gpt/GptChannelConfigSet/Pit_0/PitChannel_0"/>
                                  <setting name="GptChannelMode" value="GPT_CH_MODE_CONTINUOUS"/>
-                                 <setting name="GptChannelClkSrcRef" value="/Gpt/Gpt/GptDriverConfiguration/GptClockReferencePoint_0_EMIOS0"/>
+                                 <setting name="GptChannelClkSrcRef" value="/Gpt/Gpt/GptDriverConfiguration/GptClockReferencePoint_1"/>
                                  <setting name="GptChannelTickValueMax" value="4294967295"/>
                                  <setting name="GptEnableWakeup" value="false"/>
                                  <array name="GptNotification">
@@ -3499,6 +3503,10 @@
                               <struct name="0">
                                  <setting name="Name" value="GptClockReferencePoint_0_EMIOS0"/>
                                  <setting name="GptClockReference" value="/Mcu/Mcu/McuModuleConfiguration/McuClockSettingConfig_0/EMIOS0"/>
+                              </struct>
+                              <struct name="1">
+                                 <setting name="Name" value="GptClockReferencePoint_1"/>
+                                 <setting name="GptClockReference" value="/Mcu/Mcu/McuModuleConfiguration/McuClockSettingConfig_0/pit0"/>
                               </struct>
                            </array>
                         </struct>
