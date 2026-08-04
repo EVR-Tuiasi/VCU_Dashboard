@@ -56,6 +56,7 @@ extern "C" {
 ==================================================================================================*/
 extern MonitoredValues_t MonitoredValues;
 extern Witnesses_t Witnesses;
+bool reverseToggle = false;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -97,11 +98,11 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     //CanMessaging_Init();
-    reversingToggle();
+    reversingToggle(reverseToggle);
 	Display_Init();
 
 	/* IF Display_Test is used, then the reversingToggle function should be COMMENTED */
-	//Display_Test();
+	//Display_Test(reverseToggle);
 
 	//Display_Touch_Test();
 	//Display_Sound_Test();
@@ -170,7 +171,7 @@ int main(void)
 		StatusLed_Set(INVERTERS_LED, inverters_error);
 		StatusLed_Set(DASHBOARD_LED, dashboard_error);
 		Segments_Update();
-		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING);
+		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING, reverseToggle);
 		Segments_Update();
 	}*/
 	//Display_Test();
