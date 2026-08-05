@@ -307,6 +307,11 @@ extern "C"{
 #define ACCEL_WARNING								4U
 #define BRAKE_WARNING								8U
 
+#define TOUCH_AREA_MIN_CORNER_X						255U
+#define TOUCH_AREA_MIN_CORNER_Y						121U
+#define TOUCH_AREA_MAX_CORNER_X						526U
+#define TOUCH_AREA_MAX_CORNER_Y						364U
+
 /*==================================================================================================
  *                                             ENUMS
 ==================================================================================================*/
@@ -336,10 +341,11 @@ typedef struct{
 void Display_Init(void);
 //void ImageTest(void);
 void Display_Sound_Test(void);
-void Display_Test(void);
+void Display_Test(bool *ptrReversing);
 void Display_Touch_Test(void);
-void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses);
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses, bool *ptrReverseState);
 //void trailingArray(void);
+void touchScreen_Update(bool *ptrReversing);
 
 #ifdef __cplusplus
 }

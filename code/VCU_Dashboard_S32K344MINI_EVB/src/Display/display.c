@@ -164,7 +164,32 @@ void Display_Sound_Test(void){
 	}
 }*/
 
-void Display_Test(){
+void touchScreen_Update(bool *ptrReversing)
+{
+	static uint8_t wasTouched = 0;
+
+	uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
+	uint16_t x = xy >> 16;
+	uint16_t y = xy & 0xFFFF;
+
+	uint8_t touched = (x != 0x8000 && y != 0x8000);
+
+	if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
+	{
+		if (!wasTouched)
+		{
+			*ptrReversing ^= 1;
+		}
+
+		wasTouched = 1;
+	}
+	else
+	{
+		wasTouched = 0;
+	}
+}
+
+void Display_Test(bool *ptrReversing){
 	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0, Witness = 0;
 	uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
 
@@ -174,6 +199,7 @@ void Display_Test(){
 	uint32_t prescaler = 0;
 	while(1){
 		prescaler++;
+		touchScreen_Update(ptrReversing);
 		if(prescaler >= 100U){
 			prescaler = 0;
 			Battery_Percentage++;
@@ -231,7 +257,7 @@ void Display_Test(){
 
 			}
 		}
-		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness);
+		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness, ptrReversing);
 	}
 }
 
@@ -318,7 +344,7 @@ void Display_Touch_Test(void){
 	}
 }
 
-void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses){
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses, bool *ptrReverseState){
 	uint32_t index = 0;
 	uint8_t Red, Green, Blue = 0;
 	uint16_t x_memory_inner[151];
@@ -894,7 +920,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//INVERTER_TEMP STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= INVERTER_WARNING)
+		if((Witnesses & INVERTER_WARNING) == INVERTER_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -909,7 +935,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BATTERY STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= BATTERY_WARNING)
+		if((Witnesses & BATTERY_WARNING) == BATTERY_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -924,7 +950,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//ACCELERATION STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= ACCEL_WARNING)
+		if((Witnesses & ACCEL_WARNING) == ACCEL_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -939,7 +965,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 
 		//BRAKE STATUS
 		wr32(RAM_DL + (index+=4), save_context());
-		if(Witnesses &= BRAKE_WARNING)
+		if((Witnesses & BRAKE_WARNING) == BRAKE_WARNING)
 		{
 			wr32(RAM_DL + (index+=4), color_rgb(250, 120, 0));
 		}
@@ -1141,6 +1167,26 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), vertex2ii(TOTAL_VOLTAGE_POSITION_X + 38, TOTAL_VOLTAGE_POSITION_Y + 144, MEDIUM_FONT, 'o'));
 		wr32(RAM_DL + (index+=4), vertex_translate_x(0));
 		wr32(RAM_DL + (index+=4), restore_context());
+
+		/* CODE FOR ENTERING REVERSING MODE */
+		if(*ptrReverseState == true){
+			wr32(RAM_DL + (index+=4), vertex_format(0));
+			wr32(RAM_DL + (index+=4),color_rgb(210, 0, 0));
+			wr32(RAM_DL + (index+=4),begin(RECTS));
+			wr32(RAM_DL + (index+=4),vertex2f(210, 392));
+			wr32(RAM_DL + (index+=4),vertex2f(585, 424));
+			wr32(RAM_DL + (index+=4),color_rgb(255, 255, 255));
+			wr32(RAM_DL + (index+=4),begin(BITMAPS));
+			wr32(RAM_DL + (index+=4),vertex2ii(282, 385, 31, 'R'));
+			wr32(RAM_DL + (index+=4),vertex2ii(312, 385, 31, 'E'));
+			wr32(RAM_DL + (index+=4),vertex2ii(337, 385, 31, 'V'));
+			wr32(RAM_DL + (index+=4),vertex2ii(365, 385, 31, 'E'));
+			wr32(RAM_DL + (index+=4),vertex2ii(392, 385, 31, 'R'));
+			wr32(RAM_DL + (index+=4),vertex2ii(422, 385, 31, 'S'));
+			wr32(RAM_DL + (index+=4),vertex2ii(450, 385, 31, 'I'));
+			wr32(RAM_DL + (index+=4),vertex2ii(463, 385, 31, 'N'));
+			wr32(RAM_DL + (index+=4),vertex2ii(494, 385, 31, 'G'));
+		}
 
 		wr32(RAM_DL + (index+=4), display());
 		wr8(REG_DLSWAP, DLSWAP_FRAME);
