@@ -160,7 +160,7 @@ void SoundTest(void){
 	}
 }*/
 
-void reversingToggle(bool *ptrIsReversing)
+void touchScreenUpdate(bool *ptrIsReversing)
 {
 	static uint8_t wasTouched = 0;
 
@@ -195,8 +195,8 @@ void Display_Test(bool *ptrIsReversing){
 	uint32_t prescaler = 0;
 	while(1){
 		prescaler++;
-		reversingToggle(ptrIsReversing);
-		if(prescaler >= 100U){
+		touchScreenUpdate(ptrIsReversing);
+		if(prescaler >= 70U){
 			prescaler = 0;
 			Battery_Percentage++;
 			Motor_Temperature++;

@@ -98,16 +98,18 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     //CanMessaging_Init();
-    reversingToggle(&reverseToggle);
 	Display_Init();
+    /*while(1){
+    	reversingToggle(&reverseToggle);
+    }*/
 
 	/* IF Display_Test is used, then the reversingToggle function should be COMMENTED */
-	//Display_Test(reverseToggle);
+	//Display_Test(&reverseToggle);
 
 	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
-	/*uint8_t acceleration, braking, batteryPercentage, speed;
+	uint8_t acceleration, braking, batteryPercentage, speed;
 	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
 	int motorTemperature, inverterTemperature;
 	bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
@@ -170,10 +172,11 @@ int main(void)
 		StatusLed_Set(PEDALS_LED, pedals_error);
 		StatusLed_Set(INVERTERS_LED, inverters_error);
 		StatusLed_Set(DASHBOARD_LED, dashboard_error);
+		touchScreenUpdate(&reverseToggle);
 		Segments_Update();
-		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING, reverseToggle);
+		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING, &reverseToggle);
 		Segments_Update();
-	}*/
+	}
 	//Display_Test();
 }
 

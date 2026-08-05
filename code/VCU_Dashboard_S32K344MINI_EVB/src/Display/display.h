@@ -345,7 +345,7 @@ void Display_Test(bool *ptrIsReversing);
 void Display_Touch_Test(void);
 void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses, bool *ptrReverseState);
 //void trailingArray(void);
-void reversingToggle(bool *ptrIsReversing);
+void touchScreenUpdate(bool *ptrIsReversing);
 
 #ifdef __cplusplus
 }
