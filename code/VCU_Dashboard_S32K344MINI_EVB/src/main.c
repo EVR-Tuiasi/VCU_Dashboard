@@ -98,7 +98,7 @@ int main(void)
     //ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     //CanMessaging_Init();
-    reversingToggle(reverseToggle);
+    reversingToggle(&reverseToggle);
 	Display_Init();
 
 	/* IF Display_Test is used, then the reversingToggle function should be COMMENTED */

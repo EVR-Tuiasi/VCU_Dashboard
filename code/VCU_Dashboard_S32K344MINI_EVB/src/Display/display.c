@@ -160,32 +160,32 @@ void SoundTest(void){
 	}
 }*/
 
-void reversingToggle(bool isReversing)
+void reversingToggle(bool *ptrIsReversing)
 {
-    static uint8_t wasTouched = 0;
+	static uint8_t wasTouched = 0;
 
-    uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
-    uint16_t x = xy >> 16;
-    uint16_t y = xy & 0xFFFF;
+	uint32_t xy = rd32(REG_CTOUCH_TOUCH_XY);
+	uint16_t x = xy >> 16;
+	uint16_t y = xy & 0xFFFF;
 
-    uint8_t touched = (x != 0x8000 && y != 0x8000);
+	uint8_t touched = (x != 0x8000 && y != 0x8000);
 
-    if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
-    {
-        if (!wasTouched)
-        {
-            isReversing ^= 1;
-        }
+	if (touched && x > TOUCH_AREA_MIN_CORNER_X && x < TOUCH_AREA_MAX_CORNER_X && y > TOUCH_AREA_MIN_CORNER_Y && y < TOUCH_AREA_MAX_CORNER_Y)
+	{
+		if (!wasTouched)
+		{
+			*ptrIsReversing ^= 1;
+		}
 
-        wasTouched = 1;
-    }
-    else
-    {
-        wasTouched = 0;
-    }
+		wasTouched = 1;
+	}
+	else
+	{
+		wasTouched = 0;
+	}
 }
 
-void Display_Test(bool isReversing){
+void Display_Test(bool *ptrIsReversing){
 	uint8_t Battery_Percentage = 0, Speed = 0, Brake = 0, Acceleration = 0, Witness = 0;
 	uint16_t Inverter_Temperature = 0, Motor_Temperature = 0, Cell_Voltage = 0, Cell_Temperature = 0, Total_Current = 0, Total_Voltage = 0;
 
@@ -195,6 +195,7 @@ void Display_Test(bool isReversing){
 	uint32_t prescaler = 0;
 	while(1){
 		prescaler++;
+		reversingToggle(ptrIsReversing);
 		if(prescaler >= 100U){
 			prescaler = 0;
 			Battery_Percentage++;
@@ -252,7 +253,7 @@ void Display_Test(bool isReversing){
 
 			}
 		}
-		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness, isReversing);
+		Display_Update(Acceleration, Brake, Battery_Percentage, Motor_Temperature, Inverter_Temperature, Speed, Cell_Voltage, Cell_Temperature, Total_Current, Total_Voltage, mins, seconds, milis, Witness, ptrIsReversing);
 	}
 }
 
@@ -339,7 +340,7 @@ void Display_Touch_Test(void){
 	}
 }
 
-void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses, bool reverseState){
+void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percentage, uint16_t Motor_Temperature, uint16_t Inverter_Temperature, uint8_t Speed, uint16_t Cell_Voltage, uint16_t Cell_Temperature, uint16_t Total_Current, uint16_t Total_Voltage, uint8_t Minutes, uint8_t Seconds, uint32_t Miliseconds, uint8_t Witnesses, bool *ptrReverseState){
 	uint32_t index = 0;
 	uint8_t Red, Green, Blue = 0;
 	uint16_t x_memory_inner[151];
@@ -1164,7 +1165,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 		wr32(RAM_DL + (index+=4), restore_context());
 
 		/* CODE FOR ENTERING REVERSING MODE */
-		if(reverseState == true){
+		if(*ptrReverseState == true){
 			wr32(RAM_DL + (index+=4), vertex_format(0));
 			wr32(RAM_DL + (index+=4),color_rgb(210, 0, 0));
 			wr32(RAM_DL + (index+=4),begin(RECTS));
