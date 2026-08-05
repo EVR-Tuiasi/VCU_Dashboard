@@ -31,7 +31,7 @@ extern "C" {
 *                                      LOCAL VARIABLES
 ==================================================================================================*/
 
-
+static ActivationButtonState_t activationButtonState = DEACTIVATED_PRESSED;
 /*==================================================================================================
 *                                      GLOBAL CONSTANTS
 ==================================================================================================*/
@@ -79,13 +79,22 @@ void ActivationLogicButton_Init(void){
 }
 
 bool ActivationLogicButton_GetState(void){
-	return Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR);
+	switch(activationButtonState){
+		case DEACTIVATED_PRESSED:
+		case DEACTIVATED_NOT_PRESSED:
+			return false;
+		case ACTIVATED_PRESSED:
+		case ACTIVATED_NOT_PRESSED:
+			return true;
+		default:
+			return false;
+	}
 }
 
 void ActivationLogicButton_Test(void){
 	bool stare_buton;
 	while(1){
-		if(ActivationLogicButton_GetState()){
+		if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR)){
 			stare_buton = 1;
 		}
 		else{
@@ -95,6 +104,31 @@ void ActivationLogicButton_Test(void){
 		StatusLed_Set(INVERTERS_LED, stare_buton);
 		StatusLed_Set(DASHBOARD_LED, stare_buton);
 		StatusLed_Set(PEDALS_LED, stare_buton);
+	}
+}
+
+void ActivationLogicButton_Update(void){
+	switch(activationButtonState){
+		case DEACTIVATED_PRESSED:
+			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_OFF){
+				activationButtonState = DEACTIVATED_NOT_PRESSED;
+			}
+			break;
+		case DEACTIVATED_NOT_PRESSED:
+			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_ON){ //TODO: ADD FRANA!!!!!!
+				activationButtonState = ACTIVATED_PRESSED;
+			}
+			break;
+		case ACTIVATED_PRESSED:
+			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_OFF){
+				activationButtonState = ACTIVATED_NOT_PRESSED;
+			}
+			break;
+		case ACTIVATED_NOT_PRESSED:
+			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_ON){
+				activationButtonState = DEACTIVATED_PRESSED;
+			}
+			break;
 	}
 }
 

@@ -55,7 +55,6 @@ extern "C" {
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
 extern MonitoredValues_t MonitoredValues;
-extern Witnesses_t Witnesses;
 bool reverseToggle = false;
 
 /*==================================================================================================
@@ -91,11 +90,11 @@ int main(void)
     Can_43_FLEXCAN_Init(NULL_PTR);
     CanIf_Init(NULL_PTR);
 
-    //Segments_Init();
+    Segments_Init();
     //Segments_TimeoutTest();
     //Segments_Test();
 
-    //ActivationLogicButton_Init();
+    ActivationLogicButton_Init();
     //ActivationLogicButton_Test();
     CanMessaging_Init();
     //CanMessaging_Test();
@@ -104,7 +103,7 @@ int main(void)
 	//Display_Touch_Test();
 	//Display_Sound_Test();
 	//StatusLed_Test();
-	uint8_t acceleration, braking, batteryPercentage, speed;
+	uint8_t acceleration, braking, batteryPercentage, speed, witnesses;
 	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
 	int motorTemperature, inverterTemperature;
 	bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
@@ -141,7 +140,7 @@ int main(void)
 		cellTemperature = MonitoredValues.TsacMonitoredValues.HighestCellTemperature.valueCan;
 		totalCurrent = MonitoredValues.TsacMonitoredValues.OverallCurrent.valueCan / 10U;
 		totalVoltage = MonitoredValues.TsacMonitoredValues.OverallVoltage.valueCan / 10U;
-
+		speed = 1U;
 		Segments_Set(SPEED_KMH, speed * 10U);
 		Segments_Set(BATTERY_PERCENTAGE, batteryPercentage * 10U);
 		maxTemperature = motorTemperature*10U;
@@ -151,17 +150,26 @@ int main(void)
 			maxTemperature = cellTemperature;
 		Segments_Set(TEMPERATURE, maxTemperature);
 
-		battery_error = MonitoredValues.TsacMonitoredValues.AmsError.valueCan | MonitoredValues.TsacMonitoredValues.Bms0Error.valueCan | MonitoredValues.TsacMonitoredValues.Bms1Error.valueCan | MonitoredValues.TsacMonitoredValues.ThermistorsError.valueCan | MonitoredValues.TsacMonitoredValues.TransceiverError.valueCan | MonitoredValues.TsacMonitoredValues.ShuntError.valueCan;
-		acceleration_error = MonitoredValues.PedalsMonitoredValues.Accel_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc.valueCan;
-		brake_error = MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
-		pedals_error = acceleration_error | brake_error;
-		inverters_error = 0;
+		battery_error = CanMessaging_GetBatteryReceiveTimeout() | MonitoredValues.TsacMonitoredValues.AmsError.valueCan | MonitoredValues.TsacMonitoredValues.Bms0Error.valueCan | MonitoredValues.TsacMonitoredValues.Bms1Error.valueCan | MonitoredValues.TsacMonitoredValues.ThermistorsError.valueCan | MonitoredValues.TsacMonitoredValues.TransceiverError.valueCan | MonitoredValues.TsacMonitoredValues.ShuntError.valueCan;
+		acceleration_error = CanMessaging_GetPedalsReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Accel_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc.valueCan;
+		brake_error = CanMessaging_GetBatteryReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
+		pedals_error = CanMessaging_GetPedalsReceiveTimeout() | acceleration_error | brake_error;
+		inverters_error = CanMessaging_GetInvertersReceiveTimeout();
 		dashboard_error = MonitoredValues.DashboardMonitoredValues.IsDisplayWorking.valueCan | MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking.valueCan;
 
-		Witnesses.Acceleration = acceleration_error;
-		Witnesses.Battery = battery_error;
-		Witnesses.Brake = brake_error;
-		Witnesses.Inverter = inverters_error;
+		witnesses = 0;
+		if(brake_error){
+			witnesses |= BRAKE_WARNING;
+		}
+		if(acceleration_error){
+			witnesses |= ACCEL_WARNING;
+		}
+		if(battery_error){
+			witnesses |= BATTERY_WARNING;
+		}
+		if(inverters_error){
+			witnesses |= INVERTER_WARNING;
+		}
 
 		StatusLed_Set(BATTERY_LED, battery_error);
 		StatusLed_Set(PEDALS_LED, pedals_error);
@@ -169,8 +177,13 @@ int main(void)
 		StatusLed_Set(DASHBOARD_LED, dashboard_error);
 		touchScreen_Update(&reverseToggle);		//commented if not used, reverseToggle will always be FALSE
 		Segments_Update();
-		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, INVERTER_WARNING, &reverseToggle);
+		Display_Update(acceleration, braking, batteryPercentage, motorTemperature, inverterTemperature, speed, cellVoltage, cellTemperature, totalCurrent, totalVoltage, 0, 0, 0, witnesses, &reverseToggle);
 		Segments_Update();
+		ActivationLogicButton_Update();
+
+		WriteCanDataAtAddress(ActivationLogicButton_GetState(), &MonitoredValues.DashboardMonitoredValues.ActivationButtonPressed);
+		WriteCanDataAtAddress(reverseToggle, &MonitoredValues.DashboardMonitoredValues.CarReverseCommandPressed);
+		CanMessaging_Update();
 	}
 }
 

@@ -29,21 +29,21 @@ extern "C" {
 #define SCL_PIN_IDX						1U
 #define GPT_RECOVER_CHANNEL  			0U
 #define GPT_RECOVER_CLOCKS   			4000U
-#define MESSAGES_UNTIL_FORCED_REINIT    500U
+#define MESSAGES_UNTIL_FORCED_REINIT    5000U
 #define RECOVER_CLK_COUNT               20U
 /*==================================================================================================
 *                                      LOCAL CONSTANTS
 ==================================================================================================*/
 static const SegmentsGroups_t SegmentsGroups = {
 	{//DigitGroup_Speed
-		DIGIT_0,
-		DIGIT_3,
-		DIGIT_6
-	},
-	{//DigitGroup_Battery
 		DIGIT_1,
 		DIGIT_5,
 		DIGIT_7
+	},
+	{//DigitGroup_Battery
+		DIGIT_0,
+		DIGIT_3,
+		DIGIT_6
 	},
 	{//DigitGroup_Temperature
 		DIGIT_2,

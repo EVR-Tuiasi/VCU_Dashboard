@@ -33,6 +33,13 @@ typedef enum{
 	PEDALS_LED = STATUS_LED_PEDALS_PIN_PCR
 }StatusLed_t;
 
+typedef enum{
+	ACTIVATED_NOT_PRESSED,
+	ACTIVATED_PRESSED,
+	DEACTIVATED_NOT_PRESSED,
+	DEACTIVATED_PRESSED
+}ActivationButtonState_t;
+
 /*==================================================================================================
 *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -76,6 +83,7 @@ void StatusLed_Test(void);
 void ActivationLogicButton_Init(void);
 bool ActivationLogicButton_GetState(void);
 void ActivationLogicButton_Test(void);
+void ActivationLogicButton_Update(void);
 
 #ifdef __cplusplus
 }
