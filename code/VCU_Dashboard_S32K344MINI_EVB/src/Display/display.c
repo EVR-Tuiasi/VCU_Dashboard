@@ -81,6 +81,7 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
 ==================================================================================================*/
 void Display_Init(void){
 	Dio_WriteChannel(PD_PIN_PCR, 0);
+	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_OFF);
 	volatile uint64_t delei = 3000000;
 	while(delei){
 		delei--;
@@ -148,6 +149,22 @@ void Display_Sound_Test(void){
 			while(delei--);
 		}
 	}
+}
+
+void Display_Sound_Play(void){
+	wr8(REG_VOL_SOUND,0xFF);
+	//wr32(REG_GPIOX_DIR, 0x00008004);
+	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_ON);
+	volatile uint32_t delei;
+	volatile uint8_t i = 2;
+	while(i--){
+		//wr32(REG_GPIOX, 0x00008004); // enable amp
+		wr16(REG_SOUND, (0x6C<< 8) | 0x41);
+		wr8(REG_PLAY, 1);
+		delei = 10000000;
+		while(delei--);
+	}
+	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_OFF);
 }
 
 /*void trailingArray(){

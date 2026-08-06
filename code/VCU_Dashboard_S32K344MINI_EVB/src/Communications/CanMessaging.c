@@ -934,9 +934,10 @@ static void CanMessaging_SendData(void){
 *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 void CanMessaging_Init(void){
-	Dio_WriteChannel(CAN_CHANNEL_EN, STD_HIGH); //CAN0_EN
 	volatile uint64 i = 1000000;
-	while(i--);
+	//Este activ pt bord asa ca nu mai trebuie activat!!!
+	/*Dio_WriteChannel(CAN_CHANNEL_EN, STD_HIGH); //CAN0_EN
+	while(i--);*/
 	Dio_WriteChannel(CAN_CHANNEL_STB_N, STD_HIGH); //CAN0_STB_N
 	i = 1000000;
 	while(i--);

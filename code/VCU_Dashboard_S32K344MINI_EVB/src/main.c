@@ -106,7 +106,7 @@ int main(void)
 	uint8_t acceleration, braking, batteryPercentage, speed, witnesses;
 	uint16_t cellVoltage, cellTemperature, totalCurrent, totalVoltage, maxTemperature;
 	int motorTemperature, inverterTemperature;
-	bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
+	volatile bool battery_error, pedals_error, inverters_error, dashboard_error, acceleration_error, brake_error;
 	while(1){
 		acceleration = MonitoredValues.PedalsMonitoredValues.AcceleratorSensor1TravelPercentage.valueCan;
 		if(acceleration > MonitoredValues.PedalsMonitoredValues.AcceleratorSensor2TravelPercentage.valueCan)
@@ -128,7 +128,7 @@ int main(void)
 		inverterTemperature = (int)MonitoredValues.InvertersMonitoredValues.LeftInverterTemperature.valueCan;
 		if(inverterTemperature > (int)MonitoredValues.InvertersMonitoredValues.RightInverterTemperature.valueCan)
 			inverterTemperature = (int)MonitoredValues.InvertersMonitoredValues.RightInverterTemperature.valueCan;
-		inverterTemperature -= 30;
+		inverterTemperature -= 40;
 		if(inverterTemperature < 0)
 			inverterTemperature = 0;
 
@@ -152,7 +152,7 @@ int main(void)
 
 		battery_error = CanMessaging_GetBatteryReceiveTimeout() | MonitoredValues.TsacMonitoredValues.AmsError.valueCan | MonitoredValues.TsacMonitoredValues.Bms0Error.valueCan | MonitoredValues.TsacMonitoredValues.Bms1Error.valueCan | MonitoredValues.TsacMonitoredValues.ThermistorsError.valueCan | MonitoredValues.TsacMonitoredValues.TransceiverError.valueCan | MonitoredValues.TsacMonitoredValues.ShuntError.valueCan;
 		acceleration_error = CanMessaging_GetPedalsReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Accel_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc.valueCan;
-		brake_error = CanMessaging_GetBatteryReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
+		brake_error = CanMessaging_GetPedalsReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
 		pedals_error = CanMessaging_GetPedalsReceiveTimeout() | acceleration_error | brake_error;
 		inverters_error = CanMessaging_GetInvertersReceiveTimeout();
 		dashboard_error = MonitoredValues.DashboardMonitoredValues.IsDisplayWorking.valueCan | MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking.valueCan;

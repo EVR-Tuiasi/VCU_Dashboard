@@ -11,11 +11,13 @@ extern "C" {
 ==================================================================================================*/
 #include "helper_functions.h"
 #include "Dio.h"
+#include "Display/display.h"
+#include "Messaging.h"
 
 /*==================================================================================================
 *                          LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==================================================================================================*/
-
+#define BRAKE_PERCENTAGE_THRESHOLD 10U
 
 /*==================================================================================================
 *                                       LOCAL MACROS
@@ -40,7 +42,7 @@ static ActivationButtonState_t activationButtonState = DEACTIVATED_PRESSED;
 /*==================================================================================================
 *                                      GLOBAL VARIABLES
 ==================================================================================================*/
-
+extern MonitoredValues_t MonitoredValues;
 
 /*==================================================================================================
 *                                   LOCAL FUNCTION PROTOTYPES
@@ -108,6 +110,13 @@ void ActivationLogicButton_Test(void){
 }
 
 void ActivationLogicButton_Update(void){
+	uint8_t brake_sensor1_travel_percentage, brake_sensor2_travel_percentage, brake_travel_percentage;
+	brake_sensor1_travel_percentage = MonitoredValues.PedalsMonitoredValues.BrakeSensor1TravelPercentage.valueCan;
+	brake_sensor2_travel_percentage = MonitoredValues.PedalsMonitoredValues.BrakeSensor2TravelPercentage.valueCan;
+	brake_travel_percentage = brake_sensor1_travel_percentage;
+	if(brake_travel_percentage > brake_sensor2_travel_percentage){
+		brake_travel_percentage = brake_sensor2_travel_percentage;
+	}
 	switch(activationButtonState){
 		case DEACTIVATED_PRESSED:
 			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_OFF){
@@ -115,18 +124,19 @@ void ActivationLogicButton_Update(void){
 			}
 			break;
 		case DEACTIVATED_NOT_PRESSED:
-			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_ON){ //TODO: ADD FRANA!!!!!!
+			if((Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_ON) && (brake_travel_percentage >= BRAKE_PERCENTAGE_THRESHOLD)){
 				activationButtonState = ACTIVATED_PRESSED;
+				Display_Sound_Play();
 			}
 			break;
 		case ACTIVATED_PRESSED:
-			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_OFF){
+			if((Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_OFF)  && (brake_travel_percentage >= BRAKE_PERCENTAGE_THRESHOLD)){
 				activationButtonState = ACTIVATED_NOT_PRESSED;
 			}
 			break;
 		case ACTIVATED_NOT_PRESSED:
 			if(Dio_ReadChannel(ACTIVATION_LOGIC_BUTTON_READ_PIN_PCR) == STD_ON){
-				activationButtonState = DEACTIVATED_PRESSED;
+				activationButtonState = DEACTIVATED_PRESSED;;
 			}
 			break;
 	}
