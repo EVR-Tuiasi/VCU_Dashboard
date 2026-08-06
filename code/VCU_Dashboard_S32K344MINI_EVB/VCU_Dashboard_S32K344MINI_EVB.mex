@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="S32K344" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_19 http://mcuxpresso.nxp.com/XSD/mex_configuration_19.xsd" uuid="cb0a0571-31b0-4026-b225-2a0da4ce6ac1" version="19" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_19" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="S32K344" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_18 http://mcuxpresso.nxp.com/XSD/mex_configuration_18.xsd" uuid="cb0a0571-31b0-4026-b225-2a0da4ce6ac1" version="18" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_18" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>S32K344</processor>
       <package>S32K344_257BGA</package>
@@ -84,7 +84,8 @@
                   <pin peripheral="SIUL2" signal="gpio, 75" pin_num="T15" pin_signal="PTC11">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
-                        <pin_feature name="outputInversionSelect" value="invert"/>
+                        <pin_feature name="outputInversionSelect" value="doNotInvert"/>
+                        <pin_feature name="InitValue" value="state_0"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="CAN0" signal="can0_tx" pin_num="M16" pin_signal="PTA7"/>
@@ -137,7 +138,7 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="19.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="17.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="generate/include/Clock_Ip_Cfg.h" update_enabled="true"/>
             <file path="generate/include/Clock_Ip_Cfg_Defines.h" update_enabled="true"/>
@@ -1032,7 +1033,7 @@
                                        <setting name="PortPinIfe" value="false"/>
                                        <setting name="PortPinDirectionChangeable" value="true"/>
                                        <setting name="PortPinModeChangeable" value="true"/>
-                                       <setting name="PortPinInvertControl" value="true"/>
+                                       <setting name="PortPinInvertControl" value="false"/>
                                        <setting name="PortPinSiul2Instance" value="SIUL2_0"/>
                                        <setting name="PortPinId" value="8"/>
                                        <setting name="PortPinInitialMode" value="PORT_GPIO_MODE"/>

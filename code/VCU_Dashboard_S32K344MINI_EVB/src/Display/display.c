@@ -80,35 +80,48 @@ const uint16_t y_memory_outer[] = {373, 368, 363, 358, 354, 349, 344, 339, 334, 
  *                                       GLOBAL FUNCTIONS
 ==================================================================================================*/
 void Display_Init(void){
-	Dio_WriteChannel(PD_PIN_PCR, 0);
-	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_OFF);
-	volatile uint64_t delei = 3000000;
+	volatile uint64_t delei;
+	wr32(REG_PWM_DUTY, 100);
+	delei = 1000000;
+	while(delei){
+		delei--;
+	}
+	wr32(REG_PWM_DUTY, 128);
+	delei = 1000000;
 	while(delei){
 		delei--;
 	}
 	Dio_WriteChannel(PD_PIN_PCR, 1);
+	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_OFF);
+	delei = 3000000;
+	while(delei){
+		delei--;
+	}
+	Dio_WriteChannel(PD_PIN_PCR, 0);
 	delei = 30000000;
 	while(delei){
 		delei--;
 	}
-	host_command(CLKSEL, 0x00);//select the system clock frequency
+	host_command(CLKSEL, 0x04);//select the system clock frequency
 	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
 	while (0x7C != rd8(REG_ID)); //Wait till clock is on
 	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
 	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
 	wr16(REG_HCYCLE, 928);
+	wr16(REG_HSIZE, 800);
 	wr16(REG_HOFFSET, 88);
 	wr16(REG_HSYNC0, 0);
 	wr16(REG_HSYNC1, 48);
+
 	wr16(REG_VCYCLE, 525);
+	wr16(REG_VSIZE, 480);
 	wr16(REG_VOFFSET, 32);
 	wr16(REG_VSYNC0, 0);
 	wr16(REG_VSYNC1, 3);
+
 	wr8(REG_SWIZZLE, 0);
 	wr8(REG_PCLK_POL, 1);
-	wr8(REG_CSPREAD, 1);
-	wr16(REG_HSIZE, 800);
-	wr16(REG_VSIZE, 480);
+	wr8(REG_CSPREAD, 0);
 	wr8(REG_DITHER, 1);
 
 	/* write first display list */
@@ -120,13 +133,6 @@ void Display_Init(void){
 	wr8(REG_GPIO_DIR,0x81);//| rd8(REG_GPIO_DIR));
 	wr8(REG_GPIO,0x81);// | rd8(REG_GPIO));//enable display bit
 	wr8(REG_PCLK,2);//after this display is visible on the LCD
-
-	wr32(REG_PWM_DUTY, 100);
-	delei = 1000000;
-	while(delei){
-		delei--;
-	}
-	wr32(REG_PWM_DUTY, 128);
 }
 
 void Display_Sound_Test(void){
