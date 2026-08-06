@@ -140,7 +140,7 @@ int main(void)
 		cellTemperature = MonitoredValues.TsacMonitoredValues.HighestCellTemperature.valueCan;
 		totalCurrent = MonitoredValues.TsacMonitoredValues.OverallCurrent.valueCan / 10U;
 		totalVoltage = MonitoredValues.TsacMonitoredValues.OverallVoltage.valueCan / 10U;
-		speed = 1U;
+
 		Segments_Set(SPEED_KMH, speed * 10U);
 		Segments_Set(BATTERY_PERCENTAGE, batteryPercentage * 10U);
 		maxTemperature = motorTemperature*10U;
