@@ -22,6 +22,8 @@ extern "C" {
 ==================================================================================================*/
 #define PD_PIN_PCR				75U
 #define AUDIO_SHUTDOWN_PIN_PCR	85U
+
+#define DISPLAY_RESPONSE_TIMEOUT 50000U
 /*==================================================================================================
  *                                       LOCAL MACROS
 ==================================================================================================*/
@@ -35,7 +37,8 @@ extern "C" {
 /*==================================================================================================
  *                                      LOCAL VARIABLES
 ==================================================================================================*/
-
+static bool display_error = STD_OFF;
+static uint32_t display_error_counter = 0U;
 
 /*==================================================================================================
  *                                      GLOBAL CONSTANTS
@@ -104,8 +107,19 @@ void Display_Init(void){
 	}
 	host_command(CLKSEL, 0x04);//select the system clock frequency
 	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
-	while (0x7C != rd8(REG_ID)); //Wait till clock is on
-	while (0x0 != rd8(REG_CPURESET)); //Check if EVE is in working status.
+	while (0x7C != rd8(REG_ID) && (display_error_counter < DISPLAY_RESPONSE_TIMEOUT)){ //Wait till clock is on
+		display_error_counter++;
+	}
+	if(display_error_counter >= DISPLAY_RESPONSE_TIMEOUT){
+		display_error = STD_ON;
+	}
+	display_error_counter = 0U;
+	while (0x0 != rd8(REG_CPURESET)&& (display_error_counter < DISPLAY_RESPONSE_TIMEOUT)){ //Check if EVE is in working status.
+		display_error_counter++;
+	}
+	if(display_error_counter >= DISPLAY_RESPONSE_TIMEOUT){
+		display_error = STD_ON;
+	}
 	/* Configure display registers - demonstration for WQVGA resolution, modified for 800x480*/
 	wr16(REG_HCYCLE, 928);
 	wr16(REG_HSIZE, 800);
@@ -159,12 +173,10 @@ void Display_Sound_Test(void){
 
 void Display_Sound_Play(void){
 	wr8(REG_VOL_SOUND,0xFF);
-	//wr32(REG_GPIOX_DIR, 0x00008004);
 	Dio_WriteChannel(AUDIO_SHUTDOWN_PIN_PCR, STD_ON);
 	volatile uint32_t delei;
-	volatile uint8_t i = 2;
-	while(i--){
-		//wr32(REG_GPIOX, 0x00008004); // enable amp
+	volatile uint8_t sound_repeat_num = 2;
+	while(sound_repeat_num--){
 		wr16(REG_SOUND, (0x6C<< 8) | 0x41);
 		wr8(REG_PLAY, 1);
 		delei = 10000000;
