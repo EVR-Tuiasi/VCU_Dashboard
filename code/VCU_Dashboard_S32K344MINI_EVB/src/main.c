@@ -165,7 +165,7 @@ int main(void)
 		acceleration_error = CanMessaging_GetPedalsReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Accel_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Accel_Sensor2_ShortToVcc.valueCan;
 		brake_error = CanMessaging_GetPedalsReceiveTimeout() | MonitoredValues.PedalsMonitoredValues.Brake_Implausibility.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor1_ShortToVcc.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_OutOfRangeOutput.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToGnd.valueCan | MonitoredValues.PedalsMonitoredValues.Brake_Sensor2_ShortToVcc.valueCan;
 		pedals_error = CanMessaging_GetPedalsReceiveTimeout() | acceleration_error | brake_error;
-		inverters_error = CanMessaging_GetInvertersReceiveTimeout();
+		inverters_error = CanMessaging_GetInvertersReceiveTimeout() | MonitoredValues.InvertersMonitoredValues.InvertersError.valueCan;
 		//dashboard_error = MonitoredValues.DashboardMonitoredValues.IsDisplayWorking.valueCan | MonitoredValues.DashboardMonitoredValues.IsSegmentsDriverWorking.valueCan;
 
 		witnesses = 0;
