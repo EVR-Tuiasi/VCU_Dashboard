@@ -105,7 +105,7 @@ void Display_Init(void){
 	while(delei){
 		delei--;
 	}
-	host_command(CLKSEL, 0x04);//select the system clock frequency
+	host_command(CLKSEL, 0x00);//select the system clock frequency
 	host_command(ACTIVE, 0);//send host command "ACTIVE" to wake up
 	while (0x7C != rd8(REG_ID) && (display_error_counter < DISPLAY_RESPONSE_TIMEOUT)){ //Wait till clock is on
 		display_error_counter++;
@@ -235,7 +235,7 @@ void Display_Test(bool *ptrReversing){
 	while(1){
 		prescaler++;
 		touchScreen_Update(ptrReversing);
-		if(prescaler >= 100U){
+		if(prescaler >= 10U){
 			prescaler = 0;
 			Battery_Percentage++;
 			Motor_Temperature++;
@@ -438,6 +438,7 @@ void Display_Update(uint8_t Acceleration, uint8_t Brake, uint8_t Battery_Percent
 	}
 
 	if(rd8(REG_DLSWAP) == 0){
+		wr32(RAM_DL + (index+=4), restore_context());
 		wr32(RAM_DL + (index+=4), clear(1, 1, 1));
 		wr32(RAM_DL + (index+=4), vertex_format(0));
 
